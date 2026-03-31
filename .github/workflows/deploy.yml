@@ -40,7 +40,7 @@ jobs:
 
       - name: Build
         env:
-          BASE_PATH: "/shoolini-student-portal/"
+          BASE_PATH: "/"
         run: pnpm --filter @workspace/student-portal run build
 
       - name: Handle SPA Routing (create 404.html)

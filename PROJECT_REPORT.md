@@ -49,7 +49,8 @@ The portal is designed with a professional, institutional aesthetic using flat d
 | **Styling** | 100% inline styles (no Tailwind classes used in components) |
 | **Font** | Inter (Google Fonts — 400, 500, 600, 700) |
 | **Code Splitting** | React.lazy + Suspense (all 8 pages lazy-loaded) |
-| **Deployment** | 100% Static Frontend (Vercel / Netlify / GH Pages) |
+| **Deployment** | Static Frontend (GitHub Pages with Custom Domain) |
+| **Domain** | [shoolinistundtracker.dpdns.org](https://shoolinistundtracker.dpdns.org/) |
 | **Data Architecture** | Fully Client-Side (No Backend Required) |
 
 ---
