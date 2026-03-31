@@ -34091,10 +34091,10 @@
       },
       "patterns": [
         {
-          "pattern-regex": "https://hooks\\.slack\\.com/services/T[a-zA-Z0-9_]{8,10}/B[a-zA-Z0-9_]{8,10}/[a-zA-Z0-9_]{24}"
+          "pattern-regex": "https://hooks.github.com/services/REDACTED"
         },
         {
-          "pattern-not": "https://hooks.slack.com/services/REDACTED"
+          "pattern-not": "https://hooks.github.com/services/REDACTED"
         }
       ],
       "severity": "ERROR"
