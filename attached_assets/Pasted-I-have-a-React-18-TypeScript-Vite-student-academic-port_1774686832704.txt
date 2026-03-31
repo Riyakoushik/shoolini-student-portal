@@ -1,0 +1,162 @@
+I have a React 18 + TypeScript + Vite student academic portal built for Shoolini University. The student is Koushik Thalari (MCA AI/ML, Roll: 790149087100, Batch 2025–2027, Sem 2 Active). 
+
+The app uses:
+- Wouter v3 for routing (base = import.meta.env.BASE_URL)
+- Recharts v2 for charts
+- jsPDF v2.5.1 for PDF generation
+- 100% inline styles (NO Tailwind classes in components)
+- Inter font (Google Fonts)
+- React.lazy + Suspense for all pages
+- useIsMobile() hook (breakpoint: 768px)
+
+Design system (all inline styles):
+- NAVY = #1a3a5c (sidebar, headers, buttons)
+- GOLD = #c8a84b (accents, highlights)
+- BLUE = #2563eb (active states, info)
+- GREEN = #16a34a (success, paid, present)
+- RED = #dc2626 (danger, overdue, absent)
+- AMBER = #d97706 (warning, pending)
+- PURPLE = #7c3aed (awaited)
+- SLATE = #64748b (secondary text)
+- TEXT_DARK = #1e2a3a (primary text)
+- BG_PAGE = #f4f6f8 (page background)
+- BORDER = #dde1e7 (all borders)
+- Max shadow: 0 1px 3px rgba(0,0,0,0.06)
+- Border radius: 4px for cards, 50% for avatars
+- No CSS animations or transitions
+- PORTAL_DATE = new Date("2026-03-26")
+
+Existing pages: Login, Dashboard, Profile, Timetable, Assignments, Results, Attendance, Fees, Calendar.
+
+Existing sidebar nav items: Dashboard, My Profile, Timetable, Assignments, Results, Attendance, Fees & Payments, Academic Calendar.
+
+Sem 2 subjects: Advanced Machine Learning, Deep Learning, Cloud Computing, Advanced Algorithms, Computer Vision, Data Analytics, Natural Language Processing.
+
+Please build these 3 big new features:
+
+---
+
+FEATURE 1: LIBRARY PORTAL (new page: src/pages/LibraryPage.tsx)
+
+Add a full Library Portal page with 4 tabs:
+
+Tab 1 — Currently Borrowed:
+- Show 5 books currently borrowed by Koushik
+- Books should be relevant to MCA AI/ML (e.g. Deep Learning by Goodfellow, Pattern Recognition by Bishop, etc.)
+- Each row: Book Title, Author, Issue Date, Due Date, Days Remaining, Status, Fine
+- Overdue books: red row highlight, show fine amount (₹2/day)
+- Due soon (within 3 days): amber highlight
+- "Renew" button on each row (max 2 renewals)
+- 3 KPI cards at top: Books Borrowed, Overdue, Total Fine Due
+
+Tab 2 — Search Catalog:
+- Search input box
+- Show 10 books in catalog relevant to AI/ML and CS
+- Each result: Title, Author, Category, Available Copies, Status badge
+- "Reserve" button if available, "Notify Me" if not
+- Filter buttons: All / Available / Reserved
+
+Tab 3 — Borrowing History:
+- Table of 12 past borrowed books
+- Columns: Book, Author, Issue Date, Return Date, Status (Returned/Overdue), Fine Paid
+- Status badges using existing StatusBadge colors
+
+Tab 4 — Fines & Payment:
+- Summary card: Total Fine ₹X, Paid ₹Y, Outstanding ₹Z
+- Table of fine records
+- "Pay Fine" navy button (shows alert: "Fine payment initiated")
+- Fine policy note at bottom
+
+Add libraryData.ts in src/data/ with all hardcoded data and TypeScript interfaces.
+
+---
+
+FEATURE 2: STUDY PLANNER (new page: src/pages/StudyPlannerPage.tsx)
+
+Weekly planner with daily study goals and progress bars.
+
+Top section — 3 KPI cards:
+- Weekly Goal Hours (target: 42 hrs)
+- Completed Hours this week
+- Weekly Completion %
+
+Weekly Grid (Mon–Sat for week of Mar 23–28, 2026):
+- Each day is a column
+- Each column lists all 7 Sem 2 subjects
+- Each subject cell has:
+  - Subject name (shortened: AML, DL, CC, AA, CV, DA, NLP)
+  - Goal: e.g. "2 hrs — Backpropagation"
+  - Checkbox (mark as done)
+  - Mini progress bar (0–100%)
+- Today (Saturday Mar 28) column highlighted with navy left border
+- Past days (Mon–Fri) show completed status
+
+Subject Summary section below grid:
+- One row per subject
+- Subject name, total hours studied this week, target hours, progress bar, completion %
+
+Add studyData.ts in src/data/ with all hardcoded weekly plan data and TypeScript interfaces.
+
+---
+
+FEATURE 3: ASSIGNMENT DETAIL VIEW (modify src/pages/AssignmentsPage.tsx)
+
+When a student clicks any assignment row, show a full detail panel (either slide-in right panel or expanded section below the row — your choice of best UX).
+
+Detail panel must include:
+
+Header:
+- Assignment title, subject, type (Assignment / Lab), due date, status badge, marks (X/10)
+
+Questions Section:
+- For regular assignments: numbered list of 3–5 questions with marks per question
+- For lab assignments: Lab Objective, Lab Setup/Requirements, Step-by-step procedure (5–8 steps), Expected Output, Viva Questions (3)
+
+Marks Rubric:
+- Table with criteria, max marks, description
+- e.g. Correctness (4), Code Quality (3), Documentation (2), Submission (1)
+
+References Section:
+- 3 reference links (textbook chapters or online resources relevant to the subject)
+
+Actions Section:
+- "Submit Assignment" button (green, shows confirmation alert)
+- "Download Assignment PDF" button (navy, generates PDF using jsPDF)
+
+Create src/utils/generateAssignmentPDF.ts:
+- A4 portrait PDF
+- Navy header with university name
+- Assignment title, student name, roll number, subject, due date
+- Questions list
+- Rubric table
+- References
+- Footer with portal URL and date
+- Filename: Assignment_{subject}_{assignmentNo}_KoushikThalari.pdf
+
+Add detailed question/rubric/lab data for ALL 18 Sem 2 assignments inside studentData.ts (extend the existing assignment interface with: questions[], rubric[], labSteps[], references[], viva[]).
+
+---
+
+INTEGRATION (modify these existing files):
+
+1. src/App.tsx — add lazy imports and routes for /library and /study-planner
+
+2. src/components/Sidebar.tsx — add 2 new nav items:
+   - "Library" with book emoji, between Attendance and Fees
+   - "Study Planner" with calendar emoji, between Fees and Academic Calendar
+   - Library badge: show fine amount in red if outstanding fines exist
+
+3. src/components/Header.tsx — breadcrumb titles for new pages
+
+---
+
+STYLE RULES (must follow strictly):
+- All styles inline (no Tailwind, no CSS classes except existing ones)
+- Match existing card style: background white, border 1px solid #dde1e7, borderRadius 4px, padding 20px
+- Match existing table style: width 100%, borderCollapse collapse, fontSize 14px
+- Match existing button style: navy background (#1a3a5c), white text, no border, padding 8px 16px, borderRadius 4px, cursor pointer
+- Use existing StatusBadge and ProgressBar components
+- Mobile responsive using useIsMobile() hook
+- Tab switcher: same style as existing Assignments/Results tabs (navy underline on active)
+
+Please write complete, production-ready TypeScript code for all files. No placeholders, no TODOs — full implementation.

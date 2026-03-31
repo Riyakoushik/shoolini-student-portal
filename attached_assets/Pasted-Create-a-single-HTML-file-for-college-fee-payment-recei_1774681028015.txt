@@ -1,0 +1,87 @@
+Create a single HTML file for college fee payment receipts for
+Shoolini University Student Academic Portal.
+
+STUDENT DETAILS:
+- Name: Koushik Thalari
+- Roll Number: 790149087100
+- Program: MCA (Artificial Intelligence & Machine Learning)
+- Department: School of Computer Science & Engineering (SCSE)
+- University: Shoolini University of Biotechnology and Management Sciences
+- Campus: Kasauli Hills, Solan, Himachal Pradesh — 173229
+- Batch: 2025–2027
+- Current Semester: 2
+
+DESIGN:
+- Header background: #1a3a5c (navy)
+- Accent color: #c8a84b (gold)
+- Clean, professional, institutional look
+- No animations, no gradients, flat design only
+
+RECEIPTS (3 separate receipts, each with its own fee breakdown):
+
+--- RECEIPT 1 ---
+Receipt No: PAY-2025-001
+Date: 12 Aug 2025
+Payment Mode: UPI
+UPI Transaction ID: UPI20250812XXXXX001
+Semester: 1 — First Installment
+Fee Breakdown:
+- Tuition Fee: ₹18,000
+- Examination Fee: ₹2,000
+- Lab Fee: ₹2,500
+- Library Fee: ₹1,000
+- Activity Fee: ₹500
+Total Paid: ₹24,000
+
+--- RECEIPT 2 ---
+Receipt No: PAY-2025-002
+Date: 15 Oct 2025
+Payment Mode: UPI
+UPI Transaction ID: UPI20251015XXXXX002
+Semester: 1 — Second Installment (Balance Clearance)
+Fee Breakdown:
+- Tuition Fee: ₹12,000
+- Examination Fee: ₹2,000
+- Lab Fee: ₹2,500
+- Library Fee: ₹1,000
+- Activity Fee: ₹500
+Total Paid: ₹18,000
+
+--- RECEIPT 3 ---
+Receipt No: PAY-2026-001
+Date: 20 Jan 2026
+Payment Mode: UPI
+UPI Transaction ID: UPI20260120XXXXX003
+Semester: 2 — First Installment
+Fee Breakdown:
+- Tuition Fee: ₹18,000
+- Examination Fee: ₹2,000
+- Lab Fee: ₹2,500
+- Library Fee: ₹1,000
+- Activity Fee: ₹500
+Total Paid: ₹24,000
+
+LAYOUT:
+- Show 3 separate receipt cards on the page
+- Each receipt is fully independent with its own details and breakdown
+- Add a tab or button at the top to switch between Receipt 1, 2, and 3
+- Each receipt must look like an official printed document
+
+BUTTONS (per receipt, visible on screen, hidden on print):
+- "Download PDF" button — use jsPDF library from CDN to generate
+  and download that specific receipt as a PDF
+- "Print Receipt" button — triggers window.print() for that receipt only
+
+PDF DOWNLOAD REQUIREMENTS:
+- Use jsPDF from: https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js
+- PDF must include all student info, UPI transaction ID, fee breakdown, total
+- PDF filename format: "Receipt_PAY-2025-001_KoushikThalari.pdf"
+- Each receipt downloads as its own separate PDF file
+
+FOOTER ON EACH RECEIPT:
+- "This is a computer-generated receipt and does not require a physical signature."
+- Payment verified via UPI. Transaction ID is proof of payment.
+- Registrar: registrar@shooliniuniversity.com
+- IT Support: itsupport@shooliniuniversity.com
+- Phone: +91 7018007000
+- NAAC B+ | UGC Certified

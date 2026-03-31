@@ -1,0 +1,219 @@
+I have a React 18 + TypeScript + Vite student academic portal for Shoolini University.
+Student: Koushik Thalari | Roll: 790149087100 | MCA AI/ML | Batch 2025–2027 | Sem 2 Active
+PORTAL_DATE = new Date("2026-03-26")
+
+Tech stack: React 18, TypeScript, Vite, Wouter v3, Recharts v2, jsPDF v2.5.1, 100% inline styles (NO Tailwind).
+
+Design tokens (inline styles only):
+NAVY=#1a3a5c, GOLD=#c8a84b, BLUE=#2563eb, GREEN=#16a34a, RED=#dc2626, AMBER=#d97706, PURPLE=#7c3aed, SLATE=#64748b, TEXT_DARK=#1e2a3a, BG_PAGE=#f4f6f8, BORDER=#dde1e7
+Border radius: 4px cards, shadow: 0 1px 3px rgba(0,0,0,0.06), no CSS animations.
+
+Sem 2 subjects: Advanced Machine Learning, Deep Learning, Cloud Computing, Advanced Algorithms, Computer Vision, Data Analytics, Natural Language Processing.
+
+Please fix and build ALL of the following features with complete working logic — no placeholders, no TODOs, full production-ready TypeScript code:
+
+═══════════════════════════════════════════════════════
+FEATURE 1: RESULTS PAGE — DOWNLOADABLE PDFs FOR ALL EXAM TYPES
+═══════════════════════════════════════════════════════
+
+Fix and enhance src/pages/ResultsPage.tsx:
+
+Semester 1 Downloads (all results "Awaited" but PDFs still downloadable as official marksheets):
+- Download IA1 Marksheet PDF — shows all Sem 1 subjects with IA1 scores (avg 25.5/30), grade, remarks
+- Download IA2 Marksheet PDF — shows all Sem 1 subjects with IA2 scores (avg 26.5/30), grade, remarks
+- Download Mid-term Marksheet PDF
+- Download Pre-final Exam Admit Card PDF (hall ticket with photo placeholder, exam schedule, instructions)
+- Download Final Exam Admit Card PDF
+- Download Practical Exam Schedule PDF
+- Download Consolidated Sem 1 Result PDF (when available — show "Result Awaited" watermark diagonally)
+
+Semester 2 Downloads:
+- Download Mid-term Marksheet PDF — all 7 subjects, scores (85,88,82,86,84,83,87), grades A+, faculty names, date Mar 17–25 2026
+- Download Pre-final Admit Card PDF — hall ticket with: student photo placeholder, roll number, exam center (Shoolini University Main Campus), exam schedule table for all 7 subjects with dates/times/room numbers, important instructions, university seal
+- Download Final Exam Admit Card PDF (upcoming — show "To Be Released" watermark)
+- Download Practical Exam Schedule PDF
+
+For ALL result PDFs use jsPDF and create src/utils/generateResultPDF.ts:
+- A4 portrait
+- Navy header strip with Shoolini University logo area + university name + "OFFICE OF EXAMINATIONS"
+- Gold separator line
+- Student details block: Name, Roll No, Program, Department, Semester, Academic Year
+- Results table with alternating row colors
+- Grade scale at bottom
+- Green "VERIFIED" stamp-style circle (or "AWAITED" in purple for pending)
+- University Registrar signature line
+- Footer with university address
+- Filename pattern: SU_[Type]_[Sem]_790149087100_KoushikThalari.pdf
+
+For ALL admit card PDFs create src/utils/generateAdmitCard.ts:
+- Navy header
+- "ADMIT CARD / HALL TICKET" title
+- Student photo placeholder box (right side)
+- Student details (left side): Name, Roll, Program, Sem, Center, Center Code
+- Exam schedule table: Subject | Date | Time | Duration | Room | Invigilator Code
+- Important instructions section (8 rules: bring ID, no phones, etc.)
+- "This admit card must be presented at the examination hall" notice
+- Controller of Examinations signature block
+- Filename: SU_AdmitCard_[ExamType]_Sem[N]_790149087100.pdf
+
+Add a "Download All" button on each semester tab that downloads all available PDFs for that semester as separate files sequentially with 300ms delay between each.
+
+═══════════════════════════════════════════════════════
+FEATURE 2: FEES PAGE — REAL PAYMENT LOGIC WITH RANDOM ACCOUNT DETAILS
+═══════════════════════════════════════════════════════
+
+Fix and enhance src/pages/FeesPage.tsx:
+
+When user clicks "Pay Now" on any outstanding/overdue fee:
+
+Step 1 — Payment Method Selection Modal:
+Show a modal overlay with payment options:
+- UPI (default selected)
+- Net Banking
+- Credit / Debit Card
+- NEFT / RTGS
+
+Step 2 — Payment Details (auto-filled with random realistic data):
+
+For UPI:
+- Generate random UPI ID: like koushik.thalari{4-digit-random}@okaxis or @ybl or @paytm
+- Show QR code placeholder (navy box with "Scan QR" text)
+- UPI amount pre-filled
+- Pay button
+
+For Net Banking:
+- Random Bank: pick from [HDFC Bank, SBI, ICICI Bank, Axis Bank, Kotak Bank]
+- Random Account Number: "XXXX XXXX" + 4 random digits (masked)
+- Random IFSC: [HDFC/SBIN/ICIC/UTIB/KKBK] + 0 + 6 random digits
+- Account Holder: Thalari Venkateswarlu (father's name)
+- Branch: Hyderabad Main Branch
+- Pay button
+
+For Credit/Debit Card:
+- Random Card Number: "4XXX XXXX XXXX" + 4 random digits (Visa style, masked as **** **** **** 1234)
+- Random Expiry: any future month/year like 09/27, 03/28, 11/26
+- CVV field: user types (3 digits)
+- Cardholder: KOUSHIK THALARI
+- Pay button
+
+For NEFT/RTGS:
+- Beneficiary Name: Shoolini University of Biotechnology and Management Sciences
+- Account Number: Random 12-digit number
+- IFSC: HDFC0001234
+- Bank: HDFC Bank, Solan Branch
+- Reference: SU/FEE/2026/[6-digit-random]
+- Pay button
+
+Step 3 — Processing Screen:
+Show "Processing Payment..." with a simple animated dots loader (CSS only, no libraries) for 2 seconds.
+
+Step 4 — Success Screen:
+Show green success card with:
+- Large green checkmark (CSS/SVG, not emoji)
+- "Payment Successful!" heading
+- Transaction ID: random format like TXN[timestamp][4-random-digits]
+- Amount paid: ₹XX,XXX
+- Date & Time: current timestamp formatted
+- Payment method used
+- "Download Receipt" button — generates PDF receipt via existing generateReceipt.ts
+- "Close" button — closes modal, updates fee status to "Paid" in local state, adds to payment history, shows green "Paid" badge on that fee row
+
+State management:
+- Use React useState to track which fees are paid in this session
+- Once paid, the "Pay Now" button becomes a green "Paid ✓" badge (not clickable)
+- Update the KPI cards: Total Paid increases, Outstanding decreases
+- Add the new payment to Payment History table instantly
+- Generate a new receipt number: PAY-2026-[3-digit-random]
+
+Also fix the existing "Download Receipt" buttons — they must work for all 3 existing paid records and generate proper A4 PDF receipts.
+
+═══════════════════════════════════════════════════════
+FEATURE 3: ASSIGNMENTS — SUBMIT LOGIC + WORKING DETAIL VIEW
+═══════════════════════════════════════════════════════
+
+Fix and enhance src/pages/AssignmentsPage.tsx:
+
+Assignment Detail Panel (click any assignment to open):
+Show a slide-in right panel or expanded section with:
+
+Header section:
+- Assignment title, subject name, type badge (Assignment/Lab), due date, marks (X/10), status badge
+
+Questions Section (for regular assignments — 3 to 5 questions):
+Generate subject-relevant questions for each assignment. Examples:
+- AML Assignment 1: "Explain the difference between bagging and boosting with examples.", "Implement a Random Forest classifier and compare with Decision Tree.", etc.
+- DL Assignment: "Derive the backpropagation equations for a 3-layer neural network.", etc.
+- Each question shows: Q number, question text, marks allocated
+
+Lab Steps Section (for Lab assignments):
+- Lab Objective
+- Requirements/Tools (Python 3.x, TensorFlow, NumPy, etc.)
+- Step-by-step procedure (5–8 numbered steps with code hints)
+- Expected Output description
+- Viva Questions (3 questions)
+
+Marks Rubric table:
+- Criteria | Max Marks | Description
+- e.g.: Understanding (3), Implementation (4), Documentation (2), Submission (1) = 10 total
+
+References:
+- 3 references per assignment (book chapter or URL — relevant to subject)
+
+Submit Assignment Logic:
+- "Submit Assignment" green button (only shown if status is Pending/Overdue)
+- On click: show confirmation dialog "Are you sure you want to submit [Assignment Name]?"
+- On confirm: show 1.5 second "Submitting..." loader
+- Then show success: "Assignment Submitted Successfully! Submission ID: SUB-[timestamp]-[random]"
+- Update assignment status from Pending/Overdue → Submitted in local React state
+- Update the status badge color, update filter counts, update Dashboard pending count KPI
+- The submit button disappears and shows green "Submitted ✓" with timestamp
+
+Download Assignment PDF button (navy):
+- Generate PDF via src/utils/generateAssignmentPDF.ts (create this file)
+- PDF contents: Navy header, university name, "ASSIGNMENT BRIEF", student details, subject, due date, all questions with marks, rubric table, references, submission instructions, footer
+- Filename: SU_Assignment_[SubjectCode]_[AssignNo]_790149087100.pdf
+
+═══════════════════════════════════════════════════════
+FEATURE 4: OTHER WORKING LOGIC FIXES ACROSS THE PORTAL
+═══════════════════════════════════════════════════════
+
+Dashboard:
+- "Mark Present" button on Live Class card: on click show "Attendance marked for [Subject]!" success toast (navy background, white text, appears top-right for 3 seconds), update attendance count in local state
+- Notification bell popup must dismiss on clicking anywhere outside it
+- Pending task count KPI must reduce when assignments are submitted
+
+Profile Page:
+- "Upload Photo" link: on click show a file input dialog, if user selects an image, display it as the avatar (replace "KT" initials with actual image) using FileReader API — store in local state
+- "Print Profile" button: trigger window.print()
+- "Download Offer Letter PDF" button: must work and generate complete multi-page PDF
+
+Timetable Page:
+- Add "Export Timetable PDF" button that generates a properly formatted weekly timetable PDF with navy header, all days/subjects/rooms/times in a table
+
+Attendance Page:
+- Progress bars must animate from 0 to actual % on page load using requestAnimationFrame (not CSS transitions — use JS counter)
+- "Download Attendance Report PDF" button: generates PDF with attendance summary, per-subject table, university header
+
+Calendar Page:
+- Clicking on a day with events should show a small popup/tooltip listing all events for that day
+- Events must be clickable and show event details
+
+═══════════════════════════════════════════════════════
+INTEGRATION RULES
+═══════════════════════════════════════════════════════
+
+1. All modals: use fixed overlay (position fixed, top 0, left 0, width 100%, height 100%, background rgba(0,0,0,0.5), zIndex 1000) with centered white card (maxWidth 480px, borderRadius 8px, padding 24px)
+
+2. All success/error toasts: position fixed, top 20px, right 20px, zIndex 1100, navy background, white text, padding 12px 20px, borderRadius 4px, auto-dismiss after 3 seconds
+
+3. All loaders: use CSS keyframe animation (dots or spinner) — no libraries
+
+4. All random data: generated fresh each time modal opens using Math.random()
+
+5. All state changes: use React useState, lifted to page component level — changes persist within the session (not across refresh — that is fine)
+
+6. All PDF downloads: must actually trigger file download, not open in new tab
+
+7. Style consistency: all new UI must match existing design tokens exactly — navy buttons, gold accents, BORDER colored borders, BG_PAGE backgrounds
+
+Please write complete production-ready TypeScript + React code for every file. Write each file completely — no "// rest of code stays same" shortcuts. Full file content for every modified or new file.

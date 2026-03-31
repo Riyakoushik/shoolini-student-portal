@@ -1,0 +1,169 @@
+I have a React 18 + TypeScript + Vite student academic portal for Shoolini University.
+Tech stack: React 18, TypeScript, Vite, Wouter v3, Recharts v2, jsPDF v2.5.1, 100% inline styles (NO Tailwind).
+
+Design tokens: NAVY=#1a3a5c, GOLD=#c8a84b, BLUE=#2563eb, GREEN=#16a34a, RED=#dc2626, AMBER=#d97706, PURPLE=#7c3aed, SLATE=#64748b, TEXT_DARK=#1e2a3a, BG_PAGE=#f4f6f8, BORDER=#dde1e7
+
+The student profile in the portal currently has placeholder/generic data. Please update ALL of the following files with the REAL data extracted from his resume below:
+
+═══════════════════════════════════════════════════════
+REAL STUDENT DATA (extracted from resume)
+═══════════════════════════════════════════════════════
+
+PERSONAL INFO:
+- Full Name: Thalari Koushik (portal uses "Koushik Thalari" — keep that order for university records)
+- Phone: +91-7901490871
+- Personal Email: tkjs.koushik@gmail.com
+- University Email: koushik.thalari@shooliniuniversity.com
+- LinkedIn: linkedin.com/in/tkoushik
+- GitHub: github.com/Riyakoushik
+- Personal Website: thalarikoushik.in
+- Location: Kurnool, Andhra Pradesh, India
+- Languages: English (Fluent), Telugu (Native), Hindi (Conversational)
+- Availability: Immediately available for Full-Time / Internship roles
+
+OBJECTIVE / ABOUT ME:
+"BCA graduate on a mission to build impactful tech products and grow into a world-class Product Manager. Driven by execution-first thinking, deep AI curiosity, and a relentless hunger to solve real problems at scale."
+
+EDUCATION HISTORY (before Shoolini):
+1. Sunstone, Bangalore — Bachelor of Computer Applications (BCA)
+   May 2022 – May 2025 | CGPA: 8.56/10
+
+2. Sri Chaitanya College of Education, Vijayawada — Intermediate (MPC)
+   June 2019 – April 2021 | 78%
+
+3. Sri Chaitanya Techno School, Vijayawada — SSC
+   June 2018 – March 2019 | CGPA: 9.5/10
+
+TRAINING & PROGRAMS:
+- McKinsey & Company – Forward Program
+  July 2025 – December 2025 | Product Strategy Track | Global (Remote)
+  • Selected from 10,000+ global applicants
+  • Applied MECE frameworks and quantitative modeling — 3 strategic recommendations adopted by program leadership
+  • Delivered 15+ executive-level presentations
+
+PROJECTS:
+1. RIYA – Emotionally Intelligent AI Companion (Jan 2025 – Present)
+   Building an emotionally intelligent AI companion with long-term memory and short-term context buffers to provide meaningful emotional support and reduce loneliness. Architecting multi-layered memory systems and conversational state management through iterative AI research.
+   Tech: Python, OpenAI APIs, LLMs, Agentic Workflows, Voice Recognition
+
+2. AI Research Automation System (Jul 2024 – Sep 2024)
+   Developed an autonomous no-code agentic workflow in Notion using Claude AI and Manus AI to harvest, synthesize, and report deep-web market intelligence — eliminating 80% of manual research time through intelligent agent orchestration and automated summarization pipelines.
+   Tech: Notion, Claude AI, Manus AI, AI Agents, NLP, Web Scraping
+
+3. Apna Teardown – AI Product Case Studies (Oct 2024 – Present)
+   Authored in-depth UX teardowns and product analyses of high-growth AI products, delivering actionable PM insights covering go-to-market strategy, user psychology, and product design decisions. Published at thalarikoushik.in/blog
+   Skills: Product Analysis, UX Research, GTM Strategy, Competitive Intelligence
+
+CORE COMPETENCIES:
+- Product Management: Agile Methodology, Scrum Framework, Product Roadmap Planning, GTM Strategy, Backlog Prioritization, Sprint Planning, Stakeholder Management, RICE Framework, Kano Analysis, OKRs
+- User Research & Design: User Interview Moderation, Jobs-to-be-Done Framework, Usability Testing, User Personas, Customer Journey Mapping, Design Thinking
+- Analytics & Tools: Google Analytics, A/B Testing, Funnel Analysis, Data Visualization, SQL (Basic), Google Sheets
+
+CERTIFICATIONS:
+1. McKinsey Forward Program 2025 — Product Strategy & Structured Problem-Solving (6-Month Intensive)
+2. Product Management: Building a Product Strategy 2024 — LinkedIn Learning (Self-Paced)
+
+═══════════════════════════════════════════════════════
+FILES TO UPDATE
+═══════════════════════════════════════════════════════
+
+1. src/data/studentData.ts — update the `student` object with ALL real fields:
+   - Add: personalEmail, phone, linkedin, github, website, location (Kurnool, AP)
+   - Add: objective (the "BCA graduate on a mission..." text)
+   - Add: languages array: [{name:"English", level:"Fluent"}, {name:"Telugu", level:"Native"}, {name:"Hindi", level:"Conversational"}]
+   - Add: educationHistory array with all 3 prior education entries (institution, degree, period, score, location)
+   - Add: training array with McKinsey Forward Program details + bullet points
+   - Add: projects array with all 3 projects (title, period, description, techStack[], highlights[])
+   - Add: competencies object with 3 categories (productManagement[], userResearch[], analyticsTools[])
+   - Add: certifications array with both certs (name, issuer, year, type)
+   - Add: availability: "Immediately available for Full-Time / Internship roles"
+   - Keep ALL existing fields: rollNumber, program, department, university, campus, batch, semester, advisor, universityEmail, fatherName, motherName, offerLetterNo, dbaReference, digiLockerConsentId
+
+2. src/pages/ProfilePage.tsx — update ALL sections to show real data:
+
+   Section: Personal Information table
+   - Replace placeholder DOB/Aadhaar with real fields where available
+   - Add real phone: +91-7901490871
+   - Add personal email: tkjs.koushik@gmail.com
+   - Add location: Kurnool, Andhra Pradesh
+   - Add languages: English (Fluent), Telugu (Native), Hindi (Conversational)
+
+   Section: About Me / Objective (add this new card below the avatar card)
+   - Navy left border accent card
+   - Show the objective text: "BCA graduate on a mission to build impactful tech products..."
+   - Aspiring role tag: "Aspiring Product Manager & AI Specialist" in gold badge
+
+   Section: Social & Links (new card)
+   - LinkedIn button → opens linkedin.com/in/tkoushik
+   - GitHub button → opens github.com/Riyakoushik
+   - Website button → opens thalarikoushik.in
+   - Email button → opens mailto:tkjs.koushik@gmail.com
+   - Each as a navy outlined pill button with icon emoji
+
+   Section: Education History (new card — titled "Prior Education")
+   - Table with: Institution, Degree, Period, Score, Location
+   - Show all 3 prior education entries
+   - Most recent (BCA Sunstone) highlighted with navy left border
+
+   Section: Training & Programs (new card)
+   - McKinsey & Company Forward Program card
+   - Navy header with "McKinsey & Company" in gold
+   - Show: Program name, Period, Track, Mode
+   - Show all 3 bullet points as a list with green checkmarks
+
+   Section: Projects (new card — titled "Personal Projects")
+   - One card per project with:
+     - Project title + period badge
+     - Description text
+     - Tech stack as amber chip badges
+     - Status badge: "Active" (green) or "Completed" (slate)
+   - Show all 3 projects: RIYA, AI Research Automation, Apna Teardown
+
+   Section: Skills (update existing skills section)
+   - Replace generic skills with REAL competencies from resume:
+   - Tab 1 — Product Management: Agile, Scrum, Roadmap Planning, GTM Strategy, Backlog Prioritization, Sprint Planning, Stakeholder Management, RICE Framework, Kano Analysis, OKRs
+   - Tab 2 — User Research & Design: User Interview Moderation, JTBD Framework, Usability Testing, User Personas, Customer Journey Mapping, Design Thinking
+   - Tab 3 — Analytics & Tools: Google Analytics, A/B Testing, Funnel Analysis, Data Visualization, SQL (Basic), Google Sheets
+   - Tab 4 — AI/ML (keep existing): Python, TensorFlow, OpenAI APIs, LLMs, Agentic Workflows, NLP, Voice Recognition
+
+   Section: Certifications (new card)
+   - Two certification cards side by side
+   - Card 1: McKinsey Forward Program 2025 | Product Strategy | 6-Month Intensive | gold border
+   - Card 2: Product Management: Building a Product Strategy | LinkedIn Learning | 2024 | blue border
+   - Each shows issuer, year, type badge
+
+   Section: Contact & Address (update existing)
+   - Permanent Address: Kurnool, Andhra Pradesh, India
+   - Phone: +91-7901490871
+   - Personal Email: tkjs.koushik@gmail.com
+   - Availability: "Immediately available for Full-Time / Internship roles" — green badge
+
+3. src/pages/LoginPage.tsx:
+   - Update the student display name shown on the login page if any
+
+4. src/components/Sidebar.tsx:
+   - User strip at bottom: keep "KT" avatar initials, name "Koushik Thalari", roll "790149087100"
+   - No change needed unless name was wrong
+
+5. src/utils/generateOfferLetter.ts:
+   - Make sure personal email tkjs.koushik@gmail.com and phone +91-7901490871 are in the offer letter PDF student details block
+
+═══════════════════════════════════════════════════════
+STYLE RULES (must follow strictly)
+═══════════════════════════════════════════════════════
+
+- All styles inline only — no Tailwind, no new CSS classes
+- New cards: background white, border: 1px solid #dde1e7, borderRadius: 4px, padding: 20px, marginBottom: 24px
+- Card headers: fontSize 16px, fontWeight 600, color #1e2a3a, borderBottom: 1px solid #dde1e7, paddingBottom: 12px, marginBottom: 16px
+- Gold badge: background #fef9ee, color #c8a84b, border: 1px solid #c8a84b, borderRadius: 4px, padding: 2px 10px, fontSize: 12px
+- Navy accent border: borderLeft: 4px solid #1a3a5c, paddingLeft: 16px
+- Tech chip badges: background #fffbeb, color #d97706, border: 1px solid #d97706, borderRadius: 12px, padding: 2px 10px, fontSize: 12px, marginRight: 6px, marginBottom: 6px, display: inline-block
+- Social link buttons: border: 1px solid #1a3a5c, color: #1a3a5c, borderRadius: 4px, padding: 6px 14px, fontSize: 13px, cursor: pointer, background: white, marginRight: 8px
+- Green checkmark list: color #16a34a, marginRight: 8px
+
+Please write complete production-ready TypeScript code for:
+- src/data/studentData.ts (full updated file)
+- src/pages/ProfilePage.tsx (full updated file with all new sections)
+- Any other files that reference student name/email/phone
+
+No placeholders. No "// ... rest stays same". Full file content only.

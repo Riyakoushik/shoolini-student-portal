@@ -1,0 +1,150 @@
+Create a single HTML file for an official University Joining Offer Letter
+for Shoolini University of Biotechnology and Management Sciences.
+It must look exactly like a real official university offer letter document.
+
+=== STUDENT DETAILS ===
+- Name: Koushik Thalari
+- Father's Name: Thalari Venkateswarlu
+- Mother's Name: Thalari Padmavathi
+- Roll Number: 790149087100
+- Program: Master of Computer Applications (MCA)
+- Specialization: Artificial Intelligence & Machine Learning
+- Department: School of Computer Science & Engineering (SCSE)
+- University: Shoolini University of Biotechnology and Management Sciences
+- Campus: Kasauli Hills, Solan, Himachal Pradesh — 173229
+- Batch: 2025–2027
+- Offer Letter No: SU/MCA/2025/OL/00487
+- Issue Date: 05 August 2025
+- Reporting Date: 11 August 2025
+- Academic Advisor: Dr. Priya Sharma
+- DigiLocker Verified: YES ✓
+- DBA Reference No: DBA/SU/2025/MCA/09871
+
+=== DESIGN ===
+- Header background: #1a3a5c (navy)
+- Accent color: #c8a84b (gold)
+- Clean, professional, official government-style document look
+- University letterhead at top with logo placeholder
+- "OFFICIAL DOCUMENT" watermark faintly in background
+- Green verified stamp "DigiLocker Verified ✓" on document
+- Official seal/stamp at signature section
+- No animations, no gradients, flat design only
+- Font: Georgia or Times New Roman for official feel
+
+=== LETTER SECTIONS ===
+
+--- SECTION 1: LETTERHEAD ---
+- University name in bold large text
+- Address: Kasauli Hills, Solan, Himachal Pradesh — 173229
+- Phone: +91 7018007000
+- Email: admissions@shooliniuniversity.com
+- Website: www.shooliniuniversity.com
+- Trust badges: NAAC B+ | UGC Recognized | AICTE Approved |
+  NIRF Ranked | ISO 9001:2015 Certified
+- Horizontal divider line in gold color
+- Ref No: SU/MCA/2025/OL/00487
+- Date: 05 August 2025
+
+--- SECTION 2: OFFER LETTER BODY ---
+Subject: Offer of Admission — MCA (AI & ML) | Batch 2025–2027
+
+Dear Koushik Thalari,
+
+We are delighted to offer you provisional admission to the
+Master of Computer Applications (MCA) program with specialization
+in Artificial Intelligence & Machine Learning at Shoolini University
+of Biotechnology and Management Sciences, Solan, Himachal Pradesh,
+for the academic batch 2025–2027.
+
+Your application has been reviewed by the Admissions Committee and
+you have been found eligible for admission based on your academic
+performance, entrance test score, and personal interview.
+
+Include these details in the body:
+- Program: MCA (AI & ML) — 2 Years / 4 Semesters
+- Department: School of Computer Science & Engineering
+- Campus: Kasauli Hills, Solan, HP
+- Reporting Date: 11 August 2025 (9:00 AM — Admin Block)
+- Orientation: 12 August 2025
+- Classes Begin: 13 August 2025
+- Student ID Allotted: 790149087100
+
+--- SECTION 3: DOCUMENT VERIFICATION STATUS ---
+Title: "Document Submission & Verification Status"
+
+Show a verification table with STATUS column:
+
+Document                          | Submitted Via  | Status
+----------------------------------|----------------|------------------
+Bachelor's Degree Certificate     | DigiLocker     | ✓ Verified
+All Semester Mark Sheets          | DigiLocker     | ✓ Verified
+Transfer Certificate (TC)         | DigiLocker     | ✓ Verified
+Migration Certificate             | DigiLocker     | ✓ Verified
+Character Certificate             | DigiLocker     | ✓ Verified
+Medical Fitness Certificate       | DigiLocker     | ✓ Verified
+Aadhaar Card                      | DigiLocker     | ✓ Verified
+Passport Size Photographs (6)     | DBA Portal     | ✓ Verified
+Anti-Ragging Undertaking (Self)   | DBA Portal     | ✓ Verified
+Anti-Ragging Undertaking (Parent) | DBA Portal     | ✓ Verified
+Income Certificate                | DigiLocker     | ✓ Verified
+Domicile Certificate              | DigiLocker     | ✓ Verified
+Gap Certificate (if any)          | DBA Portal     | ✓ Verified
+Category Certificate              | DigiLocker     | ✓ Verified
+
+Note below table:
+- All documents verified digitally via DigiLocker
+  (Partner ID: SU-HP-2009-MCA)
+- DBA Reference Number: DBA/SU/2025/MCA/09871
+- DigiLocker Verification Date: 08 August 2025
+- Physical originals to be presented on reporting day
+  for final cross-verification
+- Document verification is complete and admission is confirmed
+
+--- SECTION 4: FEE STRUCTURE ---
+Title: "Program Fee Structure — MCA AI/ML (Batch 2025–2027)"
+Subtitle: "Total Program Fee: ₹2,50,000"
+
+Show a detailed table:
+
+Semester | Tuition Fee | Exam Fee | Lab Fee | Library | Activity | Total
+Sem 1    | ₹38,000     | ₹5,000   | ₹8,000  | ₹2,500  | ₹1,500   | ₹55,000
+Sem 2    | ₹38,000     | ₹5,000   | ₹8,000  | ₹2,500  | ₹1,500   | ₹55,000
+Sem 3    | ₹36,000     | ₹5,000   | ₹8,000  | ₹2,500  | ₹1,500   | ₹53,000
+Sem 4    | ₹34,000     | ₹5,000   | ₹8,000  | ₹2,500  | ₹1,500   | ₹51,000
+         |             |          |         |         | TOTAL    | ₹2,14,000
+
+Add miscellaneous fees row:
+- One-time Registration Fee: ₹5,000
+- Alumni Association Fee: ₹3,000
+- Caution Deposit (Refundable): ₹10,000
+- Student Welfare Fund: ₹5,000
+- Development Fund: ₹8,000
+- Identity Card & Smart Card: ₹2,000
+- Insurance (2 Years): ₹3,000
+GRAND TOTAL: ₹2,50,000
+
+Fee Payment Schedule:
+- At Admission (Aug 2025): ₹55,000 (Sem 1 full)
+- Semester 2 (Jan 2026): ₹55,000
+- Semester 3 (Jul 2026): ₹53,000
+- Semester 4 (Jan 2027): ₹51,000
+- Miscellaneous (one-time at admission): ₹36,000
+
+Payment Mode: UPI / NEFT / RTGS / DD
+DD in favor of: "Shoolini University" payable at Solan
+UPI ID: shooliniuniversity@hdfcbank
+
+--- SECTION 5: DIGILOCKER & DBA VERIFICATION ---
+Title: "Digital Document Submission — DigiLocker & DBA Portal"
+
+DigiLocker Submission (COMPLETED):
+- All documents submitted via DigiLocker (digilocker.gov.in)
+- DigiLocker Partner ID: SU-HP-2009-MCA
+- Verification completed on: 08 August 2025
+- DigiLocker Consent ID: DGL2025KT00487
+
+Steps followed by student:
+1. ✓ Logged into DigiLocker using Aadhaar-linked mobile
+2. ✓ Uploaded all required documents
+3. ✓ Shared document access with Shoolini University
+4. ✓ DigiLocker

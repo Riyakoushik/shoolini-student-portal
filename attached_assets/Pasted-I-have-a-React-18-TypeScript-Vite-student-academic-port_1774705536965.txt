@@ -1,0 +1,361 @@
+I have a React 18 + TypeScript + Vite student academic portal for Shoolini University.
+The portal generates PDFs using jsPDF v2.5.1.
+
+The current PDF generators have MAJOR alignment, design, and layout issues that need to be completely rebuilt. I am attaching screenshots/samples of what the broken PDFs look like. Please rewrite ALL PDF generator utilities from scratch with pixel-perfect layout.
+
+Student: Koushik Thalari | Roll: 790149087100 | MCA AI/ML | Sem 1 & 2 | Batch 2025–2027
+University: Shoolini University of Biotechnology and Management Sciences
+Campus: Kasauli Hills, Solan, Himachal Pradesh — 173229
+
+═══════════════════════════════════════════════════════
+KNOWN ISSUES IN CURRENT PDFs (fix all of these)
+═══════════════════════════════════════════════════════
+
+ADMIT CARD ISSUES:
+- Room number and Invigilator Code columns are OVERLAPPING each other — text runs into adjacent columns
+- The "3 Hours" duration text is merged with the Time column — "9:00 AM – 12:00 PM3 Hours" (no space/separation)
+- University Seal overlaps with student details block on the right side
+- Photo placeholder box is misaligned — overlaps with text content
+- "UNIVERSITY SEAL" text and the seal circle are positioned incorrectly
+- Academic Year label is hidden behind the EXAMINATION SCHEDULE heading
+- Table column widths are not proportional — Subject column too wide, Room/Inv columns too narrow causing text overflow
+- Footer text overlaps with signature block
+- Overall spacing is cramped and unprofessional
+
+MARKSHEET ISSUES:
+- "INTERNAL ASSESSMENT 2 MARKSHEET" title appears TWICE (duplicate heading)
+- The VERIFIED badge/stamp positioning is off
+- Score column alignment is inconsistent
+- Overall page has too much empty space at the bottom — content not vertically balanced
+- Grade column text color not rendering (should be colored: A+ green, A blue)
+- Footer is too far from content
+
+═══════════════════════════════════════════════════════
+REWRITE 1: src/utils/generateAdmitCard.ts
+═══════════════════════════════════════════════════════
+
+Completely rewrite this file. Generate a professional A4 admit card / hall ticket PDF using jsPDF.
+
+PAGE SETUP:
+- A4 portrait: 210mm × 297mm (jsPDF units: 'mm', format: 'a4')
+- Margins: left=15, right=15, top=0
+- Use jsPDF built-in fonts: helvetica (normal, bold, italic)
+- All measurements in mm
+
+SECTION 1 — HEADER STRIP (top of page, full width):
+- Navy filled rectangle: x=0, y=0, width=210, height=38
+- University logo area: white circle placeholder at x=18, y=4, radius=14 — inside write "SU" in navy bold 9pt
+- "SHOOLINI UNIVERSITY" in white bold 18pt, centered at x=105, y=14
+- "Kasauli Hills, Solan, Himachal Pradesh — 173229" in white normal 8pt, centered at x=105, y=20
+- Gold separator line: y=24, full width, color=#c8a84b, lineWidth=0.8
+- "ADMIT CARD / HALL TICKET" in gold (#c8a84b) bold 13pt, centered at x=105, y=30
+- "FINAL EXAMINATION — SEMESTER 1" in white normal 9pt, centered at x=105, y=36
+
+SECTION 2 — IMPORTANT NOTICE BAR:
+- Light gold filled rect: x=15, y=42, width=180, height=8, fill=#fef9ee, border=#c8a84b 0.3pt
+- "IMPORTANT: This admit card must be produced at the examination hall. Roll No must match ID proof." in amber bold 7.5pt centered
+
+SECTION 3 — STUDENT INFO BLOCK (left side) + PHOTO BOX (right side):
+Layout: student info on left (x=15 to x=130), photo box on right (x=138 to x=195)
+
+LEFT SIDE — Student details as label+value pairs, starting y=56:
+Use this pattern for each row:
+  - Label: fontSize=7, color=#64748b (slate), text e.g. "STUDENT NAME"
+  - Value: fontSize=9.5, color=#1e2a3a (dark), fontStyle=bold, y = label_y + 4.5
+  - Next label starts at previous value_y + 7
+
+Rows (label → value):
+  STUDENT NAME → Koushik Thalari
+  ROLL NUMBER → 790149087100
+  PROGRAM → MCA (AI / ML Specialization)
+  DEPARTMENT → School of Computer Science & Engineering
+  SEMESTER → Semester 1  |  Batch: 2025–2027
+  EXAM CENTER → Shoolini University Main Campus, Solan
+  CENTER CODE → SU-MCE-01
+  ACADEMIC YEAR → 2025–2026
+
+RIGHT SIDE — Photo placeholder box:
+- Rect: x=138, y=52, width=57, height=68, border=#dde1e7 0.5pt, fill=white
+- Dashed border effect: draw rect with dashed stroke (use setLineDash([2,2]))
+- "PHOTO" text centered inside box, fontSize=9, color=#64748b, y=80
+- "(Passport size)" text centered, fontSize=7, color=#94a3b8, y=86
+- Small camera icon suggestion: draw simple outline rect within rect at center
+
+UNIVERSITY SEAL — circular stamp:
+- Position: x=155, y=100 (BELOW photo box, not overlapping)
+- Outer circle: radius=14, stroke=#1a3a5c, lineWidth=0.5
+- Inner circle: radius=11, stroke=#c8a84b, lineWidth=0.3
+- "UNIVERSITY" text centered at seal center, fontSize=5.5, color=#1a3a5c
+- "SEAL" text below, fontSize=5.5, color=#1a3a5c
+
+Horizontal divider line after student block:
+- y=125, x=15 to x=195, color=#dde1e7, lineWidth=0.3
+
+SECTION 4 — EXAMINATION SCHEDULE TABLE:
+Start y=130
+
+Table title: "EXAMINATION SCHEDULE" — fontSize=10, bold, color=#1a3a5c, x=15, y=130
+
+Table header row: y=135, height=9
+- Filled rect: x=15, width=180, height=9, fill=#1a3a5c
+- Column headers in white bold 7.5pt:
+  SUBJECT        x=17,  width=55  (text at x=44 centered)
+  DATE           x=72,  width=32  (text at x=88 centered)
+  TIME           x=104, width=32  (text at x=120 centered)
+  DURATION       x=136, width=20  (text at x=146 centered)
+  ROOM           x=156, width=22  (text at x=167 centered)
+  INV. CODE      x=178, width=17  (text at x=186 centered)
+
+CRITICAL: These column widths must add up to exactly 180mm total. Calculate carefully:
+Subject=55, Date=32, Time=32, Duration=20, Room=22, InvCode=19 → total=180 ✓
+
+Table data rows (8 subjects) — alternating white and #f8fafc rows, height=10 each:
+Row data (Subject | Date | Time | Duration | Room | InvCode):
+1. Data Structures | Dec 9, 2025 | 9:00–12:00 PM | 3 Hours | Hall C-301 | INV-C01
+2. Computer Networks | Dec 10, 2025 | 9:00–12:00 PM | 3 Hours | Hall C-302 | INV-C02
+3. Database Mgmt Systems | Dec 11, 2025 | 9:00–12:00 PM | 3 Hours | Hall C-303 | INV-C03
+4. Operating Systems | Dec 12, 2025 | 9:00–12:00 PM | 3 Hours | Hall C-304 | INV-C04
+5. Software Engineering | Dec 13, 2025 | 9:00–12:00 PM | 3 Hours | Hall C-305 | INV-C05
+6. Web Technologies | Dec 16, 2025 | 9:00–12:00 PM | 3 Hours | Hall C-306 | INV-C06
+7. Python Programming | Dec 17, 2025 | 9:00–12:00 PM | 3 Hours | Hall C-307 | INV-C07
+8. Mathematics for Computing | Dec 18, 2025 | 9:00–12:00 PM | 3 Hours | Hall C-308 | INV-C08
+
+For each row:
+- Background rect at correct y position
+- Draw all 6 column values using text-anchor at column center x
+- fontSize=8 for all data cells, color=#1e2a3a
+- Subject column: fontSize=8, bold, left-aligned at x=17
+- Thin border lines between rows: lineWidth=0.2, color=#dde1e7
+- Vertical column separator lines: draw thin lines at each column boundary
+
+After 8 rows table ends at approximately y = 135 + 9 + (8×10) = 224
+
+SECTION 5 — IMPORTANT INSTRUCTIONS:
+Start y=230
+
+"IMPORTANT INSTRUCTIONS" — fontSize=9, bold, color=#1a3a5c, x=15
+
+Draw 8 instruction lines starting y=236, lineHeight=6:
+1. Bring a valid government-issued photo ID (Aadhaar Card / Passport) along with this admit card.
+2. Mobile phones, smart watches, or any electronic devices are strictly prohibited in the exam hall.
+3. Report at least 30 minutes before the scheduled start time of the examination.
+4. Students are not allowed to enter the hall after 15 minutes from the start of the exam.
+5. Use only blue or black ballpoint pen. Pencil is permitted only for diagrams and rough work.
+6. Do not communicate with other students or exchange stationery during the examination.
+7. Any form of malpractice will result in immediate disqualification and disciplinary action.
+8. This admit card is non-transferable and valid only for the examination session mentioned above.
+
+Each instruction: "  " + number + ". " + text, fontSize=7.5, color=#374151
+
+SECTION 6 — SIGNATURE BLOCK:
+y=290 (near bottom, well above footer)
+
+Left side (x=15):
+- Line: x=15 to x=70, y=290, lineWidth=0.3, color=#94a3b8
+- "Student Signature:" fontSize=7.5, color=#64748b, x=15, y=294
+
+Right side (x=130):
+- "Dr. K.L. Sharma" bold, fontSize=8.5, color=#1e2a3a, x=195 text-anchor=right
+- "Controller of Examinations" fontSize=7, color=#64748b, x=195 text-anchor=right
+- "Shoolini University" fontSize=7, color=#64748b, x=195 text-anchor=right
+
+Center — validity stamp:
+- Rounded rect: x=80, y=283, width=50, height=12, fill=#dcfce7, border=#16a34a 0.5pt, rx=3
+- "ADMIT CARD VALID" bold fontSize=7, color=#15803d, centered inside
+
+SECTION 7 — FOOTER STRIP:
+- Navy filled rect: x=0, y=283, width=210, height=6  ← wait, place footer at y=304 (very bottom)
+- Actually: footer rect at y=287, height=10, fill=#1a3a5c
+- "Office of Examinations | Shoolini University | examinations@shooliniuniversity.com | +91 7018007000" white 6pt centered
+- Below footer: "Shoolini University of Biotechnology and Management Sciences | shooliniuniversity.com" navy 6pt centered, y=299
+
+IMPORTANT jsPDF RULES to avoid overlap:
+1. Calculate every y coordinate explicitly — never guess
+2. After every text/rect, track the new currentY = previous_y + element_height + gap
+3. Use doc.setFont('helvetica', 'bold') and doc.setFont('helvetica', 'normal') explicitly before each text
+4. Use doc.setFontSize(n) before each text element
+5. Use doc.setTextColor(r,g,b) before each text — convert hex to RGB
+6. Use doc.setFillColor(r,g,b) + doc.rect(x,y,w,h,'F') for filled rects
+7. Use doc.setDrawColor(r,g,b) + doc.setLineWidth(n) before each line/rect stroke
+8. For centered text: doc.text(text, x, y, {align: 'center'})
+9. For right-aligned text: doc.text(text, x, y, {align: 'right'})
+10. NEVER use doc.addImage() unless a real image base64 is available — use shape placeholders instead
+
+═══════════════════════════════════════════════════════
+REWRITE 2: src/utils/generateResultPDF.ts
+═══════════════════════════════════════════════════════
+
+Create this new utility that handles ALL result PDF types with a type parameter.
+
+Function signature:
+export async function generateResultPDF(type: 'IA1' | 'IA2' | 'Midterm' | 'PreFinal' | 'Final' | 'Practical' | 'Consolidated', semester: 1 | 2): Promise
+
+PAGE SETUP: Same as above — A4 portrait, mm units, margins 15mm
+
+SECTION 1 — HEADER (same navy strip design as admit card):
+- Navy rect: x=0, y=0, w=210, h=36
+- "SU" logo circle: white, x=18, y=4, r=13
+- "SHOOLINI UNIVERSITY" white bold 17pt centered x=105, y=12
+- "Kasauli Hills, Solan, Himachal Pradesh — 173229" white normal 7.5pt centered x=105, y=18
+- Gold line: y=22, lineWidth=0.8, color=#c8a84b
+- "OFFICE OF EXAMINATIONS" gold bold 8pt centered x=105, y=27
+- Document title (based on type) white bold 13pt centered x=105, y=33:
+  IA1 → "INTERNAL ASSESSMENT 1 MARKSHEET"
+  IA2 → "INTERNAL ASSESSMENT 2 MARKSHEET"
+  Midterm → "MID-TERM EXAMINATION MARKSHEET"
+  PreFinal → "PRE-FINAL EXAMINATION ADMIT CARD"
+  Final → "FINAL EXAMINATION ADMIT CARD"
+  Practical → "PRACTICAL EXAMINATION SCHEDULE"
+  Consolidated → "CONSOLIDATED RESULT SHEET"
+
+SECTION 2 — DOCUMENT META BAR (just below header):
+- Light gray rect: x=15, y=40, w=180, h=7, fill=#f8fafc, border=#dde1e7 0.3pt
+- Left: "Examination Period: [period based on type/semester]" slate 7pt, x=18, y=45
+- Right: VERIFIED badge (green) or AWAITED (purple) or TO BE RELEASED (amber)
+  Badge: rounded rect at x=160, y=41, w=33, h=5.5
+  VERIFIED: fill=#dcfce7, border=#16a34a, text="✓ VERIFIED" green bold 6.5pt
+  AWAITED: fill=#ede9fe, border=#7c3aed, text="RESULT AWAITED" purple bold 6pt
+  TO BE RELEASED: fill=#fffbeb, border=#d97706, text="TO BE RELEASED" amber bold 6pt
+
+Examination periods by type:
+  IA1 Sem1: Sep 1 – Oct 1, 2025
+  IA2 Sem1: Nov 15 – Nov 30, 2025
+  Midterm Sem1: Oct 15 – Oct 25, 2025
+  Midterm Sem2: Mar 17 – Mar 25, 2026
+  PreFinal Sem1: Nov 28 – Dec 5, 2025
+  PreFinal Sem2: Apr 14 – Apr 20, 2026
+  Final Sem1: Dec 9 – Dec 18, 2025
+  Final Sem2: May 10 – May 20, 2026
+  Practical Sem1: Jan 16 – Jan 17, 2026
+  Practical Sem2: May 22 – May 24, 2026
+
+SECTION 3 — STUDENT DETAILS BLOCK:
+- Outer rect: x=15, y=50, w=180, h=32, border=#dde1e7 0.5pt, fill=white
+- Inner navy left accent: x=15, y=50, w=3, h=32, fill=#1a3a5c
+
+Two columns inside:
+LEFT COLUMN (x=22 to x=105):
+  "STUDENT NAME" slate 6.5pt, y=56
+  "Koushik Thalari" dark bold 9pt, y=61
+  "ROLL NUMBER" slate 6.5pt, y=67
+  "790149087100" dark bold 9pt, y=72
+
+RIGHT COLUMN (x=110 to x=193):
+  "DEPARTMENT" slate 6.5pt, y=56
+  "School of Computer Science & Engineering" dark bold 8pt, y=61
+  "SEMESTER" slate 6.5pt, y=67
+  "Semester [N]  |  Academic Year: 2025–2026" dark bold 8pt, y=72
+
+Second row of student details (y=78):
+LEFT: "PROGRAM" label + "MCA (AI / ML Specialization)" value
+RIGHT: "GENERATED ON" label + "28 March 2026" value
+
+SECTION 4 — RESULTS TABLE (for marksheet types):
+Start y=88
+
+Table header: navy rect x=15, y=88, w=180, h=9, fill=#1a3a5c
+Columns for IA/Midterm marksheets:
+  SUBJECT        x=15,  w=90  → header centered at x=60
+  SCORE          x=105, w=25  → header centered at x=117
+  MAX            x=130, w=25  → header centered at x=142
+  GRADE          x=155, w=40  → header centered at x=175
+
+All headers: white bold 8pt
+
+Data rows — 8 subjects for Sem 1, 7 for Sem 2, alternating fill white/#f8fafc, height=10:
+
+SEM 1 IA1 SCORES (scores out of 30):
+Data Structures: 25 | Computer Networks: 26 | Operating Systems: 24 | Software Engineering: 27 | Web Technologies: 28 | Python Programming: 26 | Mathematics for Computing: 23 | Database Management Systems: 25
+Total: 204/240
+
+SEM 1 IA2 SCORES (scores out of 30):
+Data Structures: 26 | Computer Networks: 27 | Operating Systems: 25 | Software Engineering: 28 | Web Technologies: 29 | Python Programming: 27 | Mathematics for Computing: 24 | Database Management Systems: 26
+Total: 212/240
+
+SEM 2 MIDTERM SCORES (scores out of 100):
+Advanced Machine Learning: 85 | Deep Learning: 88 | Natural Language Processing: 82 | Computer Vision: 86 | Data Analytics: 84 | Cloud Computing: 83 | Advanced Algorithms: 87
+Total: 595/700
+
+For each data row:
+- Subject: left-aligned bold 8pt dark, x=18
+- Score: centered bold 8.5pt dark at x=117
+- Max: centered normal 8pt slate at x=142
+- Grade: centered bold 8.5pt — COLOR the grade text:
+  A+ → color=#16a34a (green)
+  A  → color=#2563eb (blue)
+  B+ → color=#d97706 (amber)
+  B  → color=#dc2626 (red)
+
+TOTAL ROW (after all subject rows):
+- Fill: #1a3a5c (navy), height=10
+- "TOTAL" white bold 9pt left at x=18
+- Total score white bold 9pt centered at score column
+- Total max white normal 8pt at max column
+
+GRADE SCALE (below table, y = tableEnd + 8):
+"Grade Scale: 90–100% = A+  |  75–89% = A  |  60–74% = B+  |  Below 60% = B"
+fontSize=7, color=#64748b, centered
+
+WATERMARK for AWAITED results (Consolidated):
+- Diagonal text across center of page
+- "RESULT AWAITED" in large 40pt, color=rgba(124,58,237,0.08), rotated 45 degrees
+- Use doc.text(text, x, y, {angle: 45}) at center of page
+
+SECTION 5 — SIGNATURE BLOCK (y = after grade scale + 15):
+Left side:
+- "Generated: 28 March 2026" slate 7pt
+
+Right side:
+- "_______________________" line
+- "Dr. S.K. Bansal" bold 8.5pt dark, right-aligned
+- "University Registrar" slate 7pt, right-aligned
+- "Shoolini University" slate 7pt, right-aligned
+
+SECTION 6 — FOOTER:
+- Thin gold line: full width, lineWidth=0.5, color=#c8a84b, at y=275
+- "Registrar, Shoolini University  |  registrar@shooliniuniversity.com  |  +91 7018007000" slate 6.5pt centered, y=279
+- "NAAC B+  |  UGC Certified  |  Established 2009  |  shooliniuniversity.com" slate 6pt centered, y=284
+- Navy footer bar: x=0, y=288, w=210, h=8, fill=#1a3a5c
+- "Shoolini University of Biotechnology and Management Sciences  |  shooliniuniversity.com" white 6pt centered, y=293
+
+═══════════════════════════════════════════════════════
+REWRITE 3: src/utils/generateReceipt.ts (fix existing)
+═══════════════════════════════════════════════════════
+
+Apply the same precise layout system to the existing receipt generator:
+- Fix any overlapping text issues
+- Ensure all columns in the fee breakdown table are perfectly aligned
+- Use same header/footer design as above for consistency
+- Receipt number, payment ID, transaction ID must all display clearly
+- "PAYMENT CONFIRMED" badge must be properly positioned
+- Two-column info block (student left / payment details right) must not overlap
+
+═══════════════════════════════════════════════════════
+REWRITE 4: src/utils/generateOfferLetter.ts (fix existing)
+═══════════════════════════════════════════════════════
+
+Apply same precise layout:
+- Fix multi-page layout — use doc.addPage() correctly
+- Ensure no content is cut off at page breaks
+- Table cells must not overflow — wrap long text or truncate with "..."
+- Fee table columns must be proportionally sized and aligned
+
+═══════════════════════════════════════════════════════
+GENERAL jsPDF BEST PRACTICES — APPLY TO ALL FILES
+═══════════════════════════════════════════════════════
+
+1. NEVER concatenate strings with numbers without padding — always use explicit column x positions
+2. ALWAYS call setFont + setFontSize + setTextColor before EVERY text() call — never assume previous state carries over
+3. For tables: calculate row y = tableStartY + headerHeight + (rowIndex * rowHeight) — never increment manually
+4. Column text alignment: use text-anchor center by passing {align:'center'} and the center x of the column
+5. For "right-aligned" columns (like score): use x = columnRight - 3, {align:'right'}
+6. ALWAYS use doc.setLineDashPattern([], 0) to reset dashes after using dashed lines
+7. For multi-line text: use doc.splitTextToSize(text, maxWidth) then doc.text(lines, x, y)
+8. Test all y coordinates: last element y + height must be less than 280mm (leaving room for footer)
+9. Use RGB values — convert hex manually: #1a3a5c → [26, 58, 92], #c8a84b → [200, 168, 75], #16a34a → [22, 163, 74], #dc2626 → [220, 38, 38], #d97706 → [217, 119, 6], #64748b → [100, 116, 139], #f8fafc → [248, 250, 252]
+10. For rounded rectangle borders in jsPDF: use doc.roundedRect(x, y, w, h, rx, ry, 'S') for stroke or 'F' for fill or 'FD' for both
+
+Please rewrite ALL four utility files completely with these exact specifications.
+Write each file in full — no shortcuts, no "// same as before" comments.
+Every measurement must be explicit. Every color must be set before use.
+The goal is pixel-perfect, professional PDFs that look like real university documents.
