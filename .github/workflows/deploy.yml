@@ -43,6 +43,9 @@ jobs:
           BASE_PATH: "/shoolini-student-portal/"
         run: pnpm --filter @workspace/student-portal run build
 
+      - name: Handle SPA Routing (create 404.html)
+        run: cp ./artifacts/student-portal/dist/public/index.html ./artifacts/student-portal/dist/public/404.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
         with:
