@@ -3,27 +3,27 @@ import { student } from "../data/studentData";
 import logoUrl from "../assets/shoolini-logo.png";
 
 // ── RGB palette ──────────────────────────────────────────────────────────────
-const NR = 26,  NG = 58,  NB = 92;          // #1a3a5c  navy
+const NR = 26, NG = 58, NB = 92;          // #1a3a5c  navy
 const GR = 200, GG = 168, GB = 75;           // #c8a84b  gold
 const SR = 100, SG = 116, SB = 139;          // #64748b  slate
-const DR = 30,  DG = 42,  DB = 58;           // #1e2a3a  dark
+const DR = 30, DG = 42, DB = 58;           // #1e2a3a  dark
 
-const GNR = 22,  GNG = 163, GNB = 74;        // #16a34a  green  (A+)
-const BLR = 37,  BLG = 99,  BLB = 235;       // #2563eb  blue   (A)
+const GNR = 22, GNG = 163, GNB = 74;        // #16a34a  green  (A+)
+const BLR = 37, BLG = 99, BLB = 235;       // #2563eb  blue   (A)
 const AMR = 217, AMG = 119, AMB = 6;         // #d97706  amber  (B+)
-const RER = 220, REG = 38,  REB = 38;        // #dc2626  red    (B)
-const PUR = 124, PUG = 58,  PUB = 237;       // #7c3aed  purple (awaited)
+const RER = 220, REG = 38, REB = 38;        // #dc2626  red    (B)
+const PUR = 124, PUG = 58, PUB = 237;       // #7c3aed  purple (awaited)
 
 const PW = 210;
-const L  = 15;
-const R  = 195;
+const L = 15;
+const R = 195;
 const CW = 180;
 
 // ── Grade colour helper ──────────────────────────────────────────────────────
 function gradeRGB(grade: string): [number, number, number] {
   if (grade === "A+" || grade === "O") return [GNR, GNG, GNB];
-  if (grade === "A")                   return [BLR, BLG, BLB];
-  if (grade === "B+")                  return [AMR, AMG, AMB];
+  if (grade === "A") return [BLR, BLG, BLB];
+  if (grade === "B+") return [AMR, AMG, AMB];
   return [RER, REG, REB];
 }
 
@@ -36,7 +36,7 @@ async function getLogoBase64(url: string): Promise<string | null> {
       img.onload = () => res(); img.onerror = () => rej(); img.src = url;
     });
     const canvas = document.createElement("canvas");
-    canvas.width  = img.naturalWidth  || img.width;
+    canvas.width = img.naturalWidth || img.width;
     canvas.height = img.naturalHeight || img.height;
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
@@ -150,14 +150,14 @@ function drawStudentBlock(doc: jsPDF, y: number, semester: number): number {
   }
 
   // Row 1 (y+6, y+12)
-  lv("STUDENT NAME", "Koushik Thalari",                         LX, y + 6);
-  lv("DEPARTMENT",   "School of Computer Science & Engineering", RX, y + 6, 80);
+  lv("STUDENT NAME", "Koushik Thalari", LX, y + 6);
+  lv("DEPARTMENT", "School of Computer Science & Engineering", RX, y + 6, 80);
   // Row 2 (y+14, y+20)
-  lv("ROLL NUMBER",  student.rollNo,                             LX, y + 14);
-  lv("SEMESTER",     `Semester ${semester}  |  Academic Year: 2025\u20132026`, RX, y + 14, 80);
+  lv("ROLL NUMBER", student.rollNo, LX, y + 14);
+  lv("SEMESTER", `Semester ${semester}  |  Academic Year: 2025\u20132026`, RX, y + 14, 80);
   // Row 3 (y+22, y+28)
-  lv("PROGRAM",      "MCA (AI / ML Specialization)",             LX, y + 22);
-  lv("GENERATED ON", "28 March 2026",                            RX, y + 22);
+  lv("PROGRAM", "MCA (AI / ML Specialization)", LX, y + 22);
+  lv("GENERATED ON", "28 March 2026", RX, y + 22);
 
   return y + 32;
 }
@@ -169,19 +169,19 @@ function drawMarksheetTable(
   isAwaited: boolean,
 ): { y: number; totalScore: number; totalMax: number } {
   const showFaculty = rows.some(r => r.faculty);
-  const showDate    = rows.some(r => r.date);
+  const showDate = rows.some(r => r.date);
 
   // Column widths that always sum to CW=180
-  let wSub   = 90;
-  let wFac   = 0;
-  let wDat   = 0;
+  let wSub = 90;
+  let wFac = 0;
+  let wDat = 0;
   const wSco = 25;
   const wMax = 25;
   const wGrd = 40;
 
   if (showFaculty && showDate) { wSub = 50; wFac = 38; wDat = 27; }
-  else if (showFaculty)        { wSub = 65; wFac = 50; }
-  else if (showDate)           { wSub = 72; wDat = 43; }
+  else if (showFaculty) { wSub = 65; wFac = 50; }
+  else if (showDate) { wSub = 72; wDat = 43; }
 
   // Column center-x positions
   const xSub = L;
@@ -200,19 +200,19 @@ function drawMarksheetTable(
   doc.setFillColor(NR, NG, NB);
   doc.rect(L, y, CW, THEAD_H, "F");
   doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(255, 255, 255);
-  doc.text("SUBJECT",   xSub + 2, y + 6);
-  if (showFaculty) doc.text("FACULTY",    xFac + 2, y + 6);
-  if (showDate)    doc.text("EXAM DATE",  xDat + 2, y + 6);
-  doc.text("SCORE",     cxSco, y + 6, { align: "center" });
-  doc.text("MAX",       cxMax, y + 6, { align: "center" });
-  doc.text("GRADE",     cxGrd, y + 6, { align: "center" });
+  doc.text("SUBJECT", xSub + 2, y + 6);
+  if (showFaculty) doc.text("FACULTY", xFac + 2, y + 6);
+  if (showDate) doc.text("EXAM DATE", xDat + 2, y + 6);
+  doc.text("SCORE", cxSco, y + 6, { align: "center" });
+  doc.text("MAX", cxMax, y + 6, { align: "center" });
+  doc.text("GRADE", cxGrd, y + 6, { align: "center" });
 
   y += THEAD_H;
 
   // Data rows
   const ROW_H = 10;
   let totalScore = 0;
-  let totalMax   = 0;
+  let totalMax = 0;
 
   rows.forEach((row, i) => {
     const ry = y + i * ROW_H;
@@ -296,8 +296,8 @@ function drawSignatureBlock(doc: jsPDF, y: number): number {
   doc.setFont("helvetica", "bold"); doc.setFontSize(8.5); doc.setTextColor(DR, DG, DB);
   doc.text("Dr. S.K. Bansal", R, y + 6, { align: "right" });
   doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(SR, SG, SB);
-  doc.text("University Registrar",  R, y + 11, { align: "right" });
-  doc.text("Shoolini University",   R, y + 16, { align: "right" });
+  doc.text("University Registrar", R, y + 11, { align: "right" });
+  doc.text("Shoolini University", R, y + 16, { align: "right" });
 
   return y + 20;
 }
@@ -350,7 +350,7 @@ export async function generateMarksheetPDF(params: {
     isAwaited = false, watermarkText, gradeScale,
   } = params;
 
-  const doc  = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+  const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
   const logo = await getLogoBase64(logoUrl);
 
   // Header — title appears only here (not repeated below)
@@ -398,7 +398,7 @@ export async function generatePracticalSchedulePDF(params: {
 }): Promise<void> {
   const { filename, semester, rows } = params;
 
-  const doc  = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+  const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
   const logo = await getLogoBase64(logoUrl);
 
   drawPageHeader(doc, logo, "PRACTICAL EXAMINATION SCHEDULE");
@@ -409,22 +409,22 @@ export async function generatePracticalSchedulePDF(params: {
 
   // Column geometry: Sub=80, Date=35, Time=33, Room=22, Dur=10 → total=180
   const PCOL = {
-    sub:  { x: L,       w: 80, cx: L + 40 },
-    date: { x: L + 80,  w: 35, cx: L + 97.5 },
+    sub: { x: L, w: 80, cx: L + 40 },
+    date: { x: L + 80, w: 35, cx: L + 97.5 },
     time: { x: L + 115, w: 33, cx: L + 131.5 },
     room: { x: L + 148, w: 20, cx: L + 158 },
-    dur:  { x: L + 168, w: 12, cx: L + 174 },
+    dur: { x: L + 168, w: 12, cx: L + 174 },
   };
 
   // Header
   doc.setFillColor(NR, NG, NB);
   doc.rect(L, y, CW, 9, "F");
   doc.setFont("helvetica", "bold"); doc.setFontSize(7.5); doc.setTextColor(255, 255, 255);
-  doc.text("SUBJECT",  PCOL.sub.x + 2, y + 6);
-  doc.text("DATE",     PCOL.date.cx,   y + 6, { align: "center" });
-  doc.text("TIME",     PCOL.time.cx,   y + 6, { align: "center" });
-  doc.text("ROOM",     PCOL.room.cx,   y + 6, { align: "center" });
-  doc.text("DURATION", PCOL.dur.cx,    y + 6, { align: "center" });
+  doc.text("SUBJECT", PCOL.sub.x + 2, y + 6);
+  doc.text("DATE", PCOL.date.cx, y + 6, { align: "center" });
+  doc.text("TIME", PCOL.time.cx, y + 6, { align: "center" });
+  doc.text("ROOM", PCOL.room.cx, y + 6, { align: "center" });
+  doc.text("DURATION", PCOL.dur.cx, y + 6, { align: "center" });
   y += 9;
 
   const ROW_H = 10;
@@ -433,10 +433,10 @@ export async function generatePracticalSchedulePDF(params: {
     doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(DR, DG, DB);
     doc.text(row.subject, PCOL.sub.x + 2, y + 6.5);
     doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(DR, DG, DB);
-    doc.text(row.date,     PCOL.date.cx, y + 6.5, { align: "center" });
-    doc.text(row.time,     PCOL.time.cx, y + 6.5, { align: "center" });
-    doc.text(row.room,     PCOL.room.cx, y + 6.5, { align: "center" });
-    doc.text(row.duration, PCOL.dur.cx,  y + 6.5, { align: "center" });
+    doc.text(row.date, PCOL.date.cx, y + 6.5, { align: "center" });
+    doc.text(row.time, PCOL.time.cx, y + 6.5, { align: "center" });
+    doc.text(row.room, PCOL.room.cx, y + 6.5, { align: "center" });
+    doc.text(row.duration, PCOL.dur.cx, y + 6.5, { align: "center" });
     doc.setDrawColor(221, 225, 231); doc.setLineWidth(0.2);
     doc.line(L, y + ROW_H, R, y + ROW_H);
     y += ROW_H;

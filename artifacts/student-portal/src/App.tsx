@@ -1,11 +1,11 @@
-import { useState, useEffect, lazy, Suspense } from "react";
-import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { Redirect, Route, Router as WouterRouter, Switch, useLocation } from "wouter";
+
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import LoginPage from "./pages/LoginPage";
-import { useLocation } from "wouter";
+import { BG_PAGE, SLATE } from "./constants";
 import { useIsMobile } from "./hooks/use-mobile";
-import { SLATE, BG_PAGE } from "./constants";
 
 const DashboardPage    = lazy(() => import("./pages/DashboardPage"));
 const ProfilePage      = lazy(() => import("./pages/ProfilePage"));
@@ -16,7 +16,6 @@ const AttendancePage   = lazy(() => import("./pages/AttendancePage"));
 const FeesPage         = lazy(() => import("./pages/FeesPage"));
 const CalendarPage     = lazy(() => import("./pages/CalendarPage"));
 const LibraryPage      = lazy(() => import("./pages/LibraryPage"));
-const StudyPlannerPage = lazy(() => import("./pages/StudyPlannerPage"));
 
 const pageTitleMap: Record<string, string> = {
   "/dashboard":    "Dashboard — Shoolini University",
@@ -28,7 +27,6 @@ const pageTitleMap: Record<string, string> = {
   "/fees":         "Fees & Payments — Shoolini University",
   "/calendar":     "Calendar — Shoolini University",
   "/library":      "Library Portal — Shoolini University",
-  "/study-planner":"Study Planner — Shoolini University",
 };
 
 const pageFallback = (
@@ -164,11 +162,6 @@ function AppRouter({ isAuth, onLogin, onLogout }: { isAuth: boolean; onLogin: ()
           <LibraryPage />
         </ProtectedLayout>
       </Route>
-      <Route path="/study-planner">
-        <ProtectedLayout isAuth={isAuth} onLogout={onLogout}>
-          <StudyPlannerPage />
-        </ProtectedLayout>
-      </Route>
       <Route>
         {isAuth ? <Redirect to="/dashboard" /> : <Redirect to="/" />}
       </Route>
@@ -176,6 +169,11 @@ function AppRouter({ isAuth, onLogin, onLogout }: { isAuth: boolean; onLogin: ()
   );
 }
 
+
+/**
+ * Main application component for the Shoolini Student Portal.
+ * Handles authentication, routing, and mobile sidebar navigation.
+ */
 export default function App() {
   const [isAuth, setIsAuth] = useState(false);
 

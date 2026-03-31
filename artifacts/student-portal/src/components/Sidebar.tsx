@@ -12,7 +12,6 @@ const navItems = [
   { icon: "📊", label: "Attendance",     path: "/attendance" },
   { icon: "📚", label: "Library",        path: "/library",    badge: "!",  badgeColor: RED },
   { icon: "💳", label: "Fees & Payments",path: "/fees",       badge: "!",  badgeColor: RED },
-  { icon: "🗒️", label: "Study Planner", path: "/study-planner" },
   { icon: "🗓️", label: "Calendar",      path: "/calendar" },
 ];
 

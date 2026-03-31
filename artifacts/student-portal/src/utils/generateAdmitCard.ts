@@ -1,76 +1,22 @@
 import { jsPDF } from "jspdf";
 import { student } from "../data/studentData";
+import { PDF_COLORS, PAGE_GEOMETRY, getWhiteLogoBase64, drawHLine, drawStandardFooter } from "./pdfCommon";
 import logoUrl from "../assets/shoolini-logo.png";
-
-// ── RGB palette ──────────────────────────────────────────────────────────────
-const NR = 26,  NG = 58,  NB = 92;          // #1a3a5c  navy
-const GR = 200, GG = 168, GB = 75;           // #c8a84b  gold
-const SR = 100, SG = 116, SB = 139;          // #64748b  slate
-const DR = 30,  DG = 42,  DB = 58;           // #1e2a3a  dark text
-
-const PW = 210;  // page width
-const L  = 15;   // left margin
-const R  = 195;  // right margin
-const CW = 180;  // content width = R - L
 
 // ── Column geometry (must sum to CW = 180) ──────────────────────────────────
 // Subject=55, Date=32, Time=32, Duration=20, Room=22, InvCode=19  →  total=180
 const COL = {
-  sub:  { x: L,       w: 55, cx: L + 27.5 },
-  date: { x: L + 55,  w: 32, cx: L + 71   },
-  time: { x: L + 87,  w: 32, cx: L + 103  },
-  dur:  { x: L + 119, w: 20, cx: L + 129  },
-  room: { x: L + 139, w: 22, cx: L + 150  },
-  inv:  { x: L + 161, w: 19, cx: L + 170.5 },
+  sub:  { x: PAGE_GEOMETRY.MARGIN,       w: 55, cx: PAGE_GEOMETRY.MARGIN + 27.5 },
+  date: { x: PAGE_GEOMETRY.MARGIN + 55,  w: 32, cx: PAGE_GEOMETRY.MARGIN + 71   },
+  time: { x: PAGE_GEOMETRY.MARGIN + 87,  w: 32, cx: PAGE_GEOMETRY.MARGIN + 103  },
+  dur:  { x: PAGE_GEOMETRY.MARGIN + 119, w: 20, cx: PAGE_GEOMETRY.MARGIN + 129  },
+  room: { x: PAGE_GEOMETRY.MARGIN + 139, w: 22, cx: PAGE_GEOMETRY.MARGIN + 150  },
+  inv:  { x: PAGE_GEOMETRY.MARGIN + 161, w: 19, cx: PAGE_GEOMETRY.MARGIN + 170.5 },
 };
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
-async function getLogoBase64(url: string): Promise<string | null> {
-  try {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    await new Promise<void>((res, rej) => {
-      img.onload = () => res(); img.onerror = () => rej(); img.src = url;
-    });
-    const canvas = document.createElement("canvas");
-    canvas.width  = img.naturalWidth  || img.width;
-    canvas.height = img.naturalHeight || img.height;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return null;
-    ctx.drawImage(img, 0, 0);
-    const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const d = id.data;
-    for (let i = 0; i < d.length; i += 4) {
-      if (d[i + 3] > 10) { d[i] = 255; d[i + 1] = 255; d[i + 2] = 255; }
-    }
-    ctx.putImageData(id, 0, 0);
-    return canvas.toDataURL("image/png");
-  } catch { return null; }
-}
-
-function hLine(doc: jsPDF, y: number, r: number, g: number, b: number, lw = 0.3) {
-  doc.setDrawColor(r, g, b); doc.setLineWidth(lw);
-  doc.line(L, y, R, y);
-}
 
 function vLine(doc: jsPDF, x: number, y1: number, y2: number) {
   doc.setDrawColor(221, 225, 231); doc.setLineWidth(0.2);
   doc.line(x, y1, x, y2);
-}
-
-function drawFooter(doc: jsPDF) {
-  doc.setFillColor(NR, NG, NB);
-  doc.rect(0, 287, PW, 10, "F");
-  doc.setFont("helvetica", "normal"); doc.setFontSize(6); doc.setTextColor(255, 255, 255);
-  doc.text(
-    "Office of Examinations  |  Shoolini University  |  examinations@shooliniuniversity.com  |  +91 7018007000",
-    PW / 2, 293, { align: "center" }
-  );
-  doc.setTextColor(180, 195, 215);
-  doc.text(
-    "Shoolini University of Biotechnology and Management Sciences  |  shooliniuniversity.com",
-    PW / 2, 298, { align: "center" }
-  );
 }
 
 // ── Public interface ─────────────────────────────────────────────────────────
@@ -83,6 +29,10 @@ export interface AdmitCardScheduleRow {
   invigilatorCode?: string;
 }
 
+/**
+ * Asynchronously generates and saves an Admit Card PDF for a student.
+ * @param params Object containing student schedule and exam metadata.
+ */
 export async function generateAdmitCard(params: {
   filename: string;
   examType: string;
@@ -102,11 +52,11 @@ export async function generateAdmitCard(params: {
   } = params;
 
   const doc  = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
-  const logo = await getLogoBase64(logoUrl);
+  const logo = await getWhiteLogoBase64(logoUrl);
 
   // ── SECTION 1 — HEADER STRIP (y 0–38) ─────────────────────────────────────
-  doc.setFillColor(NR, NG, NB);
-  doc.rect(0, 0, PW, 38, "F");
+  doc.setFillColor(PDF_COLORS.NAVY.r, PDF_COLORS.NAVY.g, PDF_COLORS.NAVY.b);
+  doc.rect(0, 0, PAGE_GEOMETRY.WIDTH, 38, "F");
 
   // Logo circle — radius 9, center (20,11), stays above gold line at y=24
   doc.setFillColor(255, 255, 255);
@@ -114,7 +64,7 @@ export async function generateAdmitCard(params: {
   if (logo) {
     try { doc.addImage(logo, "PNG", 12, 3, 16, 16); } catch { /* ok */ }
   } else {
-    doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(NR, NG, NB);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(PDF_COLORS.NAVY.r, PDF_COLORS.NAVY.g, PDF_COLORS.NAVY.b);
     doc.text("SU", 20, 13, { align: "center" });
   }
 
@@ -124,10 +74,10 @@ export async function generateAdmitCard(params: {
   doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(200, 210, 225);
   doc.text("Kasauli Hills, Solan, Himachal Pradesh \u2014 173229", 105, 20, { align: "center" });
 
-  doc.setDrawColor(GR, GG, GB); doc.setLineWidth(0.8);
-  doc.line(0, 24, PW, 24);
+  doc.setDrawColor(PDF_COLORS.GOLD.r, PDF_COLORS.GOLD.g, PDF_COLORS.GOLD.b); doc.setLineWidth(0.8);
+  doc.line(0, 24, PAGE_GEOMETRY.WIDTH, 24);
 
-  doc.setFont("helvetica", "bold"); doc.setFontSize(13); doc.setTextColor(GR, GG, GB);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(13); doc.setTextColor(PDF_COLORS.GOLD.r, PDF_COLORS.GOLD.g, PDF_COLORS.GOLD.b);
   doc.text("ADMIT CARD / HALL TICKET", 105, 30, { align: "center" });
 
   doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(255, 255, 255);
@@ -141,16 +91,16 @@ export async function generateAdmitCard(params: {
     doc.setGState(new (doc as any).GState({ opacity: 1 }));
     doc.setFont("helvetica", "bold"); doc.setFontSize(13); doc.setTextColor(180, 40, 40);
     doc.text("ADMIT CARD NOT YET RELEASED", 105, 65, { align: "center" });
-    doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(SR, SG, SB);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(PDF_COLORS.SLATE.r, PDF_COLORS.SLATE.g, PDF_COLORS.SLATE.b);
     doc.text("This admit card will be available once released by the Examination Board.", 105, 74, { align: "center" });
     doc.text("Please check back closer to the examination date.", 105, 81, { align: "center" });
-    drawFooter(doc); doc.save(filename); return;
+    drawStandardFooter(doc); doc.save(filename); return;
   }
 
   // ── SECTION 2 — NOTICE BAR (y 42–50) ──────────────────────────────────────
   doc.setFillColor(254, 249, 238);
-  doc.setDrawColor(GR, GG, GB); doc.setLineWidth(0.3);
-  doc.rect(L, 42, CW, 8, "FD");
+  doc.setDrawColor(PDF_COLORS.GOLD.r, PDF_COLORS.GOLD.g, PDF_COLORS.GOLD.b); doc.setLineWidth(0.3);
+  doc.rect(PAGE_GEOMETRY.MARGIN, 42, PAGE_GEOMETRY.CONTENT, 8, "FD");
   doc.setFont("helvetica", "bold"); doc.setFontSize(7.5); doc.setTextColor(217, 119, 6);
   doc.text(
     "IMPORTANT: This admit card must be produced at the examination hall. Roll No must match ID proof.",
@@ -164,11 +114,11 @@ export async function generateAdmitCard(params: {
   doc.rect(138, 52, 57, 68, "FD");
 
   doc.setLineDashPattern([2, 2], 0);
-  doc.setDrawColor(SR, SG, SB); doc.setLineWidth(0.3);
+  doc.setDrawColor(PDF_COLORS.SLATE.r, PDF_COLORS.SLATE.g, PDF_COLORS.SLATE.b); doc.setLineWidth(0.3);
   doc.rect(140, 54, 53, 64, "S");
   doc.setLineDashPattern([], 0);
 
-  doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(SR, SG, SB);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(PDF_COLORS.SLATE.r, PDF_COLORS.SLATE.g, PDF_COLORS.SLATE.b);
   doc.text("PHOTO", 166.5, 82, { align: "center" });
   doc.setFontSize(7); doc.setTextColor(148, 163, 184);
   doc.text("(Passport size)", 166.5, 88, { align: "center" });
@@ -189,11 +139,11 @@ export async function generateAdmitCard(params: {
 
   let fy = 57;
   fields.forEach(([lbl, val]) => {
-    doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(SR, SG, SB);
-    doc.text(lbl, L, fy);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(DR, DG, DB);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(PDF_COLORS.SLATE.r, PDF_COLORS.SLATE.g, PDF_COLORS.SLATE.b);
+    doc.text(lbl, PAGE_GEOMETRY.MARGIN, fy);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(PDF_COLORS.DARK.r, PDF_COLORS.DARK.g, PDF_COLORS.DARK.b);
     const safe = doc.splitTextToSize(val, 118)[0] as string;
-    doc.text(safe, L, fy + 4.5);
+    doc.text(safe, PAGE_GEOMETRY.MARGIN, fy + 4.5);
     fy += 9;
   });
   // fy ≈ 57 + 8×9 = 129
@@ -201,26 +151,26 @@ export async function generateAdmitCard(params: {
   // University seal — below photo box (photo bottom = 52+68 = 120)
   const SEAL_CX = 166.5;
   const SEAL_CY = 136;
-  doc.setDrawColor(NR, NG, NB); doc.setLineWidth(0.5);
+  doc.setDrawColor(PDF_COLORS.NAVY.r, PDF_COLORS.NAVY.g, PDF_COLORS.NAVY.b); doc.setLineWidth(0.5);
   doc.ellipse(SEAL_CX, SEAL_CY, 14, 14, "S");
-  doc.setDrawColor(GR, GG, GB); doc.setLineWidth(0.3);
+  doc.setDrawColor(PDF_COLORS.GOLD.r, PDF_COLORS.GOLD.g, PDF_COLORS.GOLD.b); doc.setLineWidth(0.3);
   doc.ellipse(SEAL_CX, SEAL_CY, 11, 11, "S");
-  doc.setFont("helvetica", "bold"); doc.setFontSize(5.5); doc.setTextColor(NR, NG, NB);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(5.5); doc.setTextColor(PDF_COLORS.NAVY.r, PDF_COLORS.NAVY.g, PDF_COLORS.NAVY.b);
   doc.text("UNIVERSITY", SEAL_CX, SEAL_CY - 1, { align: "center" });
   doc.text("SEAL",       SEAL_CX, SEAL_CY + 3.5, { align: "center" });
 
   // Divider after info block
-  hLine(doc, 155, 221, 225, 231, 0.3);
+  drawHLine(doc, 155, 221, 225, 231, 0.3);
 
   // ── SECTION 4 — EXAMINATION SCHEDULE TABLE ────────────────────────────────
-  doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(NR, NG, NB);
-  doc.text("EXAMINATION SCHEDULE", L, 162);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(PDF_COLORS.NAVY.r, PDF_COLORS.NAVY.g, PDF_COLORS.NAVY.b);
+  doc.text("EXAMINATION SCHEDULE", PAGE_GEOMETRY.MARGIN, 162);
 
   // Table header
   const TH = 167; // table header top
   const TH_H = 9;
-  doc.setFillColor(NR, NG, NB);
-  doc.rect(L, TH, CW, TH_H, "F");
+  doc.setFillColor(PDF_COLORS.NAVY.r, PDF_COLORS.NAVY.g, PDF_COLORS.NAVY.b);
+  doc.rect(PAGE_GEOMETRY.MARGIN, TH, PAGE_GEOMETRY.CONTENT, TH_H, "F");
   doc.setFont("helvetica", "bold"); doc.setFontSize(7.5); doc.setTextColor(255, 255, 255);
   doc.text("SUBJECT",   COL.sub.x + 2,  TH + 6);
   doc.text("DATE",      COL.date.cx,     TH + 6, { align: "center" });
@@ -235,13 +185,13 @@ export async function generateAdmitCard(params: {
   schedule.forEach((row, i) => {
     if (i % 2 === 1) {
       doc.setFillColor(248, 250, 252);
-      doc.rect(L, rowY, CW, ROW_H, "F");
+      doc.rect(PAGE_GEOMETRY.MARGIN, rowY, PAGE_GEOMETRY.CONTENT, ROW_H, "F");
     }
     const subj = row.subject.length > 26 ? row.subject.substring(0, 25) + "\u2026" : row.subject;
-    doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(DR, DG, DB);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(PDF_COLORS.DARK.r, PDF_COLORS.DARK.g, PDF_COLORS.DARK.b);
     doc.text(subj, COL.sub.x + 2, rowY + 6);
 
-    doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(DR, DG, DB);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(PDF_COLORS.DARK.r, PDF_COLORS.DARK.g, PDF_COLORS.DARK.b);
     doc.text(row.date,                          COL.date.cx, rowY + 6, { align: "center" });
     doc.text(row.time,                          COL.time.cx, rowY + 6, { align: "center" });
     doc.text(row.duration,                      COL.dur.cx,  rowY + 6, { align: "center" });
@@ -249,7 +199,7 @@ export async function generateAdmitCard(params: {
     doc.text(row.invigilatorCode ?? "INV-00",   COL.inv.cx,  rowY + 6, { align: "center" });
 
     doc.setDrawColor(221, 225, 231); doc.setLineWidth(0.2);
-    doc.line(L, rowY + ROW_H, R, rowY + ROW_H);
+    doc.line(PAGE_GEOMETRY.MARGIN, rowY + ROW_H, PAGE_GEOMETRY.RIGHT, rowY + ROW_H);
     rowY += ROW_H;
   });
 
@@ -260,8 +210,8 @@ export async function generateAdmitCard(params: {
 
   // ── SECTION 5 — INSTRUCTIONS ───────────────────────────────────────────────
   let iy = rowY + 7;
-  doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(NR, NG, NB);
-  doc.text("IMPORTANT INSTRUCTIONS", L, iy);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(PDF_COLORS.NAVY.r, PDF_COLORS.NAVY.g, PDF_COLORS.NAVY.b);
+  doc.text("IMPORTANT INSTRUCTIONS", PAGE_GEOMETRY.MARGIN, iy);
   iy += 5;
 
   const instructions = [
@@ -275,16 +225,16 @@ export async function generateAdmitCard(params: {
     "8. This admit card is non-transferable and valid only for the examination session mentioned above.",
   ];
   doc.setFont("helvetica", "normal"); doc.setFontSize(7.5); doc.setTextColor(55, 65, 81);
-  instructions.forEach(line => { doc.text(line, L, iy); iy += 5.5; });
+  instructions.forEach(line => { doc.text(line, PAGE_GEOMETRY.MARGIN, iy); iy += 5.5; });
 
   // ── SECTION 6 — SIGNATURE BLOCK ───────────────────────────────────────────
   const sy = iy + 4;
 
   // Left — student signature
   doc.setDrawColor(148, 163, 184); doc.setLineWidth(0.3);
-  doc.line(L, sy, L + 55, sy);
-  doc.setFont("helvetica", "normal"); doc.setFontSize(7.5); doc.setTextColor(SR, SG, SB);
-  doc.text("Student Signature:", L, sy + 4);
+  doc.line(PAGE_GEOMETRY.MARGIN, sy, PAGE_GEOMETRY.MARGIN + 55, sy);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(7.5); doc.setTextColor(PDF_COLORS.SLATE.r, PDF_COLORS.SLATE.g, PDF_COLORS.SLATE.b);
+  doc.text("Student Signature:", PAGE_GEOMETRY.MARGIN, sy + 4);
 
   // Centre — valid stamp
   doc.setFillColor(220, 252, 231);
@@ -297,12 +247,12 @@ export async function generateAdmitCard(params: {
   );
 
   // Right — Controller signature
-  doc.setFont("helvetica", "bold"); doc.setFontSize(8.5); doc.setTextColor(DR, DG, DB);
-  doc.text("Dr. K.L. Sharma", R, sy - 4, { align: "right" });
-  doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(SR, SG, SB);
-  doc.text("Controller of Examinations", R, sy + 1, { align: "right" });
-  doc.text("Shoolini University",        R, sy + 6, { align: "right" });
+  doc.setFont("helvetica", "bold"); doc.setFontSize(8.5); doc.setTextColor(PDF_COLORS.DARK.r, PDF_COLORS.DARK.g, PDF_COLORS.DARK.b);
+  doc.text("Dr. K.L. Sharma", PAGE_GEOMETRY.RIGHT, sy - 4, { align: "right" });
+  doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(PDF_COLORS.SLATE.r, PDF_COLORS.SLATE.g, PDF_COLORS.SLATE.b);
+  doc.text("Controller of Examinations", PAGE_GEOMETRY.RIGHT, sy + 1, { align: "right" });
+  doc.text("Shoolini University",        PAGE_GEOMETRY.RIGHT, sy + 6, { align: "right" });
 
-  drawFooter(doc);
+  drawStandardFooter(doc);
   doc.save(filename);
 }

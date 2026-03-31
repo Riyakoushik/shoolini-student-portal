@@ -25,19 +25,19 @@ function getGreeting(): string {
 
 const semColors: Record<string, string> = {
   Completed: NAVY,
-  Active:    BLUE,
-  Upcoming:  SLATE_LIGHT,
+  Active: BLUE,
+  Upcoming: SLATE_LIGHT,
 };
 
 const activeSem =
   PORTAL_DATE >= new Date("2027-01-05") ? 4 :
-  PORTAL_DATE >= new Date("2026-07-06") ? 3 :
-  PORTAL_DATE >= new Date("2026-01-19") ? 2 : 1;
+    PORTAL_DATE >= new Date("2026-07-06") ? 3 :
+      PORTAL_DATE >= new Date("2026-01-19") ? 2 : 1;
 
 const activeAssignments =
   activeSem === 4 ? sem4Assignments :
-  activeSem === 3 ? sem3Assignments :
-  activeSem === 2 ? sem2Assignments : sem1Assignments;
+    activeSem === 3 ? sem3Assignments :
+      activeSem === 2 ? sem2Assignments : sem1Assignments;
 
 const upcomingAssignments = activeAssignments
   .filter((a) => a.dueDate != null && a.dueDate >= PORTAL_DATE)
@@ -56,8 +56,8 @@ const TODAY_DISPLAY = PORTAL_DATE.toLocaleDateString("en-US", { weekday: "long",
 
 const activeTimetable =
   activeSem === 4 ? sem4TimetableDaily :
-  activeSem === 3 ? sem3TimetableDaily :
-  activeSem === 2 ? sem2TimetableDaily : [];
+    activeSem === 3 ? sem3TimetableDaily :
+      activeSem === 2 ? sem2TimetableDaily : [];
 
 const simDay = PORTAL_DATE.toLocaleDateString("en-US", { weekday: "long" });
 const todaySchedule = activeTimetable.filter((c) => c.day.includes(simDay));
@@ -114,11 +114,11 @@ export default function DashboardPage() {
   const width = useWindowWidth();
 
   const isNarrow = width < 900;
-  const kpiCols    = isNarrow ? "1fr 1fr" : "repeat(4, 1fr)";
-  const semCols    = isNarrow ? "1fr 1fr" : "repeat(4, 1fr)";
-  const chartRow   = isNarrow ? "1fr" : "1fr 1fr";
-  const assignRow  = isNarrow ? "1fr" : "1fr 1fr";
-  const linkCols   = isNarrow ? "1fr 1fr" : "repeat(5, 1fr)";
+  const kpiCols = isNarrow ? "1fr 1fr" : "repeat(4, 1fr)";
+  const semCols = isNarrow ? "1fr 1fr" : "repeat(4, 1fr)";
+  const chartRow = isNarrow ? "1fr" : "1fr 1fr";
+  const assignRow = isNarrow ? "1fr" : "1fr 1fr";
+  const linkCols = isNarrow ? "1fr 1fr" : "repeat(5, 1fr)";
 
   const [liveClass, setLiveClass] = useState(() => getLiveClass(new Date()));
   const [marked, setMarked] = useState(false);
@@ -246,10 +246,10 @@ export default function DashboardPage() {
       {/* KPI Row */}
       <div style={{ display: "grid", gridTemplateColumns: kpiCols, gap: 12, marginTop: 16 }}>
         {[
-          { label: "Current Semester", value: "2 of 4",        border: BLUE },
-          { label: "Mid-term Average", value: "85 / 100",      border: GREEN },
-          { label: "Attendance",       value: attendancePct,   border: AMBER },
-          { label: "Pending Tasks",    value: String(pendingCount), border: RED },
+          { label: "Current Semester", value: "2 of 4", border: BLUE },
+          { label: "Mid-term Average", value: "85 / 100", border: GREEN },
+          { label: "Attendance", value: attendancePct, border: AMBER },
+          { label: "Pending Tasks", value: String(pendingCount), border: RED },
         ].map((kpi) => (
           <div
             key={kpi.label}
@@ -420,10 +420,10 @@ export default function DashboardPage() {
         <div style={{ display: "grid", gridTemplateColumns: linkCols, gap: 8 }}>
           {[
             { label: "University Website", url: "https://shooliniuniversity.com" },
-            { label: "Student Portal",     url: "https://my.shooliniuniversity.com" },
-            { label: "Alumni Portal",      url: "https://alumni.shooliniuniversity.com" },
-            { label: "UGC-NAD Portal",     url: "https://shooliniuniversity.com/national-academic-depository" },
-            { label: "NAAC Certificate",   url: "https://shooliniuniversity.com" },
+            { label: "Student Portal", url: "https://my.shooliniuniversity.com" },
+            { label: "Alumni Portal", url: "https://alumni.shooliniuniversity.com" },
+            { label: "UGC-NAD Portal", url: "https://shooliniuniversity.com/national-academic-depository" },
+            { label: "NAAC Certificate", url: "https://shooliniuniversity.com" },
           ].map((link) => (
             <a
               key={link.label}

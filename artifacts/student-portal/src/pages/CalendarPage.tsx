@@ -5,17 +5,17 @@ import { RED, AMBER, BLUE, GREEN, NAVY, PORTAL_DATE, PORTAL_DATE_STR, SLATE, SLA
 const DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const eventColors: Record<CalendarEvent["type"], string> = {
-  exam:       RED,
+  exam: RED,
   assignment: AMBER,
-  semester:   BLUE,
-  holiday:    GREEN,
+  semester: BLUE,
+  holiday: GREEN,
 };
 
 const eventTypeLabel: Record<CalendarEvent["type"], string> = {
-  exam:       "Exam",
+  exam: "Exam",
   assignment: "Assignment",
-  semester:   "College Event",
-  holiday:    "Holiday / Break",
+  semester: "College Event",
+  holiday: "Holiday / Break",
 };
 
 function getDaysInMonth(year: number, month: number) {

@@ -4,21 +4,21 @@ import type { FeeRecord } from "../data/studentData";
 import logoUrl from "../assets/shoolini-logo.png";
 
 // ── RGB palette ──────────────────────────────────────────────────────────────
-const NR = 26,  NG = 58,  NB = 92;
+const NR = 26, NG = 58, NB = 92;
 const GR = 200, GG = 168, GB = 75;
 const GNR = 22, GNG = 163, GNB = 74;
 const SR = 100, SG = 116, SB = 139;
-const DR = 30,  DG = 42,  DB = 58;
+const DR = 30, DG = 42, DB = 58;
 
-const PW  = 210;
-const PH  = 297;
-const L   = 15;
-const R   = 195;
-const CW  = 180;
+const PW = 210;
+const PH = 297;
+const L = 15;
+const R = 195;
+const CW = 180;
 
 // Column x-positions for fee table
-const FEE_COL_LABEL  = L + 2;               // left-aligned label
-const FEE_COL_AMT_X  = R - 2;               // right-aligned amount
+const FEE_COL_LABEL = L + 2;               // left-aligned label
+const FEE_COL_AMT_X = R - 2;               // right-aligned amount
 
 async function getLogoBase64(url: string): Promise<string | null> {
   try {
@@ -28,7 +28,7 @@ async function getLogoBase64(url: string): Promise<string | null> {
       img.onload = () => res(); img.onerror = () => rej(); img.src = url;
     });
     const canvas = document.createElement("canvas");
-    canvas.width  = img.naturalWidth  || img.width;
+    canvas.width = img.naturalWidth || img.width;
     canvas.height = img.naturalHeight || img.height;
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
@@ -53,12 +53,12 @@ function fmtRs(n: number) {
 }
 
 export async function downloadReceipt(payment: FeeRecord): Promise<void> {
-  const doc       = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
-  const logo      = await getLogoBase64(logoUrl);
-  const feeItems  = payment.feeItems ?? [];
-  const total     = feeItems.reduce((s, f) => s + f.amountNum, 0);
+  const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+  const logo = await getLogoBase64(logoUrl);
+  const feeItems = payment.feeItems ?? [];
+  const total = feeItems.reduce((s, f) => s + f.amountNum, 0);
   const receiptNo = payment.receiptNo ?? payment.id ?? "N/A";
-  const fileName  = `Receipt_${receiptNo}_KoushikThalari.pdf`;
+  const fileName = `Receipt_${receiptNo}_KoushikThalari.pdf`;
 
   // ── HEADER ────────────────────────────────────────────────────────────────
   doc.setFillColor(NR, NG, NB);
@@ -109,21 +109,21 @@ export async function downloadReceipt(payment: FeeRecord): Promise<void> {
   y += 5;
 
   const leftFields: [string, string][] = [
-    ["STUDENT NAME",     student.name],
-    ["ROLL NUMBER",      student.rollNo],
-    ["ENROLLMENT NO",    student.enrollmentNo],
-    ["PROGRAM",          student.program],
-    ["DEPARTMENT",       student.department],
-    ["BATCH",            student.batch],
+    ["STUDENT NAME", student.name],
+    ["ROLL NUMBER", student.rollNo],
+    ["ENROLLMENT NO", student.enrollmentNo],
+    ["PROGRAM", student.program],
+    ["DEPARTMENT", student.department],
+    ["BATCH", student.batch],
     ["CURRENT SEMESTER", `Semester ${student.currentSemester}`],
   ];
   const rightFields: [string, string][] = [
-    ["RECEIPT NO",    receiptNo],
-    ["PAYMENT DATE",  payment.date ?? "\u2014"],
-    ["PAYMENT MODE",  payment.paymentMode ?? "\u2014"],
-    ["TRANSACTION ID",payment.txnId ?? "\u2014"],
-    ["SEMESTER",      payment.semester ?? payment.desc],
-    ["STATUS",        "PAID"],
+    ["RECEIPT NO", receiptNo],
+    ["PAYMENT DATE", payment.date ?? "\u2014"],
+    ["PAYMENT MODE", payment.paymentMode ?? "\u2014"],
+    ["TRANSACTION ID", payment.txnId ?? "\u2014"],
+    ["SEMESTER", payment.semester ?? payment.desc],
+    ["STATUS", "PAID"],
   ];
 
   const ROW_H = 9;

@@ -49,8 +49,8 @@ The portal is designed with a professional, institutional aesthetic using flat d
 | **Styling** | 100% inline styles (no Tailwind classes used in components) |
 | **Font** | Inter (Google Fonts — 400, 500, 600, 700) |
 | **Code Splitting** | React.lazy + Suspense (all 8 pages lazy-loaded) |
-| **Monorepo** | pnpm workspaces |
-| **Package** | `@workspace/student-portal` |
+| **Deployment** | 100% Static Frontend (Vercel / Netlify / GH Pages) |
+| **Data Architecture** | Fully Client-Side (No Backend Required) |
 
 ---
 
@@ -545,6 +545,11 @@ pnpm --filter @workspace/student-portal run dev
 - **Attendance Calendar & Auto-Generator:** Deployed `generateDailyAttendance()`, eliminating heavy static data structures in favor of programmatic calendar generation (factoring in public holidays and weekends constraint).
 - **Sem 3 & 4 Extended UI:** Re-architected `AssignmentsPage.tsx`, `ResultsPage.tsx`, `AttendancePage.tsx`, and `TimetablePage.tsx` to handle 4-semester tabbed modes, adding incredibly rich upcoming aesthetic states highlighting capstone dissertation goals, future assignment volumes, and expected subject credits.
 - **Comprehensive Verifications:** Entire architecture fully vetted via subagent headless browser tests across all major UI permutations.
+
+### v2.1 — Backend Decoupling & Static Conversion
+- **Express Backend Removed:** Safely deleted the legacy `api-server` node app to optimize the repository for zero-config portfolio hosting.
+- **Library Cleanup:** Removed all shared database schemas, Zod validators, and API typescript bindings from `lib/`.
+- **Pure Client-Side Application:** Confirmed the entire application runs flawlessly as a static site using hardcoded data and the deterministic `PORTAL_DATE` engine.
 
 ---
 

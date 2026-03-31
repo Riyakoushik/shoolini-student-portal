@@ -393,24 +393,6 @@ export const sem2Subjects: Subject[] = [
   { name: "Natural Language Processing", faculty: "Dr. Anita Desai", room: "Room 206", color: "#c8a84b" },
 ];
 
-// ── Timetable (old session format — kept for backward compat) ─────────────────
-
-export const sem1Timetable: Record<string, { s1: number | null; s2: number | null }> = {
-  Monday:    { s1: 0, s2: 1 },
-  Tuesday:   { s1: 1, s2: 6 },
-  Wednesday: { s1: 2, s2: 3 },
-  Thursday:  { s1: 2, s2: 0 },
-  Friday:    { s1: 4, s2: 6 },
-};
-
-export const sem2Timetable: Record<string, { s1: number | null; s2: number | null; s3: number | null }> = {
-  Monday:    { s1: 0, s2: 1, s3: 4 },
-  Tuesday:   { s1: 1, s2: 3, s3: null },
-  Wednesday: { s1: 2, s2: 2, s3: 6 },
-  Thursday:  { s1: 6, s2: 4, s3: 2 },
-  Friday:    { s1: 6, s2: 0, s3: 5 },
-};
-
 // ── New daily timetable format (Mon–Sat, one 4-hr class per day) ───────────────
 
 export interface DailyClass {

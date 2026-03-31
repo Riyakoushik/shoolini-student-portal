@@ -32,10 +32,10 @@ function makeUPI() {
 }
 function makeBank() {
   const banks = [
-    { name: "HDFC Bank",  prefix: "HDFC" },
-    { name: "SBI",        prefix: "SBIN" },
+    { name: "HDFC Bank", prefix: "HDFC" },
+    { name: "SBI", prefix: "SBIN" },
     { name: "ICICI Bank", prefix: "ICIC" },
-    { name: "Axis Bank",  prefix: "UTIB" },
+    { name: "Axis Bank", prefix: "UTIB" },
     { name: "Kotak Bank", prefix: "KKBK" },
   ];
   return banks[rnd(banks.length)];
@@ -44,12 +44,12 @@ function makeIfsc(prefix: string) { return `${prefix}0${rndDigits(6)}`; }
 function makeAccountMasked() { return `XXXX XXXX ${rndDigits(4)}`; }
 function makeCard() {
   const last4 = rndDigits(4);
-  const months = ["01","02","03","04","05","06","07","08","09","10","11","12"];
+  const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   const expiry = `${months[rnd(12)]}/2${7 + rnd(2)}`;
   return { masked: `**** **** **** ${last4}`, expiry, last4 };
 }
 function makeTxnId() { return `TXN${Date.now()}${rndDigits(4)}`; }
-function makeRefNo()  { return `SU/FEE/25MCA/${rndDigits(6)}`; }
+function makeRefNo() { return `SU/FEE/25MCA/${rndDigits(6)}`; }
 function makeReceiptNo() { return `SU-PAY-25MCA-${rndDigits(3)}`; }
 
 type PayMethod = "UPI" | "NetBanking" | "Card" | "NEFT";
@@ -103,15 +103,15 @@ function PaymentModal({
   const [method, setMethod] = useState<PayMethod>("UPI");
 
   // Random data generated once on modal open
-  const upiId     = useRef(makeUPI());
-  const bank      = useRef(makeBank());
-  const ifscNet   = useRef(makeIfsc(bank.current.prefix));
-  const accNet    = useRef(makeAccountMasked());
-  const card      = useRef(makeCard());
-  const cvv       = useRef({ val: "" });
-  const neftRef   = useRef(makeRefNo());
-  const neftAcc   = useRef(rndDigits(12));
-  const txnId     = useRef("");
+  const upiId = useRef(makeUPI());
+  const bank = useRef(makeBank());
+  const ifscNet = useRef(makeIfsc(bank.current.prefix));
+  const accNet = useRef(makeAccountMasked());
+  const card = useRef(makeCard());
+  const cvv = useRef({ val: "" });
+  const neftRef = useRef(makeRefNo());
+  const neftAcc = useRef(rndDigits(12));
+  const txnId = useRef("");
   const receiptNo = useRef("");
 
   const [cvvVal, setCvvVal] = useState("");
@@ -189,10 +189,10 @@ function PaymentModal({
   /* ── Step 1: method ── */
   if (step === "method") {
     const methods: { key: PayMethod; label: string; desc: string }[] = [
-      { key: "UPI",        label: "UPI",              desc: "Pay via UPI app" },
-      { key: "NetBanking", label: "Net Banking",       desc: "Pay via internet banking" },
-      { key: "Card",       label: "Credit / Debit Card", desc: "Pay via card" },
-      { key: "NEFT",       label: "NEFT / RTGS",       desc: "Bank transfer" },
+      { key: "UPI", label: "UPI", desc: "Pay via UPI app" },
+      { key: "NetBanking", label: "Net Banking", desc: "Pay via internet banking" },
+      { key: "Card", label: "Credit / Debit Card", desc: "Pay via card" },
+      { key: "NEFT", label: "NEFT / RTGS", desc: "Bank transfer" },
     ];
     return (
       <div style={overlay} onClick={onClose}>

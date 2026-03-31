@@ -38,8 +38,8 @@ function AnimatedBar({ value, color }: { value: number; color: string }) {
 }
 
 // Month helpers
-const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const MONTH_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const MONTH_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function getMonthsInRange(log: DailyAttendanceRecord[]): { year: number; month: number; label: string }[] {
   const set = new Set<string>();
@@ -183,9 +183,9 @@ export default function AttendancePage() {
 
   const semTabs = [
     { val: 1, label: "Semester 1 — 99.07%", tag: "" },
-    { val: 2, label: "Semester 2 — 90.6%",  tag: "" },
-    { val: 3, label: "Semester 3",           tag: "Upcoming" },
-    { val: 4, label: "Semester 4",           tag: "Upcoming" },
+    { val: 2, label: "Semester 2 — 90.6%", tag: "" },
+    { val: 3, label: "Semester 3", tag: "Upcoming" },
+    { val: 4, label: "Semester 4", tag: "Upcoming" },
   ];
 
   return (
@@ -309,8 +309,8 @@ export default function AttendancePage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 16 }}>
             {[
               { label: "Classes Present", value: String(data.present), border: GREEN },
-              { label: "Classes Absent",  value: String(data.absent),  border: RED },
-              { label: "Attendance %",    value: `${data.percentage}%`, border: AMBER },
+              { label: "Classes Absent", value: String(data.absent), border: RED },
+              { label: "Attendance %", value: `${data.percentage}%`, border: AMBER },
             ].map((k) => (
               <div
                 key={k.label}
@@ -364,8 +364,8 @@ export default function AttendancePage() {
               </thead>
               <tbody>
                 {data.subjects.map((s, i) => {
-                  const p      = pct(s.present, s.total);
-                  const isLow  = p < 75;
+                  const p = pct(s.present, s.total);
+                  const isLow = p < 75;
                   const isAbsent = s.total - s.present > 0;
                   return (
                     <tr key={i} style={{ backgroundColor: isLow ? ERROR_LIGHT : i % 2 === 0 ? WHITE : BG_LIGHT }}>
