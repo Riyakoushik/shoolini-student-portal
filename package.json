@@ -12,8 +12,5 @@
     "prettier": "^3.8.1",
     "typescript": "~5.9.2"
   },
-  "packageManager": "pnpm@10.32.1",
-  "dependencies": {
-    "lightningcss-win32-x64-msvc": "1.32.0"
-  }
+  "packageManager": "pnpm@10.32.1"
 }
