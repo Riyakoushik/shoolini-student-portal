@@ -1,0 +1,5 @@
+# artifacts/student-portal/wrangler.toml
+
+name = "shoolini-student-portal"
+compatibility_date = "2026-03-31"
+assets = { directory = "./dist/public" }
