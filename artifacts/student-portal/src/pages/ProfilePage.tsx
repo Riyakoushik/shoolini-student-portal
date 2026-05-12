@@ -543,7 +543,7 @@ export default function ProfilePage() {
       <Card style={{ marginTop: 16, overflowX: "auto" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
           <SectionLabel>Program Fee Structure — MCA AI/ML (Batch 2025–2027)</SectionLabel>
-          <span style={{ fontSize: 13, fontWeight: 700, color: NAVY, marginBottom: 14 }}>Grand Total: ₹2,50,000</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: NAVY, marginBottom: 14 }}>Grand Total: ₹{offerLetterData.grandTotal.toLocaleString("en-IN")}</span>
         </div>
         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 560, marginBottom: 16 }}>
           <thead>

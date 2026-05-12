@@ -183,7 +183,7 @@ export default function AttendancePage() {
 
   const semTabs = [
     { val: 1, label: "Semester 1 — 99.07%", tag: "" },
-    { val: 2, label: "Semester 2 — 90.6%", tag: "" },
+    { val: 2, label: "Semester 2 — 86%", tag: "" },
     { val: 3, label: "Semester 3", tag: "Upcoming" },
     { val: 4, label: "Semester 4", tag: "Upcoming" },
   ];

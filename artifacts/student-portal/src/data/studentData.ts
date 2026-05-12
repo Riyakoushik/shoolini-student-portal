@@ -1,3 +1,5 @@
+import { PORTAL_DATE } from "../constants";
+
 // ── TypeScript Interfaces ──────────────────────────────────────────────────────
 
 export interface SemesterTimelineEntry {
@@ -365,7 +367,7 @@ export const student: Student = {
 
 export const semesterTimeline: SemesterTimelineEntry[] = [
   { sem: 1, label: "Semester 1", period: "Aug 11, 2025 – Jan 17, 2026", start: "Aug 11, 2025", end: "Jan 17, 2026", status: "Completed", subjects: 11, credits: 36, result: "SGPA 9.11", sgpa: 9.11, cgpa: 9.11, attendance: "99.07%" },
-  { sem: 2, label: "Semester 2", period: "Jan 19, 2026 – Jun 30, 2026", start: "Jan 19, 2026", end: "Jun 30, 2026", status: "Active", subjects: 10, credits: 32, result: "In Progress", sgpa: null, cgpa: null, attendance: "90.6%" },
+  { sem: 2, label: "Semester 2", period: "Jan 19, 2026 – Jun 30, 2026", start: "Jan 19, 2026", end: "Jun 30, 2026", status: "Active", subjects: 10, credits: 32, result: "In Progress", sgpa: null, cgpa: null, attendance: "86%" },
   { sem: 3, label: "Semester 3", period: "Jul 6, 2026 – Dec 20, 2026", start: "Jul 6, 2026", end: "Dec 20, 2026", status: "Upcoming", subjects: 9, credits: 24, result: "—", sgpa: null, cgpa: null, attendance: null },
   { sem: 4, label: "Semester 4", period: "Jan 5, 2027 – Jun 30, 2027", start: "Jan 5, 2027", end: "Jun 30, 2027", status: "Upcoming", subjects: 6, credits: 26, result: "—", sgpa: null, cgpa: null, attendance: null },
 ];
@@ -444,31 +446,31 @@ export const sem1Attendance: SemesterAttendance = {
 };
 
 export const sem2Attendance: SemesterAttendance = {
-  totalDays: 64,
-  present: 58,
-  absent: 6,
-  percentage: 90.6,
+  totalDays: 100,
+  present: 86,
+  absent: 14,
+  percentage: 86,
   subjects: [
-    { name: "Advanced Machine Learning",   present: 9, total: 10 },
-    { name: "Deep Learning",               present: 9, total: 10 },
-    { name: "Advanced Algorithms",         present: 9, total: 10 },
-    { name: "Computer Vision",             present: 9, total: 10 },
-    { name: "Data Analytics",              present: 9, total: 10 },
-    { name: "Natural Language Processing", present: 5, total: 5 },
-    { name: "Cloud Computing",             present: 8, total: 9 },
+    { name: "Advanced Machine Learning",   present: 12, total: 15 },
+    { name: "Deep Learning",               present: 13, total: 15 },
+    { name: "Advanced Algorithms",         present: 13, total: 15 },
+    { name: "Computer Vision",             present: 12, total: 15 },
+    { name: "Data Analytics",              present: 13, total: 15 },
+    { name: "Natural Language Processing", present: 11, total: 12 },
+    { name: "Cloud Computing",             present: 12, total: 13 },
   ],
 };
 
 export const sem2AttendanceDetailed = {
-  overall: { totalClasses: 64, present: 58, absent: 6, percentage: 90.6 },
+  overall: { totalClasses: 100, present: 86, absent: 14, percentage: 86 },
   subjects: [
-    { name: "Advanced Machine Learning", day: "Monday", faculty: "Dr. Priya Sharma", present: 9, absent: 1, total: 10, percentage: 90, absentDates: ["2026-02-23"] },
-    { name: "Deep Learning", day: "Tuesday", faculty: "Dr. Rajesh Kumar", present: 9, absent: 1, total: 10, percentage: 90, absentDates: ["2026-03-03"] },
-    { name: "Advanced Algorithms", day: "Wednesday", faculty: "Dr. Arjun Reddy", present: 9, absent: 1, total: 10, percentage: 90, absentDates: ["2026-03-18"] },
-    { name: "Computer Vision", day: "Thursday", faculty: "Prof. Vikram Mehta", present: 9, absent: 1, total: 10, percentage: 90, absentDates: ["2026-02-19"] },
-    { name: "Data Analytics", day: "Friday", faculty: "Dr. Suresh Patel", present: 9, absent: 1, total: 10, percentage: 90, absentDates: ["2026-03-06"] },
-    { name: "Natural Language Processing", day: "Friday (alternate)", faculty: "Dr. Anita Desai", present: 5, absent: 0, total: 5, percentage: 100, absentDates: [] },
-    { name: "Cloud Computing", day: "Saturday", faculty: "Prof. Meera Iyer", present: 8, absent: 1, total: 9, percentage: 88.9, absentDates: ["2026-02-28"] },
+    { name: "Advanced Machine Learning", day: "Monday", faculty: "Dr. Priya Sharma", present: 12, absent: 3, total: 15, percentage: 80, absentDates: ["2026-02-23","2026-03-23","2026-04-20"] },
+    { name: "Deep Learning", day: "Tuesday", faculty: "Dr. Rajesh Kumar", present: 13, absent: 2, total: 15, percentage: 86.7, absentDates: ["2026-03-03","2026-04-14"] },
+    { name: "Advanced Algorithms", day: "Wednesday", faculty: "Dr. Arjun Reddy", present: 13, absent: 2, total: 15, percentage: 86.7, absentDates: ["2026-03-18","2026-04-22"] },
+    { name: "Computer Vision", day: "Thursday", faculty: "Prof. Vikram Mehta", present: 12, absent: 3, total: 15, percentage: 80, absentDates: ["2026-02-19","2026-03-26","2026-04-30"] },
+    { name: "Data Analytics", day: "Friday", faculty: "Dr. Suresh Patel", present: 13, absent: 2, total: 15, percentage: 86.7, absentDates: ["2026-03-06","2026-04-24"] },
+    { name: "Natural Language Processing", day: "Friday (alternate)", faculty: "Dr. Anita Desai", present: 11, absent: 1, total: 12, percentage: 91.7, absentDates: ["2026-04-10"] },
+    { name: "Cloud Computing", day: "Saturday", faculty: "Prof. Meera Iyer", present: 12, absent: 1, total: 13, percentage: 92.3, absentDates: ["2026-02-28"] },
   ],
 };
 
@@ -499,23 +501,24 @@ export const sem2Assignments: Assignment[] = [
   { no: 11, subject: "Computer Vision",             title: "Assignment 6: Implement lane detection for autonomous vehicles",  due: "Mar 4, 2026",  type: "Assignment", dueDate: new Date("2026-03-04"), status: "Submitted" },
   { no: 12, subject: "Natural Language Processing", title: "Lab 6: Build zero-shot text classification system",              due: "Mar 6, 2026",  type: "Lab",        dueDate: new Date("2026-03-06"), status: "Submitted" },
   { no: 13, subject: "Advanced Machine Learning",   title: "Assignment 7: Complete mid-term review project",                 due: "Mar 12, 2026", type: "Assignment", dueDate: new Date("2026-03-12"), status: "Submitted" },
-  { no: 14, subject: "Advanced Algorithms",         title: "Assignment 8: Implement multi-task learning framework",          due: "Mar 30, 2026", type: "Assignment", dueDate: new Date("2026-03-30"), status: "Pending" },
-  { no: 15, subject: "Cloud Computing",             title: "Lab 7: Build explainable AI system with SHAP",                   due: "Apr 1, 2026",  type: "Lab",        dueDate: new Date("2026-04-01"), status: "Pending" },
-  { no: 16, subject: "Advanced Machine Learning",   title: "Assignment 9: Create adversarial attack and defense system",     due: "Apr 6, 2026",  type: "Assignment", dueDate: new Date("2026-04-06"), status: "Pending" },
-  { no: 17, subject: "Advanced Algorithms",         title: "Lab 8: Implement federated learning system",                    due: "Apr 8, 2026",  type: "Lab",        dueDate: new Date("2026-04-08"), status: "Pending" },
-  { no: 18, subject: "Cloud Computing",             title: "Assignment 10: Deploy AI model on edge device",                 due: "Apr 10, 2026", type: "Assignment", dueDate: new Date("2026-04-10"), status: "Pending" },
+  { no: 14, subject: "Advanced Algorithms",         title: "Assignment 8: Implement multi-task learning framework",          due: "Mar 30, 2026", type: "Assignment", dueDate: new Date("2026-03-30"), status: "Submitted" },
+  { no: 15, subject: "Cloud Computing",             title: "Lab 7: Build explainable AI system with SHAP",                   due: "Apr 1, 2026",  type: "Lab",        dueDate: new Date("2026-04-01"), status: "Submitted" },
+  { no: 16, subject: "Advanced Machine Learning",   title: "Assignment 9: Create adversarial attack and defense system",     due: "Apr 6, 2026",  type: "Assignment", dueDate: new Date("2026-04-06"), status: "Submitted" },
+  { no: 17, subject: "Advanced Algorithms",         title: "Lab 8: Implement federated learning system",                    due: "Apr 8, 2026",  type: "Lab",        dueDate: new Date("2026-04-08"), status: "Submitted" },
+  { no: 18, subject: "Cloud Computing",             title: "Assignment 10: Deploy AI model on edge device",                 due: "Apr 10, 2026", type: "Assignment", dueDate: new Date("2026-04-10"), status: "Submitted" },
+  { no: 19, subject: "Self Assessment",             title: "Professional Career Portfolio Submission",                      due: "Jun 15, 2026", type: "Portfolio",  dueDate: new Date("2026-06-15"), status: "Pending" },
 ];
 
 // ── Results ────────────────────────────────────────────────────────────────────
 
 export const sem2MidtermResults: MidtermResult[] = [
-  { subject: "Advanced Machine Learning",   faculty: "Dr. Priya Sharma",  date: "Mar 17, 2026", score: 85, grade: "A+" },
-  { subject: "Deep Learning",               faculty: "Dr. Rajesh Kumar",  date: "Mar 18, 2026", score: 88, grade: "A+" },
-  { subject: "Natural Language Processing", faculty: "Dr. Anita Desai",   date: "Mar 19, 2026", score: 82, grade: "A+" },
-  { subject: "Computer Vision",             faculty: "Prof. Vikram Mehta", date: "Mar 20, 2026", score: 86, grade: "A+" },
-  { subject: "Data Analytics",              faculty: "Dr. Suresh Patel",  date: "Mar 23, 2026", score: 84, grade: "A+" },
-  { subject: "Cloud Computing",             faculty: "Prof. Meera Iyer",  date: "Mar 24, 2026", score: 83, grade: "A+" },
-  { subject: "Advanced Algorithms",         faculty: "Dr. Arjun Reddy",   date: "Mar 25, 2026", score: 87, grade: "A+" },
+  { subject: "Advanced Machine Learning",   faculty: "Dr. Priya Sharma",  date: "Mar 17, 2026", score: 85, grade: "A" },
+  { subject: "Deep Learning",               faculty: "Dr. Rajesh Kumar",  date: "Mar 18, 2026", score: 88, grade: "A" },
+  { subject: "Natural Language Processing", faculty: "Dr. Anita Desai",   date: "Mar 19, 2026", score: 82, grade: "A" },
+  { subject: "Computer Vision",             faculty: "Prof. Vikram Mehta", date: "Mar 20, 2026", score: 86, grade: "A" },
+  { subject: "Data Analytics",              faculty: "Dr. Suresh Patel",  date: "Mar 23, 2026", score: 84, grade: "A" },
+  { subject: "Cloud Computing",             faculty: "Prof. Meera Iyer",  date: "Mar 24, 2026", score: 83, grade: "A" },
+  { subject: "Advanced Algorithms",         faculty: "Dr. Arjun Reddy",   date: "Mar 25, 2026", score: 87, grade: "A" },
 ];
 
 // ── Semester 1 Internal Assessments ───────────────────────────────────────────
@@ -680,31 +683,31 @@ export const sem1ResultSummary: SemesterResultSummary = {
 
 export const sem2TheoryResults: SubjectResult[] = [
   { slNo:1, courseCode:"MCAB201", courseName:"Advanced Machine Learning",
-    maxMarks:100, minMarks:40, seeMarks:0, iaMarks:85,
+    maxMarks:100, minMarks:40, seeMarks:0, iaMarks:34,
     marksScored:0, credits:4, grade:0, creditPoints:0,
     letterGrade:"—", status:"Awaited", isPractical:false },
   { slNo:2, courseCode:"MCAB202", courseName:"Deep Learning",
-    maxMarks:100, minMarks:40, seeMarks:0, iaMarks:88,
+    maxMarks:100, minMarks:40, seeMarks:0, iaMarks:35,
     marksScored:0, credits:4, grade:0, creditPoints:0,
     letterGrade:"—", status:"Awaited", isPractical:false },
   { slNo:3, courseCode:"MCAB203", courseName:"Natural Language Processing",
-    maxMarks:100, minMarks:40, seeMarks:0, iaMarks:82,
+    maxMarks:100, minMarks:40, seeMarks:0, iaMarks:33,
     marksScored:0, credits:4, grade:0, creditPoints:0,
     letterGrade:"—", status:"Awaited", isPractical:false },
   { slNo:4, courseCode:"MCAB204", courseName:"Computer Vision",
-    maxMarks:100, minMarks:40, seeMarks:0, iaMarks:86,
+    maxMarks:100, minMarks:40, seeMarks:0, iaMarks:34,
     marksScored:0, credits:4, grade:0, creditPoints:0,
     letterGrade:"—", status:"Awaited", isPractical:false },
   { slNo:5, courseCode:"MCAB205", courseName:"Data Analytics",
-    maxMarks:100, minMarks:40, seeMarks:0, iaMarks:84,
+    maxMarks:100, minMarks:40, seeMarks:0, iaMarks:34,
     marksScored:0, credits:3, grade:0, creditPoints:0,
     letterGrade:"—", status:"Awaited", isPractical:false },
   { slNo:6, courseCode:"MCAB206", courseName:"Cloud Computing",
-    maxMarks:100, minMarks:40, seeMarks:0, iaMarks:83,
+    maxMarks:100, minMarks:40, seeMarks:0, iaMarks:33,
     marksScored:0, credits:3, grade:0, creditPoints:0,
     letterGrade:"—", status:"Awaited", isPractical:false },
   { slNo:7, courseCode:"MCAB207", courseName:"Advanced Algorithms",
-    maxMarks:100, minMarks:40, seeMarks:0, iaMarks:87,
+    maxMarks:100, minMarks:40, seeMarks:0, iaMarks:35,
     marksScored:0, credits:4, grade:0, creditPoints:0,
     letterGrade:"—", status:"Awaited", isPractical:false },
 ];
@@ -738,83 +741,72 @@ export const sem2ResultSummary: SemesterResultSummary = {
 
 export const feesData: FeesData = {
   kpis: {
-    totalPaid: "₹66,000",
-    outstanding: "₹57,000",
-    nextDue: "July 2026 (Sem 3)",
+    totalPaid: "₹1,02,000",
+    outstanding: "₹1,22,816",
+    nextDue: "May 22, 2026 (Exam Fee)",
   },
   feeStructure: [
-    { type: "Tuition Fee",          sem1: "₹48,000", sem2: "₹48,000", sem3: "₹48,000", sem4: "₹48,000" },
-    { type: "Examination Fee",      sem1: "₹8,000",  sem2: "₹8,000",  sem3: "₹8,000",  sem4: "₹8,000"  },
-    { type: "Lab / Practical Fee",  sem1: "₹4,500",  sem2: "₹4,500",  sem3: "₹4,500",  sem4: "₹4,500"  },
-    { type: "Library Fee",          sem1: "₹1,500",  sem2: "—",       sem3: "₹1,500",  sem4: "—"        },
-    { type: "Student Activity Fee", sem1: "₹500",    sem2: "—",       sem3: "₹500",    sem4: "—"        },
+    { type: "Tuition Fee",          sem1: "₹40,000", sem2: "₹40,000", sem3: "₹42,000", sem4: "₹42,000" },
+    { type: "Examination Fee",      sem1: "₹6,000",  sem2: "₹6,000",  sem3: "₹6,000",  sem4: "₹6,000"  },
+    { type: "Lab / Practical Fee",  sem1: "₹5,000",  sem2: "₹5,000",  sem3: "₹5,000",  sem4: "₹5,000"  },
+    { type: "Placement Training",   sem1: "—",       sem2: "—",       sem3: "—",       sem4: "₹4,000"  },
+    { type: "Graduation & Reg Fee", sem1: "—",       sem2: "—",       sem3: "—",       sem4: "₹3,000"  },
   ],
   feeStructureTotals: {
-    sem1: "₹62,500", sem2: "₹60,500", sem3: "₹62,500", sem4: "₹60,500", program: "₹2,46,000",
+    sem1: "₹51,000", sem2: "₹51,000", sem3: "₹53,000", sem4: "₹60,000", program: "₹2,15,000",
   },
   payments: [
     {
-      id: "SU-2025-MCA-001",
-      desc: "Semester 1 Fee — Installment 1",
-      amount: "₹24,000",
-      date: "Aug 12, 2025",
-      status: "Paid",
-      receiptNo: "SU-PAY-25MCA-001",
-      paymentMode: "UPI",
-      txnId: "UPI20250812XXXXX001",
-      semester: "Semester 1 — First Installment",
-      feeItems: [
-        { label: "Tuition Fee",          amount: "Rs. 18,000", amountNum: 18000 },
-        { label: "Examination Fee",      amount: "Rs. 2,000",  amountNum: 2000  },
-        { label: "Lab / Practical Fee",  amount: "Rs. 2,500",  amountNum: 2500  },
-        { label: "Library Fee",          amount: "Rs. 1,000",  amountNum: 1000  },
-        { label: "Student Activity Fee", amount: "Rs. 500",    amountNum: 500   },
-      ],
+      id: "PAY-001", desc: "Academic Fee Installment 1", amount: "₹18,000",
+      date: "Aug 10, 2025", status: "Paid", receiptNo: "SU-FEE-25-01", paymentMode: "UPI",
+      semester: "Semester 1",
     },
     {
-      id: "SU-2025-MCA-002",
-      desc: "Semester 1 Fee — Installment 2",
-      amount: "₹18,000",
-      date: "Oct 15, 2025",
-      status: "Paid",
-      receiptNo: "SU-PAY-25MCA-002",
-      paymentMode: "UPI",
-      txnId: "UPI20251015XXXXX002",
-      semester: "Semester 1 — Second Installment (Balance Clearance)",
-      feeItems: [
-        { label: "Tuition Fee",          amount: "Rs. 12,000", amountNum: 12000 },
-        { label: "Examination Fee",      amount: "Rs. 2,000",  amountNum: 2000  },
-        { label: "Lab / Practical Fee",  amount: "Rs. 2,500",  amountNum: 2500  },
-        { label: "Library Fee",          amount: "Rs. 1,000",  amountNum: 1000  },
-        { label: "Student Activity Fee", amount: "Rs. 500",    amountNum: 500   },
-      ],
+      id: "PAY-002", desc: "Academic Fee Installment 2", amount: "₹10,000",
+      date: "Sep 12, 2025", status: "Paid", receiptNo: "SU-FEE-25-02", paymentMode: "Bank Transfer",
+      semester: "Semester 1",
     },
     {
-      id: "SU-2026-MCA-001",
-      desc: "Semester 2 Fee — Installment 1",
-      amount: "₹24,000",
-      date: "Jan 20, 2026",
-      status: "Paid",
-      receiptNo: "SU-PAY-25MCA-003",
-      paymentMode: "UPI",
-      txnId: "UPI20260120XXXXX003",
-      semester: "Semester 2 — First Installment",
-      feeItems: [
-        { label: "Tuition Fee",          amount: "Rs. 18,000", amountNum: 18000 },
-        { label: "Examination Fee",      amount: "Rs. 2,000",  amountNum: 2000  },
-        { label: "Lab / Practical Fee",  amount: "Rs. 2,500",  amountNum: 2500  },
-        { label: "Library Fee",          amount: "Rs. 1,000",  amountNum: 1000  },
-        { label: "Student Activity Fee", amount: "Rs. 500",    amountNum: 500   },
-      ],
+      id: "PAY-003", desc: "Academic Fee Installment 3", amount: "₹8,000",
+      date: "Oct 15, 2025", status: "Paid", receiptNo: "SU-FEE-25-03", paymentMode: "UPI",
+      semester: "Semester 1",
+    },
+    {
+      id: "PAY-004", desc: "Final Semester 1 Clearance Payment", amount: "₹24,000",
+      date: "Dec 05, 2025", status: "Paid", receiptNo: "SU-FEE-25-04", paymentMode: "Card",
+      semester: "Semester 1",
+    },
+    {
+      id: "PAY-005", desc: "Semester 2 Registration Advance", amount: "₹18,000",
+      date: "Jan 18, 2026", status: "Paid", receiptNo: "SU-FEE-26-01", paymentMode: "UPI",
+      semester: "Semester 2",
+    },
+    {
+      id: "PAY-006", desc: "Final Semester 2 Clearance Payment", amount: "₹24,000",
+      date: "Mar 10, 2026", status: "Paid", receiptNo: "SU-FEE-26-02", paymentMode: "NetBanking",
+      semester: "Semester 2",
     },
   ],
   pendingDues: [
-    { desc: "Semester 1 Remaining Balance", amount: "₹20,500", due: "Overdue",      status: "Overdue" },
-    { desc: "Semester 2 Remaining Balance", amount: "₹36,500", due: "Mar 31, 2026", status: "Overdue" },
+    {
+      id: "DUE-EXAM-SEM2",
+      desc: "Semester 2 Examination Fees (May/June 2026)",
+      amount: "₹9,816",
+      due: "May 22, 2026",
+      status: "Unpaid",
+      semester: "Semester 2",
+      feeItems: [
+        { label: "Examination Fee", amount: "₹6,816", amountNum: 6816 },
+        { label: "Practical / Lab Examination Fee", amount: "₹1,000", amountNum: 1000 },
+        { label: "Technology & Processing Fee", amount: "₹1,200", amountNum: 1200 },
+        { label: "Internal Assessment Processing", amount: "₹600", amountNum: 600 },
+        { label: "Portal Processing Charges", amount: "₹200", amountNum: 200 },
+      ]
+    }
   ],
   upcomingDues: [
-    { desc: "Semester 3 Fee", amount: "₹62,500", due: "July 2026" },
-    { desc: "Semester 4 Fee", amount: "₹60,500", due: "January 2027" },
+    { desc: "Semester 3 Total Fee", amount: "₹53,000", due: "July 2026" },
+    { desc: "Semester 4 Final Fee", amount: "₹60,000", due: "January 2027" },
   ],
 };
 
@@ -1083,28 +1075,23 @@ export const offerLetterData: OfferLetterData = {
   dbaRefNo: "DBA/SU/2025/MCA/09871",
   verificationDate: "03 August 2025",
   semesterFees: [
-    { sem: "Semester 1", tuition: 45000, exam: 3000, lab: 4000, library: 1500, activity: 1500, total: 55000 },
-    { sem: "Semester 2", tuition: 45000, exam: 3000, lab: 4000, library: 1500, activity: 1500, total: 55000 },
-    { sem: "Semester 3", tuition: 43000, exam: 3000, lab: 4000, library: 1500, activity: 1500, total: 53000 },
-    { sem: "Semester 4", tuition: 41000, exam: 3000, lab: 4000, library: 1500, activity: 1500, total: 51000 },
+    { sem: "Semester 1", tuition: 40000, exam: 6000, lab: 5000, library: 0, activity: 0, total: 51000 },
+    { sem: "Semester 2", tuition: 40000, exam: 6000, lab: 5000, library: 0, activity: 0, total: 51000 },
+    { sem: "Semester 3", tuition: 42000, exam: 6000, lab: 5000, library: 0, activity: 0, total: 53000 },
+    { sem: "Semester 4", tuition: 42000, exam: 6000, lab: 5000, library: 4000, activity: 3000, total: 60000 },
   ],
   miscFees: [
-    { label: "Registration Fee",       amount: 5000  },
-    { label: "Alumni Fee",             amount: 3000  },
-    { label: "Caution Deposit",        amount: 10000 },
-    { label: "Welfare Fund",           amount: 5000  },
-    { label: "Development Fund",       amount: 8000  },
-    { label: "ID / Smart Card",        amount: 2000  },
-    { label: "Insurance",              amount: 3000  },
+    { label: "Registration Fee",       amount: 0 },
+    { label: "Alumni Fee",             amount: 0 },
+    { label: "Caution Deposit",        amount: 0 },
   ],
-  grandTotal: 250000,
-  miscTotal: 36000,
+  grandTotal: 215000,
+  miscTotal: 0,
   paymentSchedule: [
-    { installment: "Installment 1", dueDate: "10 Aug 2025", amount: "Rs. 55,000", description: "Semester 1 Fee (on reporting)" },
-    { installment: "Installment 2", dueDate: "15 Aug 2025", amount: "Rs. 36,000", description: "All miscellaneous fees" },
-    { installment: "Installment 3", dueDate: "15 Jan 2026", amount: "Rs. 55,000", description: "Semester 2 Fee" },
-    { installment: "Installment 4", dueDate: "15 Jul 2026", amount: "Rs. 53,000", description: "Semester 3 Fee" },
-    { installment: "Installment 5", dueDate: "15 Jan 2027", amount: "Rs. 51,000", description: "Semester 4 Fee" },
+    { installment: "Installment 1", dueDate: "10 Aug 2025", amount: "Rs. 51,000", description: "Semester 1 Fee (on reporting)" },
+    { installment: "Installment 2", dueDate: "15 Jan 2026", amount: "Rs. 51,000", description: "Semester 2 Fee" },
+    { installment: "Installment 3", dueDate: "15 Jul 2026", amount: "Rs. 53,000", description: "Semester 3 Fee" },
+    { installment: "Installment 4", dueDate: "15 Jan 2027", amount: "Rs. 60,000", description: "Semester 4 Fee" },
   ],
   upiId: "shooliniuniversity@sbi",
   ddFavorOf: "Shoolini University of Biotechnology and Management Sciences",
@@ -1165,7 +1152,7 @@ export function generateDailyAttendance(
   absentDates: string[] = [],
 ): DailyAttendanceRecord[] {
   const records: DailyAttendanceRecord[] = [];
-  const portalDate = new Date("2026-03-31");
+  const portalDate = PORTAL_DATE;
   const start = new Date(startDate);
   const end = new Date(endDate);
   const finalDate = end < portalDate ? end : portalDate;
@@ -1199,7 +1186,7 @@ export const sem1DailyLog: DailyAttendanceRecord[] = generateDailyAttendance(
 );
 
 export const sem2DailyLog: DailyAttendanceRecord[] = generateDailyAttendance(
-  "2026-01-19", "2026-03-31",
+  "2026-01-19", "2026-06-30",
   ["2026-02-23","2026-03-03","2026-03-18","2026-02-19","2026-03-06","2026-02-28"]
 );
 

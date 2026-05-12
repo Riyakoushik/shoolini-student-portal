@@ -52,8 +52,8 @@ function makeTxnId() { return `TXN${Date.now()}${rndDigits(4)}`; }
 function makeRefNo() { return `SU/FEE/25MCA/${rndDigits(6)}`; }
 function makeReceiptNo() { return `SU-PAY-25MCA-${rndDigits(3)}`; }
 
-type PayMethod = "UPI" | "NetBanking" | "Card" | "NEFT";
-type Step = "method" | "details" | "processing" | "success";
+type PayMethod = "IMPS_RTGS";
+type Step = "details" | "processing" | "success";
 
 interface PendingDue { desc: string; amount: string; amountNum: number; due: string; }
 
@@ -66,6 +66,7 @@ interface SessionPayment {
   paymentMode: string;
   txnId: string;
   status: "Paid";
+  utr?: string;
 }
 
 /* ─── animated dots loader ───────────────────────────────────────── */
@@ -99,41 +100,42 @@ function PaymentModal({
   onClose: () => void;
   onSuccess: (payment: SessionPayment) => void;
 }) {
-  const [step, setStep] = useState<Step>("method");
-  const [method, setMethod] = useState<PayMethod>("UPI");
+  const [step, setStep] = useState<Step>("details");
+  const method: PayMethod = "IMPS_RTGS";
 
-  // Random data generated once on modal open
-  const upiId = useRef(makeUPI());
-  const bank = useRef(makeBank());
-  const ifscNet = useRef(makeIfsc(bank.current.prefix));
-  const accNet = useRef(makeAccountMasked());
-  const card = useRef(makeCard());
-  const cvv = useRef({ val: "" });
-  const neftRef = useRef(makeRefNo());
-  const neftAcc = useRef(rndDigits(12));
-  const txnId = useRef("");
+  // Account details (stable across renders)
+  const bankAcc = useRef("502000"+rndDigits(10));
+  const ifsc = useRef("HDFC0000387");
+  const micr = useRef("173240002");
   const receiptNo = useRef("");
-
-  const [cvvVal, setCvvVal] = useState("");
+  
+  const [utr, setUtr] = useState("");
+  const [error, setError] = useState("");
   const [successData, setSuccessData] = useState<SessionPayment | null>(null);
 
   function handlePay() {
+    if (utr.trim().length < 8) {
+      setError("Please enter a valid UTR/Reference number.");
+      return;
+    }
+    setError("");
     setStep("processing");
-    txnId.current = makeTxnId();
     receiptNo.current = makeReceiptNo();
+    
     setTimeout(() => {
       const now = new Date();
       const dateStr = now.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
       const timeStr = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
       const payment: SessionPayment = {
-        id: txnId.current,
+        id: utr, // Use user entered UTR as internal ref
         receiptNo: receiptNo.current,
         desc: due.desc,
         amount: due.amount,
         date: `${dateStr}, ${timeStr}`,
-        paymentMode: method,
-        txnId: txnId.current,
+        paymentMode: "IMPS/RTGS",
+        txnId: utr,
         status: "Paid",
+        utr: utr,
       };
       setSuccessData(payment);
       setStep("success");
@@ -186,190 +188,92 @@ function PaymentModal({
     marginTop: 8,
   };
 
-  /* ── Step 1: method ── */
-  if (step === "method") {
-    const methods: { key: PayMethod; label: string; desc: string }[] = [
-      { key: "UPI", label: "UPI", desc: "Pay via UPI app" },
-      { key: "NetBanking", label: "Net Banking", desc: "Pay via internet banking" },
-      { key: "Card", label: "Credit / Debit Card", desc: "Pay via card" },
-      { key: "NEFT", label: "NEFT / RTGS", desc: "Bank transfer" },
-    ];
-    return (
-      <div style={overlay} onClick={onClose}>
-        <div style={card2} onClick={(e) => e.stopPropagation()}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: TEXT_DARK }}>Select Payment Method</div>
-              <div style={{ fontSize: 13, color: SLATE, marginTop: 2 }}>{due.desc} — <strong style={{ color: NAVY }}>{due.amount}</strong></div>
-            </div>
-            <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: SLATE, padding: "0 4px" }}>×</button>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {methods.map((m) => (
-              <div
-                key={m.key}
-                onClick={() => setMethod(m.key)}
-                style={{
-                  display: "flex", alignItems: "center", gap: 14, padding: "12px 16px",
-                  border: `2px solid ${method === m.key ? NAVY : BORDER}`, borderRadius: 6, cursor: "pointer",
-                  backgroundColor: method === m.key ? "#f0f4f8" : WHITE,
-                }}
-              >
-                <div style={{ width: 16, height: 16, borderRadius: "50%", border: `2px solid ${method === m.key ? NAVY : SLATE}`, backgroundColor: method === m.key ? NAVY : "transparent", flexShrink: 0 }} />
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: 13, color: TEXT_DARK }}>{m.label}</div>
-                  <div style={{ fontSize: 11, color: SLATE }}>{m.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <button onClick={() => setStep("details")} style={payBtn}>Continue →</button>
-        </div>
-      </div>
-    );
-  }
-
-  /* ── Step 2: details ── */
+  /* ── Step 2: details (NOW THE ONLY STEP) ── */
   if (step === "details") {
     return (
       <div style={overlay}>
         <div style={card2}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: TEXT_DARK }}>Payment Details</div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: TEXT_DARK }}>Pay to University Bank Account</div>
             <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: SLATE, padding: "0 4px" }}>×</button>
           </div>
-          <div style={{ fontSize: 12, color: SLATE, marginBottom: 16 }}>
-            {method} — {due.desc} — <strong style={{ color: NAVY }}>{due.amount}</strong>
+          <div style={{ fontSize: 13, color: SLATE, marginBottom: 16 }}>
+            {due.desc} — <strong style={{ color: NAVY }}>{due.amount}</strong>
           </div>
 
-          {method === "UPI" && (
-            <div>
-              {/* QR placeholder */}
-              <div style={{ width: 140, height: 140, backgroundColor: NAVY, borderRadius: 6, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", gap: 6 }}>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 12px)", gap: 3 }}>
-                  {Array.from({ length: 25 }).map((_, i) => (
-                    <div key={i} style={{ width: 12, height: 12, backgroundColor: Math.random() > 0.5 ? WHITE : "transparent", borderRadius: 1 }} />
-                  ))}
-                </div>
-                <div style={{ fontSize: 10, color: WHITE, fontWeight: 600, letterSpacing: 1 }}>SCAN QR</div>
-              </div>
-              <div style={rowGap}>
-                <span style={labelStyle}>UPI ID</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8", display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontWeight: 600 }}>{upiId.current}</span>
-                </div>
-              </div>
-              <div style={rowGap}>
-                <span style={labelStyle}>Amount</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>{due.amount}</div>
-              </div>
-            </div>
-          )}
-
-          {method === "NetBanking" && (
-            <div>
-              <div style={rowGap}>
-                <span style={labelStyle}>Bank</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>{bank.current.name}</div>
-              </div>
-              <div style={rowGap}>
-                <span style={labelStyle}>Account Number</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>{accNet.current}</div>
-              </div>
-              <div style={rowGap}>
-                <span style={labelStyle}>IFSC Code</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>{ifscNet.current}</div>
-              </div>
-              <div style={rowGap}>
-                <span style={labelStyle}>Account Holder</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>Thalari Jayaraju</div>
-              </div>
-              <div style={rowGap}>
-                <span style={labelStyle}>Branch</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>Hyderabad Main Branch</div>
-              </div>
-              <div style={rowGap}>
-                <span style={labelStyle}>Amount</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>{due.amount}</div>
-              </div>
-            </div>
-          )}
-
-          {method === "Card" && (
-            <div>
-              <div style={rowGap}>
-                <span style={labelStyle}>Card Number</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>{card.current.masked}</div>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
-                <div>
-                  <span style={labelStyle}>Expiry</span>
-                  <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>{card.current.expiry}</div>
-                </div>
-                <div>
-                  <span style={labelStyle}>CVV</span>
-                  <input
-                    type="password"
-                    maxLength={3}
-                    value={cvvVal}
-                    onChange={(e) => { setCvvVal(e.target.value); cvv.current.val = e.target.value; }}
-                    placeholder="•••"
-                    style={{ ...inputStyle }}
-                  />
-                </div>
-              </div>
-              <div style={rowGap}>
-                <span style={labelStyle}>Cardholder Name</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>KOUSHIK THALARI</div>
-              </div>
-              <div style={rowGap}>
-                <span style={labelStyle}>Amount</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>{due.amount}</div>
-              </div>
-            </div>
-          )}
-
-          {method === "NEFT" && (
-            <div>
-              <div style={rowGap}>
+          <div style={{ backgroundColor: "#f1f5f9", border: `1px solid ${BORDER}`, borderRadius: 6, padding: "16px 20px", marginBottom: 20 }}>
+            <div style={{ fontSize: 11, color: SLATE, fontWeight: 700, textTransform: "uppercase", marginBottom: 8, letterSpacing: "0.05em" }}>Beneficiary Bank Details</div>
+            
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", rowGap: 12 }}>
+              <div>
                 <span style={labelStyle}>Beneficiary Name</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8", fontSize: 12 }}>Shoolini University of Biotechnology and Management Sciences</div>
+                <div style={{ fontWeight: 600, fontSize: 12, color: TEXT_DARK }}>Shoolini University</div>
               </div>
-              <div style={rowGap}>
+              <div>
+                <span style={labelStyle}>Account Type</span>
+                <div style={{ fontWeight: 600, fontSize: 12, color: TEXT_DARK }}>Current Account</div>
+              </div>
+              <div style={{ gridColumn: "span 2" }}>
                 <span style={labelStyle}>Account Number</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>{neftAcc.current}</div>
+                <div style={{ fontWeight: 700, fontSize: 16, color: NAVY, fontFamily: "monospace", letterSpacing: "0.05em" }}>{bankAcc.current}</div>
               </div>
-              <div style={rowGap}>
+              <div>
                 <span style={labelStyle}>IFSC Code</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>HDFC0001234</div>
+                <div style={{ fontWeight: 600, fontSize: 13, color: TEXT_DARK }}>{ifsc.current}</div>
               </div>
-              <div style={rowGap}>
-                <span style={labelStyle}>Bank</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>HDFC Bank, Solan Branch</div>
+              <div>
+                <span style={labelStyle}>MICR Code</span>
+                <div style={{ fontWeight: 600, fontSize: 13, color: TEXT_DARK }}>{micr.current}</div>
               </div>
-              <div style={rowGap}>
-                <span style={labelStyle}>Reference Number</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>{neftRef.current}</div>
+              <div>
+                <span style={labelStyle}>Bank & Branch</span>
+                <div style={{ fontWeight: 600, fontSize: 12, color: TEXT_DARK }}>HDFC Bank, Solan</div>
               </div>
-              <div style={rowGap}>
-                <span style={labelStyle}>Amount</span>
-                <div style={{ ...inputStyle, backgroundColor: "#f0f4f8" }}>{due.amount}</div>
+              <div>
+                <span style={labelStyle}>Branch Phone</span>
+                <div style={{ fontWeight: 600, fontSize: 12, color: TEXT_DARK }}>+91-8001804333</div>
               </div>
             </div>
-          )}
+            
+            <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px dashed #cbd5e1", fontSize: 11, color: SLATE, lineHeight: 1.4 }}>
+              <div><strong>Branch Address:</strong> Anand Bhawan, Near DC Office, Rajgarh Road, Solan — 173212</div>
+              <div style={{ marginTop: 6, fontStyle: "italic", color: "#64748b" }}>Transfer exact amount via IMPS / NEFT / RTGS and note the UTR number.</div>
+            </div>
+          </div>
 
-          <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+          <div>
+            <span style={{ ...labelStyle, color: NAVY, fontWeight: 700 }}>Enter UTR / Ref Number after Payment</span>
+            <input
+              type="text"
+              placeholder="Enter 12 or 22 digit Reference Number"
+              value={utr}
+              onChange={(e) => setUtr(e.target.value.toUpperCase().replace(/\s/g, ""))}
+              style={{
+                ...inputStyle,
+                borderColor: error ? RED : BORDER,
+                padding: "12px 14px",
+                fontSize: 14,
+                fontWeight: 600,
+                letterSpacing: "0.05em",
+                backgroundColor: WHITE,
+                boxShadow: "inset 0 1px 2px rgba(0,0,0,0.05)"
+              }}
+            />
+            {error && <div style={{ color: RED, fontSize: 11, marginTop: 4, fontWeight: 500 }}>⚠ {error}</div>}
+          </div>
+
+          <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
             <button
-              onClick={() => setStep("method")}
-              style={{ flex: 1, padding: "10px 0", backgroundColor: WHITE, color: NAVY, border: `1px solid ${NAVY}`, borderRadius: 4, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}
+              onClick={onClose}
+              style={{ flex: 1, padding: "12px 0", backgroundColor: WHITE, color: NAVY, border: `1px solid ${BORDER}`, borderRadius: 4, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}
             >
-              ← Back
+              Cancel
             </button>
             <button
               onClick={handlePay}
-              style={{ flex: 2, ...payBtn, marginTop: 0 }}
+              style={{ flex: 2, ...payBtn, marginTop: 0, padding: "12px 0", backgroundColor: "#16a34a" }}
             >
-              Pay {due.amount}
+              Verify & Confirm Payment
             </button>
           </div>
         </div>
@@ -405,11 +309,11 @@ function PaymentModal({
 
           <div style={{ backgroundColor: "#f8fafc", border: `1px solid ${BORDER}`, borderRadius: 6, padding: 16, textAlign: "left", marginBottom: 20 }}>
             {[
-              ["Transaction ID", successData.id],
               ["Receipt No", successData.receiptNo],
-              ["Amount Paid", successData.amount],
+              ["Amount Remitted", successData.amount],
+              ["UTR / Ref No", successData.utr || successData.txnId],
               ["Date & Time", successData.date],
-              ["Payment Method", method],
+              ["Method", "Bank Transfer (IMPS/RTGS)"],
               ["Description", successData.desc],
             ].map(([lbl, val]) => (
               <div key={lbl} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: `1px solid ${BORDER}`, fontSize: 13 }}>
@@ -471,6 +375,9 @@ export default function FeesPage() {
   const [paidIds, setPaidIds] = useState<Set<string>>(new Set());
   const [sessionPayments, setSessionPayments] = useState<SessionPayment[]>([]);
   const [activeDue, setActiveDue] = useState<PendingDue | null>(null);
+  
+  // Custom Payment State
+  const [customAmt, setCustomAmt] = useState<string>("");
 
   // Parse amount string to number
   function parseAmount(s: string): number {
@@ -478,8 +385,8 @@ export default function FeesPage() {
   }
 
   // Dynamic KPIs
-  const basePaid = 66000;
-  const baseOutstanding = 57000;
+  const basePaid = parseAmount(feesData.kpis.totalPaid);
+  const baseOutstanding = parseAmount(feesData.kpis.outstanding);
   const totalSessionPaid = sessionPayments.reduce((s, p) => s + parseAmount(p.amount), 0);
   const dynamicPaid = basePaid + totalSessionPaid;
   const dynamicOutstanding = Math.max(0, baseOutstanding - totalSessionPaid);
@@ -532,6 +439,55 @@ export default function FeesPage() {
         ))}
       </div>
 
+      {/* Custom Amount Payment */}
+      <div style={{
+        backgroundColor: "#f0f9ff", border: "1px solid #bae6fd", borderRadius: 4,
+        padding: "16px 20px", marginBottom: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+        display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16
+      }}>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#0369a1" }}>Make a Custom Payment</div>
+          <div style={{ fontSize: 12, color: "#0c4a6e", marginTop: 2 }}>Transfer any custom amount towards your pending fee account balance.</div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+            <span style={{ position: "absolute", left: 12, color: SLATE, fontWeight: 600, fontSize: 14 }}>₹</span>
+            <input
+              type="number"
+              value={customAmt}
+              onChange={(e) => setCustomAmt(e.target.value)}
+              placeholder="Enter Amount"
+              style={{
+                padding: "10px 12px 10px 26px", border: "1px solid #7dd3fc", borderRadius: 4,
+                fontSize: 14, fontWeight: 600, color: TEXT_DARK, width: 140, fontFamily: "inherit"
+              }}
+            />
+          </div>
+          <button
+            onClick={() => {
+              const num = parseFloat(customAmt);
+              if (num > 0) {
+                setActiveDue({
+                  desc: "Custom Partial Fee Payment",
+                  amount: "₹" + num.toLocaleString("en-IN"),
+                  amountNum: num,
+                  due: "N/A"
+                });
+                setCustomAmt(""); // Reset input after passing it
+              }
+            }}
+            disabled={!customAmt || parseFloat(customAmt) <= 0}
+            style={{
+              backgroundColor: "#0ea5e9", color: WHITE, border: "none", borderRadius: 4,
+              padding: "11px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer",
+              opacity: (!customAmt || parseFloat(customAmt) <= 0) ? 0.6 : 1, transition: "0.2s"
+            }}
+          >
+            Pay Balance
+          </button>
+        </div>
+      </div>
+
       {/* Fee Structure */}
       <div style={{ backgroundColor: WHITE, border: `1px solid ${BORDER}`, borderRadius: 4, padding: 16, marginBottom: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
         <div style={{ fontSize: 12, fontWeight: 600, color: SLATE, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>
@@ -561,7 +517,7 @@ export default function FeesPage() {
             </tr>
             <tr style={{ backgroundColor: INFO_BG }}>
               <td style={{ ...td, fontWeight: 700, color: DARK_BLUE }}>Program Total</td>
-              <td colSpan={4} style={{ ...td, fontWeight: 700, color: DARK_BLUE }}>{feeStructureTotals.program} (approx. ₹2,50,000)</td>
+              <td colSpan={4} style={{ ...td, fontWeight: 700, color: DARK_BLUE }}>{feeStructureTotals.program}</td>
             </tr>
           </tbody>
         </table>

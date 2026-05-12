@@ -369,13 +369,13 @@ export async function generateMarksheet(semester: number) {
     y = drawTableHeader(doc, cols2MT, y);
 
     const rows2MT = [
-      { subj: "Advanced Machine Learning", fac: "Dr. Priya Sharma",  date: "Mar 17, 2026", score: "85", max: "100", grade: "A+" },
-      { subj: "Deep Learning",             fac: "Dr. Rajesh Kumar",  date: "Mar 18, 2026", score: "88", max: "100", grade: "A+" },
-      { subj: "Natural Language Process.", fac: "Dr. Anita Desai",   date: "Mar 19, 2026", score: "82", max: "100", grade: "A+" },
-      { subj: "Computer Vision",           fac: "Prof. Vikram Mehta", date: "Mar 20, 2026", score: "86", max: "100", grade: "A+" },
-      { subj: "Data Analytics",            fac: "Dr. Suresh Patel",  date: "Mar 23, 2026", score: "84", max: "100", grade: "A+" },
-      { subj: "Cloud Computing",           fac: "Prof. Meera Iyer",  date: "Mar 24, 2026", score: "83", max: "100", grade: "A+" },
-      { subj: "Advanced Algorithms",       fac: "Dr. Arjun Reddy",   date: "Mar 25, 2026", score: "87", max: "100", grade: "A+" },
+      { subj: "Advanced Machine Learning", fac: "Dr. Priya Sharma",  date: "Mar 17, 2026", score: "85", max: "100", grade: "A" },
+      { subj: "Deep Learning",             fac: "Dr. Rajesh Kumar",  date: "Mar 18, 2026", score: "88", max: "100", grade: "A" },
+      { subj: "Natural Language Process.", fac: "Dr. Anita Desai",   date: "Mar 19, 2026", score: "82", max: "100", grade: "A" },
+      { subj: "Computer Vision",           fac: "Prof. Vikram Mehta", date: "Mar 20, 2026", score: "86", max: "100", grade: "A" },
+      { subj: "Data Analytics",            fac: "Dr. Suresh Patel",  date: "Mar 23, 2026", score: "84", max: "100", grade: "A" },
+      { subj: "Cloud Computing",           fac: "Prof. Meera Iyer",  date: "Mar 24, 2026", score: "83", max: "100", grade: "A" },
+      { subj: "Advanced Algorithms",       fac: "Dr. Arjun Reddy",   date: "Mar 25, 2026", score: "87", max: "100", grade: "A" },
     ];
 
     rows2MT.forEach((row, i) => {
@@ -400,7 +400,7 @@ export async function generateMarksheet(semester: number) {
     setColor(doc, SLATE);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(6.5);
-    doc.text("Grade Scale:  80\u2013100 = A+  |  70\u201379 = A  |  60\u201369 = B+  |  50\u201359 = B  |  <50 = F", 105, y + 5, { align: "center" });
+    doc.text("Grade Scale:  90\u2013100 = A+  |  80\u201389 = A  |  70\u201379 = B+  |  60\u201369 = B  |  <60 = F", 105, y + 5, { align: "center" });
     y += 10;
 
     // SECTION 2: PERFORMANCE ANALYSIS
@@ -422,13 +422,13 @@ export async function generateMarksheet(semester: number) {
     ];
     y = drawTableHeader(doc, colsRanking, y);
     const rankings = [
-      { rank: "1", subj: "Deep Learning",             score: "88", grade: "A+", status: "Above Average", color: GREEN },
-      { rank: "2", subj: "Advanced Algorithms",       score: "87", grade: "A+", status: "Above Average", color: GREEN },
-      { rank: "3", subj: "Computer Vision",           score: "86", grade: "A+", status: "Above Average", color: GREEN },
-      { rank: "4", subj: "Advanced Machine Learning", score: "85", grade: "A+", status: "Above Average", color: GREEN },
-      { rank: "5", subj: "Data Analytics",            score: "84", grade: "A+", status: "At Average",    color: AMBER },
-      { rank: "6", subj: "Cloud Computing",           score: "83", grade: "A+", status: "At Average",    color: AMBER },
-      { rank: "7", subj: "Natural Language Process.", score: "82", grade: "A+", status: "Below Average", color: RED },
+      { rank: "1", subj: "Deep Learning",             score: "88", grade: "A", status: "Above Average", color: GREEN },
+      { rank: "2", subj: "Advanced Algorithms",       score: "87", grade: "A", status: "Above Average", color: GREEN },
+      { rank: "3", subj: "Computer Vision",           score: "86", grade: "A", status: "Above Average", color: GREEN },
+      { rank: "4", subj: "Advanced Machine Learning", score: "85", grade: "A", status: "Above Average", color: GREEN },
+      { rank: "5", subj: "Data Analytics",            score: "84", grade: "A", status: "At Average",    color: AMBER },
+      { rank: "6", subj: "Cloud Computing",           score: "83", grade: "A", status: "At Average",    color: AMBER },
+      { rank: "7", subj: "Natural Language Process.", score: "82", grade: "A", status: "Below Average", color: RED },
     ];
     rankings.forEach((r, i) => {
       y = drawTableRow(doc, [
@@ -478,7 +478,7 @@ export async function generateMarksheet(semester: number) {
     y += 4;
     drawKPIBox(doc, 14, y, 58, "ASSIGNMENTS", "13 / 18 Submitted", "5 Pending", SLATE, NAVY, AMBER, "#fffbeb", "#fde68a");
     drawKPIBox(doc, 76, y, 58, "ATTENDANCE", "97.87%", "46/47 Classes \u2713", SLATE, GREEN, GREEN, "#f0fdf4", "#bbf7d0");
-    drawKPIBox(doc, 138, y, 58, "STANDING", "A+ Grade", "Excellent", SLATE, NAVY, GREEN, "#f0fdf4", "#bbf7d0");
+    drawKPIBox(doc, 138, y, 58, "STANDING", "A Grade", "Excellent", SLATE, NAVY, GREEN, "#f0fdf4", "#bbf7d0");
     y += 28;
 
     setFill(doc, "#fffbeb");

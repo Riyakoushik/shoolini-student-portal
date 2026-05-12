@@ -39,7 +39,7 @@ export const WHITE      = "#ffffff";
  * System-wide constants and mock user configuration values.
  * ── New daily timetable format (Mon–Sat, one 4-hr class per day) ───────────────
  */
-export const PORTAL_DATE     = new Date("2026-03-31");
-export const PORTAL_DATE_STR = "2026-03-31";
+export const PORTAL_DATE     = new Date();
+export const PORTAL_DATE_STR = new Date().toISOString().split("T")[0];
 export const LOGIN_ROLL     = "2520MCA0087";
 export const SYSTEM_PASSWORD = "Emet44";

@@ -18,11 +18,11 @@ import {
 import { generateMarksheet } from "../utils/generateMarksheet";
 
 function getGrade(score: number) {
-  if (score >= 90) return "O";
-  if (score >= 80) return "A+";
-  if (score >= 70) return "A";
-  if (score >= 60) return "B+";
-  if (score >= 50) return "B";
+  if (score >= 90) return "A+";
+  if (score >= 80) return "A";
+  if (score >= 70) return "B+";
+  if (score >= 60) return "B";
+  if (score >= 50) return "C";
   return "F";
 }
 
@@ -104,13 +104,13 @@ const sem1TheorySubjects = sem1ExamSchedule.filter((e) => e.type === "Theory");
 const sem1PracticalSubjects = sem1ExamSchedule.filter((e) => e.type === "Practical");
 
 const sem2PreFinalSchedule = [
-  { subject: "Advanced Machine Learning",   date: "Apr 21, 2026", time: "9:00 AM – 12:00 PM", duration: "3 Hours", room: "Hall A-101", invigilatorCode: "INV-A01" },
-  { subject: "Deep Learning",               date: "Apr 22, 2026", time: "9:00 AM – 12:00 PM", duration: "3 Hours", room: "Hall A-102", invigilatorCode: "INV-A02" },
-  { subject: "Natural Language Processing", date: "Apr 23, 2026", time: "9:00 AM – 12:00 PM", duration: "3 Hours", room: "Hall A-103", invigilatorCode: "INV-A03" },
-  { subject: "Computer Vision",             date: "Apr 24, 2026", time: "9:00 AM – 12:00 PM", duration: "3 Hours", room: "Hall A-104", invigilatorCode: "INV-A04" },
-  { subject: "Data Analytics",              date: "Apr 27, 2026", time: "9:00 AM – 12:00 PM", duration: "3 Hours", room: "Hall A-105", invigilatorCode: "INV-A05" },
-  { subject: "Cloud Computing",             date: "Apr 28, 2026", time: "9:00 AM – 12:00 PM", duration: "3 Hours", room: "Hall A-106", invigilatorCode: "INV-A06" },
-  { subject: "Advanced Algorithms",         date: "Apr 29, 2026", time: "9:00 AM – 12:00 PM", duration: "3 Hours", room: "Hall A-107", invigilatorCode: "INV-A07" },
+  { subject: "Advanced Machine Learning",   date: "Apr 21, 2026", time: "9:00 AM – 12:00 PM", duration: "3 Hours", room: "Hall A-101", invigilatorCode: "INV-A01", score: 84 },
+  { subject: "Deep Learning",               date: "Apr 22, 2026", time: "9:00 AM – 12:00 PM", duration: "3 Hours", room: "Hall A-102", invigilatorCode: "INV-A02", score: 86 },
+  { subject: "Natural Language Processing", date: "Apr 23, 2026", time: "9:00 AM – 12:00 PM", duration: "3 Hours", room: "Hall A-103", invigilatorCode: "INV-A03", score: 82 },
+  { subject: "Computer Vision",             date: "Apr 24, 2026", time: "9:00 AM – 12:00 PM", duration: "3 Hours", room: "Hall A-104", invigilatorCode: "INV-A04", score: 85 },
+  { subject: "Data Analytics",              date: "Apr 27, 2026", time: "9:00 AM – 12:00 PM", duration: "3 Hours", room: "Hall A-105", invigilatorCode: "INV-A05", score: 83 },
+  { subject: "Cloud Computing",             date: "Apr 28, 2026", time: "9:00 AM – 12:00 PM", duration: "3 Hours", room: "Hall A-106", invigilatorCode: "INV-A06", score: 81 },
+  { subject: "Advanced Algorithms",         date: "Apr 29, 2026", time: "9:00 AM – 12:00 PM", duration: "3 Hours", room: "Hall A-107", invigilatorCode: "INV-A07", score: 87 },
 ];
 
 const sem1PreFinalSchedule = [
@@ -726,7 +726,7 @@ export default function ResultsPage() {
               </BarChart>
             </ResponsiveContainer>
             <div style={{ marginTop: 10, fontSize: 11, color: SLATE }}>
-              Grade Scale: 90–100 = O | 80–89 = A+ | 70–79 = A | 60–69 = B+ | 50–59 = B | &lt;50 = F
+              Grade Scale: 90–100 = A+ | 80–89 = A | 70–79 = B+ | 60–69 = B | 50–59 = C | &lt;50 = F
             </div>
           </div>
 
@@ -750,7 +750,7 @@ export default function ResultsPage() {
                 <div style={{ fontSize: 15, fontWeight: 600, color: TEXT_DARK }}>Pre-final Examinations</div>
                 <div style={{ fontSize: 13, color: SLATE, marginTop: 4 }}>Scheduled: April 21–29, 2026</div>
               </div>
-              <StatusBadge status="Upcoming" />
+              <StatusBadge status="Published" />
             </div>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
@@ -759,11 +759,11 @@ export default function ResultsPage() {
                 </tr>
               </thead>
               <tbody>
-                {sem2PreFinalSchedule.map(({ subject, date }, i) => (
+                {sem2PreFinalSchedule.map(({ subject, date, score }, i) => (
                   <tr key={i} style={{ backgroundColor: i % 2 === 0 ? WHITE : BG_LIGHT }}>
                     <td style={{ ...td, fontWeight: 500 }}>{subject}</td>
                     <td style={td}>{date}</td>
-                    <td style={td}><span style={{ fontSize: 12, color: SLATE }}>—</span></td>
+                    <td style={td}><span style={{ fontSize: 13, fontWeight: 700, color: NAVY }}>{score}/100</span></td>
                   </tr>
                 ))}
               </tbody>

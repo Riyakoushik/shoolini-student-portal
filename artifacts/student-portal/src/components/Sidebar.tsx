@@ -1,19 +1,8 @@
 import { useLocation, Link } from "wouter";
 import shooliniLogo from "@/assets/shoolini-logo.png";
 import { NAVY, GOLD, AMBER, RED, BLUE } from "../constants";
-import { student } from "../data/studentData";
-
-const navItems = [
-  { icon: "🏠", label: "Dashboard",      path: "/dashboard" },
-  { icon: "👤", label: "My Profile",     path: "/profile" },
-  { icon: "📅", label: "Timetable",      path: "/timetable" },
-  { icon: "📝", label: "Assignments",    path: "/assignments", badge: "5",  badgeColor: AMBER },
-  { icon: "🏆", label: "Results",        path: "/results" },
-  { icon: "📊", label: "Attendance",     path: "/attendance" },
-  { icon: "📚", label: "Library",        path: "/library",    badge: "!",  badgeColor: RED },
-  { icon: "💳", label: "Fees & Payments",path: "/fees",       badge: "!",  badgeColor: RED },
-  { icon: "🗓️", label: "Calendar",      path: "/calendar" },
-];
+import { student, sem2Assignments, feesData } from "../data/studentData";
+import { borrowedBooks, fineRecords } from "../data/libraryData";
 
 export default function Sidebar({
   onLogout,
@@ -27,6 +16,37 @@ export default function Sidebar({
   onClose: () => void;
 }) {
   const [location] = useLocation();
+
+  // Dynamically calculate alert badges
+  const pendingAssignmentsCount = sem2Assignments.filter(a => a.status === "Pending").length;
+  const outstandingFeesCount = feesData.pendingDues.length;
+  const overdueBooksCount = borrowedBooks.filter(b => b.status === "Overdue" || b.status === "Due Soon").length;
+  const outstandingFinesCount = fineRecords.filter(f => f.status === "Outstanding").length;
+  const libraryAlerts = overdueBooksCount + outstandingFinesCount;
+
+  const navItems = [
+    { icon: "🏠", label: "Dashboard",      path: "/dashboard" },
+    { icon: "👤", label: "My Profile",     path: "/profile" },
+    { icon: "📅", label: "Timetable",      path: "/timetable" },
+    {
+      icon: "📝", label: "Assignments",    path: "/assignments",
+      badge: pendingAssignmentsCount > 0 ? String(pendingAssignmentsCount) : undefined,
+      badgeColor: AMBER,
+    },
+    { icon: "🏆", label: "Results",        path: "/results" },
+    { icon: "📊", label: "Attendance",     path: "/attendance" },
+    {
+      icon: "📚", label: "Library",        path: "/library",
+      badge: libraryAlerts > 0 ? "!" : undefined,
+      badgeColor: RED,
+    },
+    {
+      icon: "💳", label: "Fees & Payments",path: "/fees",
+      badge: outstandingFeesCount > 0 ? "!" : undefined,
+      badgeColor: RED,
+    },
+    { icon: "🗓️", label: "Calendar",      path: "/calendar" },
+  ];
 
   const sidebarStyle: React.CSSProperties = {
     width: 240,

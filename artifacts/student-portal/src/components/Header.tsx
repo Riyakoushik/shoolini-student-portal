@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import StatusBadge from "./StatusBadge";
-import { NAVY, GOLD, AMBER, SLATE, WHITE, BORDER, TEXT_DARK, BG_TABLE, NAVY_LIGHT, WARN_BG } from "../constants";
+import { NAVY, GOLD, AMBER, SLATE, WHITE, BORDER, TEXT_DARK, BG_TABLE, NAVY_LIGHT, WARN_BG, PORTAL_DATE } from "../constants";
 
 const pageTitles: Record<string, string> = {
   "/dashboard":    "Dashboard",
@@ -25,7 +25,12 @@ export default function Header({
   onToggleSidebar: () => void;
 }) {
   const title   = pageTitles[path] ?? "Dashboard";
-  const dateStr = "Wednesday, 26 March 2026";
+  const dateStr = PORTAL_DATE.toLocaleDateString("en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
   const isDashboard = path === "/dashboard";
 
   const [showNotification, setShowNotification] = useState(false);

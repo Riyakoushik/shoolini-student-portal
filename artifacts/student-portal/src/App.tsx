@@ -175,14 +175,26 @@ function AppRouter({ isAuth, onLogin, onLogout }: { isAuth: boolean; onLogin: ()
  * Handles authentication, routing, and mobile sidebar navigation.
  */
 export default function App() {
-  const [isAuth, setIsAuth] = useState(false);
+  const [isAuth, setIsAuth] = useState(() => {
+    return localStorage.getItem("student_portal_auth") === "true";
+  });
+
+  const handleLogin = () => {
+    localStorage.setItem("student_portal_auth", "true");
+    setIsAuth(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("student_portal_auth");
+    setIsAuth(false);
+  };
 
   return (
     <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
       <AppRouter
         isAuth={isAuth}
-        onLogin={() => setIsAuth(true)}
-        onLogout={() => setIsAuth(false)}
+        onLogin={handleLogin}
+        onLogout={handleLogout}
       />
     </WouterRouter>
   );

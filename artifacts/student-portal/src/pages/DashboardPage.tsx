@@ -71,8 +71,8 @@ const upcomingExams = activeSem === 4 ? [
   { name: "Final Examinations", date: `${sem3IASchedule.theoryExams.start} – ${sem3IASchedule.theoryExams.end}`, status: "Upcoming" as const },
   { name: "Practical Exams", date: `${sem3IASchedule.practicalExams.start} – ${sem3IASchedule.practicalExams.end}`, status: "Upcoming" as const },
 ] : [
-  { name: "Pre-final Exams", date: "April 21–29, 2026", status: "Upcoming" as const },
-  { name: "Final Examinations", date: "May 11–19, 2026", status: "Upcoming" as const },
+  { name: "Pre-final Exams", date: "April 21–29, 2026", status: "Published" as const },
+  { name: "Final Examinations", date: "May 11–19, 2026", status: "Ongoing" as const },
   { name: "Practical Exams", date: "May 25–28, 2026", status: "Upcoming" as const },
 ];
 
@@ -126,7 +126,19 @@ export default function DashboardPage() {
   const [pendingCount, setPendingCount] = useState(() =>
     activeAssignments.filter((a) => a.status === "Pending").length
   );
+  const [showExamModal, setShowExamModal] = useState(() => {
+    // Only show once per window session
+    if (typeof window !== "undefined" && window.sessionStorage.getItem("exam_announcement_dismissed")) {
+      return false;
+    }
+    return true;
+  });
   const [toast, setToast] = useState<string | null>(null);
+
+  const handleDismissModal = () => {
+    setShowExamModal(false);
+    sessionStorage.setItem("exam_announcement_dismissed", "true");
+  };
 
   useEffect(() => {
     const id = setInterval(() => setLiveClass(getLiveClass(new Date())), 30000);
@@ -173,7 +185,83 @@ export default function DashboardPage() {
   }
 
   return (
-    <div>
+    <div style={{ position: "relative" }}>
+      {showExamModal && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+          backgroundColor: "rgba(0,0,0,0.6)", zIndex: 9999,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: 20,
+        }}>
+          <div style={{
+            backgroundColor: WHITE, width: "100%", maxWidth: 500, borderRadius: 8,
+            overflow: "hidden", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
+            animation: "modalFadeIn 0.3s ease-out",
+          }}>
+            <style>{`
+              @keyframes modalFadeIn {
+                from { opacity: 0; transform: scale(0.95); }
+                to { opacity: 1; transform: scale(1); }
+              }
+            `}</style>
+            <div style={{ backgroundColor: NAVY, padding: "20px 24px", color: WHITE, position: "relative" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span style={{ fontSize: 32 }}>📢</span>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, letterSpacing: "0.02em" }}>Notice Board</h2>
+                  <p style={{ margin: "2px 0 0 0", fontSize: 12, color: "rgba(255,255,255,0.8)" }}>Official Announcement Released</p>
+                </div>
+              </div>
+              <button
+                onClick={handleDismissModal}
+                style={{
+                  position: "absolute", top: 16, right: 16, background: "transparent",
+                  border: "none", color: "white", fontSize: 20, cursor: "pointer", opacity: 0.7
+                }}
+              >✕</button>
+            </div>
+            <div style={{ padding: 24, textAlign: "center" }}>
+              <div style={{
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                width: 64, height: 64, borderRadius: "50%", backgroundColor: "#fee2e2", color: "#ef4444",
+                fontSize: 32, marginBottom: 16
+              }}>
+                📄
+              </div>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: TEXT_DARK, margin: "0 0 10px 0" }}>
+                Provisional Examination Timetable 2026 Announced!
+              </h3>
+              <p style={{ fontSize: 14, color: SLATE, lineHeight: 1.5, margin: 0 }}>
+                The Provisional Date Sheet for upcoming examinations has been officially published. Please review the schedule immediately to prepare for your exam sessions.
+              </p>
+            </div>
+            <div style={{ padding: "0 24px 24px 24px", display: "flex", flexDirection: "column", gap: 10 }}>
+              <a
+                href="/Shoolini_University_Provisional_Timetable_2026.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "block", width: "100%", backgroundColor: BLUE, color: WHITE,
+                  textDecoration: "none", textAlign: "center", padding: "12px", borderRadius: 6,
+                  fontWeight: 600, fontSize: 14, boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+                }}
+              >
+                View Provisional Timetable (PDF)
+              </a>
+              <button
+                onClick={handleDismissModal}
+                style={{
+                  width: "100%", backgroundColor: "transparent", border: `1px solid ${BORDER}`,
+                  padding: "10px", borderRadius: 6, color: SLATE, fontWeight: 500,
+                  fontSize: 14, cursor: "pointer"
+                }}
+              >
+                Dismiss Notice
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {toast && (
         <div style={{
           position: "fixed", top: 20, right: 20, zIndex: 1100,
@@ -242,6 +330,38 @@ export default function DashboardPage() {
           </button>
         </div>
       )}
+
+      {/* Exam Fee Urgent Notice */}
+      <div style={{
+        backgroundColor: "#fff7ed", border: "1px solid #fdba74", borderRadius: 4,
+        padding: isMobile ? "12px" : "14px 16px", marginTop: 16,
+        display: "flex", alignItems: "flex-start", gap: 12
+      }}>
+        <div style={{ fontSize: 24 }}>⚠️</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700, color: "#c2410c", fontSize: 14, marginBottom: 2 }}>Action Required: Semester 2 Examination Fees</div>
+          <p style={{ margin: 0, fontSize: 13, color: "#9a3412", lineHeight: 1.5 }}>
+            A total due of <strong>₹9,816</strong> is payable for the upcoming May/June 2026 semester-end examinations.
+            Submit by <strong style={{textDecoration:"underline"}}>May 22, 2026</strong> to avoid a late fine of ₹1,000.
+          </p>
+          <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+            <button
+              onClick={() => window.location.href = '/fees'}
+              style={{
+                background: "#f97316", color: "white", border: "none", padding: "6px 12px",
+                fontSize: 12, borderRadius: 4, fontWeight: 600, cursor: "pointer"
+              }}>
+              Pay Now
+            </button>
+            <a href="/exam_fees.png" target="_blank" rel="noreferrer" style={{
+              background: "transparent", color: "#ea580c", border: "1px solid #fdba74", padding: "5px 11px",
+              fontSize: 12, borderRadius: 4, fontWeight: 600, cursor: "pointer", textDecoration: "none"
+            }}>
+              View Notice
+            </a>
+          </div>
+        </div>
+      </div>
 
       {/* KPI Row */}
       <div style={{ display: "grid", gridTemplateColumns: kpiCols, gap: 12, marginTop: 16 }}>
