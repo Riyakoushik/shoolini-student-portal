@@ -741,9 +741,9 @@ export const sem2ResultSummary: SemesterResultSummary = {
 
 export const feesData: FeesData = {
   kpis: {
-    totalPaid: "₹1,55,000",
-    outstanding: "₹69,816",
-    nextDue: "May 22, 2026 (Exam Fee)",
+    totalPaid: "₹1,64,816",
+    outstanding: "₹60,000",
+    nextDue: "January 15, 2027 (Semester 4 Fee)",
   },
   feeStructure: [
     { type: "Tuition Fee",          sem1: "₹40,000", sem2: "₹40,000", sem3: "₹42,000", sem4: "₹42,000" },
@@ -802,15 +802,16 @@ export const feesData: FeesData = {
         { label: "Semester 3 - Lab / Practical Fee Component", amount: "₹5,000", amountNum: 5000 },
       ]
     },
-  ],
-  pendingDues: [
     {
-      id: "DUE-EXAM-SEM2",
+      id: "PAY-008",
       desc: "Semester 2 Examination Fees (May/June 2026)",
       amount: "₹9,816",
-      due: "May 22, 2026",
-      status: "Unpaid",
+      date: "May 17, 2026",
+      status: "Paid",
+      receiptNo: "SU-FEE-26-04",
+      paymentMode: "UPI",
       semester: "Semester 2",
+      txnId: "UPI:SU-EXAM-26-04",
       feeItems: [
         { label: "Examination Fee", amount: "₹6,816", amountNum: 6816 },
         { label: "Practical / Lab Examination Fee", amount: "₹1,000", amountNum: 1000 },
@@ -818,8 +819,9 @@ export const feesData: FeesData = {
         { label: "Internal Assessment Processing", amount: "₹600", amountNum: 600 },
         { label: "Portal Processing Charges", amount: "₹200", amountNum: 200 },
       ]
-    }
+    },
   ],
+  pendingDues: [],
   upcomingDues: [
     { desc: "Semester 4 Final Fee", amount: "₹60,000", due: "January 2027" },
   ],
