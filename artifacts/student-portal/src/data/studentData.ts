@@ -741,8 +741,8 @@ export const sem2ResultSummary: SemesterResultSummary = {
 
 export const feesData: FeesData = {
   kpis: {
-    totalPaid: "₹1,02,000",
-    outstanding: "₹1,22,816",
+    totalPaid: "₹1,55,000",
+    outstanding: "₹69,816",
     nextDue: "May 22, 2026 (Exam Fee)",
   },
   feeStructure: [
@@ -786,6 +786,22 @@ export const feesData: FeesData = {
       date: "Mar 10, 2026", status: "Paid", receiptNo: "SU-FEE-26-02", paymentMode: "NetBanking",
       semester: "Semester 2",
     },
+    {
+      id: "PAY-007",
+      desc: "Semester 3 Academic Fees (Tuition, Exam & Lab)",
+      amount: "₹53,000",
+      date: "May 17, 2026",
+      status: "Paid",
+      receiptNo: "SU-FEE-26-03",
+      paymentMode: "IMPS",
+      semester: "Semester 3",
+      txnId: "IMPS:FED7901490871",
+      feeItems: [
+        { label: "Semester 3 - Tuition Fee Component", amount: "₹42,000", amountNum: 42000 },
+        { label: "Semester 3 - Examination Fee Component", amount: "₹6,000", amountNum: 6000 },
+        { label: "Semester 3 - Lab / Practical Fee Component", amount: "₹5,000", amountNum: 5000 },
+      ]
+    },
   ],
   pendingDues: [
     {
@@ -805,7 +821,6 @@ export const feesData: FeesData = {
     }
   ],
   upcomingDues: [
-    { desc: "Semester 3 Total Fee", amount: "₹53,000", due: "July 2026" },
     { desc: "Semester 4 Final Fee", amount: "₹60,000", due: "January 2027" },
   ],
 };

@@ -206,7 +206,11 @@ export async function downloadReceipt(payment: FeeRecord): Promise<void> {
   } else if (mode.includes("CARD")) {
     paymentDetail = "VISA Card ending ****9871";
   } else if (mode.includes("BANK") || mode.includes("NETBANKING") || mode.includes("IMPS") || mode.includes("RTGS")) {
-    paymentDetail = "HDFC Bank A/C ****3879";
+    if (payment.txnId && payment.txnId.includes("FED7901490871")) {
+      paymentDetail = "Federal Bank (ID: 7901490871@jupiteraxis)";
+    } else {
+      paymentDetail = "HDFC Bank A/C ****3879";
+    }
   }
 
   const rightFields: [string, string][] = [
