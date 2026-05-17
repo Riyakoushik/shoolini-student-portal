@@ -376,8 +376,27 @@ export async function downloadReceipt(payment: FeeRecord): Promise<void> {
   doc.setTextColor(DR, DG, DB);
   doc.text(`REF NO: ${finalTxnId}`, PW / 2, y, { align: "center" });
   
-  // ── SIGNATURES AND OFFICIAL SEAL ─────────────────────────────────────────
-  y += 12;
+  // ── DIGITAL VERIFICATION BANNER ─────────────────────────────────────────
+  y += 5;
+  const checkY = y;
+  doc.setDrawColor(34, 197, 94); // green 500
+  doc.setFillColor(240, 253, 244); // green 50
+  doc.setLineWidth(0.3);
+  doc.roundedRect(PW / 2 - 42, checkY - 3, 84, 5, 0.8, 0.8, "FD");
+  
+  // Draw a clean small checkmark vector icon!
+  doc.setDrawColor(22, 163, 74); // green 600
+  doc.setLineWidth(0.45);
+  doc.line(PW / 2 - 38, checkY - 0.5, PW / 2 - 37, checkY + 0.5);
+  doc.line(PW / 2 - 37, checkY + 0.5, PW / 2 - 35, checkY - 1.5);
+  
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(5.5);
+  doc.setTextColor(22, 163, 74);
+  doc.text("DIGITALLY VERIFIED BY SHOOLINI UNIVERSITY GATEWAY", PW / 2 - 32, checkY + 0.5);
+  
+  // ── SIGNATURES, QR CODE AND OFFICIAL SEAL ────────────────────────────────
+  y += 14;
   const sigY = y;
   
   // Left side: Student's Signature
@@ -394,7 +413,23 @@ export async function downloadReceipt(payment: FeeRecord): Promise<void> {
   doc.setFontSize(7.5);
   doc.setTextColor(SR, SG, SB);
   doc.text("Authorized Signatory", R - 35, sigY + 12);
+  doc.setDrawColor(203, 213, 225); // slate 300
+  doc.setLineWidth(0.3);
   doc.line(R - 40, sigY + 8, R - 10, sigY + 8);
+
+  // Draw an elegant Registrar facsimile cursive signature above "Authorized Signatory"
+  doc.setDrawColor(2, 132, 199); // sky 600 (blue cursive ink style!)
+  doc.setLineWidth(0.5);
+  const sx = R - 35;
+  const sy = sigY + 3;
+  doc.line(sx, sy, sx + 3, sy - 4);
+  doc.line(sx + 3, sy - 4, sx + 5, sy + 1);
+  doc.line(sx + 5, sy + 1, sx + 7, sy - 2);
+  doc.line(sx + 7, sy - 2, sx + 9, sy + 0);
+  doc.line(sx + 9, sy + 0, sx + 12, sy - 3);
+  doc.line(sx + 12, sy - 3, sx + 14, sy - 1);
+  doc.line(sx + 14, sy - 1, sx + 17, sy - 5);
+  doc.line(sx - 2, sy + 1, sx + 22, sy + 1.5);
   
   // Add a beautiful digitized "OFFICIAL SEAL" stamp on the right side
   doc.setDrawColor(GNR, GNG, GNB);
@@ -406,7 +441,49 @@ export async function downloadReceipt(payment: FeeRecord): Promise<void> {
   doc.text("SHOOLINI UNIV", R - 24, sigY - 10.5, { align: "center" });
   doc.text("FEE RECEIVED", R - 24, sigY - 7.5, { align: "center" });
 
-  y = sigY + 18;
+  // Draw vector QR Code (14mm x 14mm) in the center of the signature area!
+  const qrX = MID - 7;
+  const qrY = sigY - 4;
+  const qrSize = 14;
+  
+  // Helper to draw a finder pattern
+  const drawFinder = (px: number, py: number, w: number) => {
+    const unit = w / 7;
+    doc.setFillColor(30, 41, 59); // slate 800
+    doc.rect(px, py, w, w, "F");
+    doc.setFillColor(255, 255, 255);
+    doc.rect(px + unit, py + unit, w - unit * 2, w - unit * 2, "F");
+    doc.setFillColor(30, 41, 59);
+    doc.rect(px + unit * 2, py + unit * 2, w - unit * 4, w - unit * 4, "F");
+  };
+  
+  const fSize = qrSize * (7 / 21);
+  drawFinder(qrX, qrY, fSize);
+  drawFinder(qrX + qrSize - fSize, qrY, fSize);
+  drawFinder(qrX, qrY + qrSize - fSize, fSize);
+  
+  const unit = qrSize / 21;
+  doc.setFillColor(30, 41, 59);
+  for (let r = 0; r < 21; r++) {
+    for (let c = 0; c < 21; c++) {
+      if (r < 8 && c < 8) continue;
+      if (r < 8 && c > 12) continue;
+      if (r > 12 && c < 8) continue;
+      
+      const rand = Math.sin(r * 12.9898 + c * 78.233) * 43758.5453;
+      const isFilled = (rand - Math.floor(rand)) > 0.45;
+      if (isFilled) {
+        doc.rect(qrX + c * unit, qrY + r * unit, unit, unit, "F");
+      }
+    }
+  }
+  
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(5);
+  doc.setTextColor(SR, SG, SB);
+  doc.text("Scan to Verify Payment", MID, sigY + 13, { align: "center" });
+
+  y = sigY + 20;
 
   // ── FOOTER ────────────────────────────────────────────────────────────────
   hLine(doc, y, GR, GG, GB, 0.6);
