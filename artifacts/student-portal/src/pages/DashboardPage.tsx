@@ -353,14 +353,12 @@ export default function DashboardPage() {
               }}>
               View Timetable
             </button>
-            <button
-              onClick={() => window.location.href = '/calendar'}
-              style={{
-                background: "transparent", color: "#1d4ed8", border: "1px solid #bfdbfe", padding: "5px 11px",
-                fontSize: 12, borderRadius: 4, fontWeight: 600, cursor: "pointer"
-              }}>
-              Academic Calendar
-            </button>
+            <a href="/practical_exams.png" target="_blank" rel="noreferrer" style={{
+              background: "transparent", color: "#1d4ed8", border: "1px solid #bfdbfe", padding: "5px 11px",
+              fontSize: 12, borderRadius: 4, fontWeight: 600, cursor: "pointer", textDecoration: "none"
+            }}>
+              View Notice
+            </a>
           </div>
         </div>
       </div>
