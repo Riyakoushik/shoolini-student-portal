@@ -73,7 +73,7 @@ const upcomingExams = activeSem === 4 ? [
 ] : [
   { name: "Pre-final Exams", date: "April 21–29, 2026", status: "Published" as const },
   { name: "Final Examinations", date: "May 11–19, 2026", status: "Ongoing" as const },
-  { name: "Practical Exams", date: "May 25–28, 2026", status: "Upcoming" as const },
+  { name: "Practical Exams", date: "July 6–7, 2026", status: "Upcoming" as const },
 ];
 
 function useWindowWidth() {
@@ -331,34 +331,36 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Exam Fee Urgent Notice */}
+      {/* Semester 2 Practical Exams Notice */}
       <div style={{
-        backgroundColor: "#fff7ed", border: "1px solid #fdba74", borderRadius: 4,
+        backgroundColor: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 4,
         padding: isMobile ? "12px" : "14px 16px", marginTop: 16,
         display: "flex", alignItems: "flex-start", gap: 12
       }}>
-        <div style={{ fontSize: 24 }}>⚠️</div>
+        <div style={{ fontSize: 24 }}>📅</div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 700, color: "#c2410c", fontSize: 14, marginBottom: 2 }}>Action Required: Semester 2 Examination Fees</div>
-          <p style={{ margin: 0, fontSize: 13, color: "#9a3412", lineHeight: 1.5 }}>
-            A total due of <strong>₹9,816</strong> is payable for the upcoming May/June 2026 semester-end examinations.
-            Submit by <strong style={{textDecoration:"underline"}}>May 22, 2026</strong> to avoid a late fine of ₹1,000.
+          <div style={{ fontWeight: 700, color: "#1e3a8a", fontSize: 14, marginBottom: 2 }}>Upcoming: Semester 2 Practical Examinations</div>
+          <p style={{ margin: 0, fontSize: 13, color: "#1e40af", lineHeight: 1.5 }}>
+            Practical examinations for Semester 2 lab courses (<strong>Data Structures</strong> and <strong>Python</strong>) are scheduled for <strong>July 6 & July 7, 2026</strong>.
+            Please verify your batch schedules, lab files, and room assignments.
           </p>
           <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
             <button
-              onClick={() => window.location.href = '/fees'}
+              onClick={() => window.location.href = '/timetable'}
               style={{
-                background: "#f97316", color: "white", border: "none", padding: "6px 12px",
+                background: "#2563eb", color: "white", border: "none", padding: "6px 12px",
                 fontSize: 12, borderRadius: 4, fontWeight: 600, cursor: "pointer"
               }}>
-              Pay Now
+              View Timetable
             </button>
-            <a href="/exam_fees.png" target="_blank" rel="noreferrer" style={{
-              background: "transparent", color: "#ea580c", border: "1px solid #fdba74", padding: "5px 11px",
-              fontSize: 12, borderRadius: 4, fontWeight: 600, cursor: "pointer", textDecoration: "none"
-            }}>
-              View Notice
-            </a>
+            <button
+              onClick={() => window.location.href = '/calendar'}
+              style={{
+                background: "transparent", color: "#1d4ed8", border: "1px solid #bfdbfe", padding: "5px 11px",
+                fontSize: 12, borderRadius: 4, fontWeight: 600, cursor: "pointer"
+              }}>
+              Academic Calendar
+            </button>
           </div>
         </div>
       </div>

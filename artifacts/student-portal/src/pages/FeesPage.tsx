@@ -427,7 +427,7 @@ export default function FeesPage() {
         {[
           { label: "Total Fees Paid", value: formatRs(dynamicPaid), border: GREEN, valueColor: undefined as string | undefined },
           { label: "Outstanding Balance", value: formatRs(dynamicOutstanding), border: dynamicOutstanding > 0 ? RED : GREEN, valueColor: (dynamicOutstanding > 0 ? RED : GREEN) as string | undefined },
-          { label: "Next Due Date", value: "July 2026 (Sem 3)", border: AMBER, valueColor: undefined as string | undefined },
+          { label: "Next Due Date", value: feesData.kpis.nextDue, border: AMBER, valueColor: undefined as string | undefined },
         ].map((k) => (
           <div
             key={k.label}

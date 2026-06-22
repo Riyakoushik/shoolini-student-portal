@@ -742,8 +742,8 @@ export const sem2ResultSummary: SemesterResultSummary = {
 export const feesData: FeesData = {
   kpis: {
     totalPaid: "₹1,64,816",
-    outstanding: "₹60,000",
-    nextDue: "January 15, 2027 (Semester 4 Fee)",
+    outstanding: "₹0",
+    nextDue: "November 12, 2026 (Semester 4 Fee)",
   },
   feeStructure: [
     { type: "Tuition Fee",          sem1: "₹40,000", sem2: "₹40,000", sem3: "₹42,000", sem4: "₹42,000" },
@@ -823,7 +823,7 @@ export const feesData: FeesData = {
   ],
   pendingDues: [],
   upcomingDues: [
-    { desc: "Semester 4 Final Fee", amount: "₹60,000", due: "January 2027" },
+    { desc: "Semester 4 Final Fee", amount: "₹60,000", due: "November 12, 2026" },
   ],
 };
 
@@ -926,13 +926,11 @@ export const calendarEvents: CalendarEvent[] = [
   { date: "2026-05-15", label: "Final Exam: Data Analytics",                        type: "exam" },
   { date: "2026-05-18", label: "Final Exam: Cloud Computing",                       type: "exam" },
   { date: "2026-05-19", label: "Final Exam: Advanced Algorithms",                   type: "exam" },
-  { date: "2026-05-25", label: "Practical Exam: Advanced Machine Learning",         type: "exam" },
-  { date: "2026-05-26", label: "Practical Exam: Natural Language Processing",       type: "exam" },
-  { date: "2026-05-27", label: "Practical Exam: Data Analytics",                    type: "exam" },
-  { date: "2026-05-28", label: "Practical Exam: Advanced Algorithms",               type: "exam" },
-  { date: "2026-06-30", label: "Semester 2 Ends",                                   type: "semester" },
+  { date: "2026-07-06", label: "Practical Exam: Data Structures",                   type: "exam" },
+  { date: "2026-07-07", label: "Practical Exam: Python Programming",                 type: "exam" },
+  { date: "2026-07-08", label: "Semester 2 Ends",                                   type: "semester" },
   // ── Semester 3 ──
-  { date: "2026-07-06", label: "Semester 3 Begins",                                  type: "semester" },
+  { date: "2026-07-15", label: "Semester 3 Begins",                                  type: "semester" },
   { date: "2026-08-15", label: "Independence Day Holiday",                           type: "holiday" },
   { date: "2026-08-18", label: "Assignment Due: Research Paper Review",              type: "assignment" },
   { date: "2026-08-20", label: "Assignment Due: MDP & Bellman Equation",             type: "assignment" },
