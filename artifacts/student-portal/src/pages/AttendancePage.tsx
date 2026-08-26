@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import {
-  sem1Attendance, sem2Attendance, sem1DailyLog, sem2DailyLog,
+  sem1Attendance, sem2Attendance, sem3Attendance, sem1DailyLog, sem2DailyLog, sem3DailyLog,
   sem3Subjects, sem4Subjects, semesterTimeline,
   type DailyAttendanceRecord,
 } from "../data/studentData";
@@ -158,22 +158,22 @@ function CalendarGrid({ log, selectedMonth }: { log: DailyAttendanceRecord[]; se
 }
 
 export default function AttendancePage() {
-  const [sem, setSem] = useState(2);
+  const [sem, setSem] = useState(3);
   const [pdfLoading, setPdfLoading] = useState(false);
 
-  const data = sem === 1 ? sem1Attendance : sem2Attendance;
-  const dailyLog = sem === 1 ? sem1DailyLog : sem2DailyLog;
+  const data = sem === 1 ? sem1Attendance : sem === 3 ? sem3Attendance : sem === 2 ? sem2Attendance : sem2Attendance;
+  const dailyLog = sem === 1 ? sem1DailyLog : sem === 3 ? sem3DailyLog : sem2DailyLog;
 
   const months = getMonthsInRange(dailyLog);
   const [selectedMonthIdx, setSelectedMonthIdx] = useState(months.length - 1);
   const selectedMonth = months[selectedMonthIdx] ?? months[0];
 
   useEffect(() => {
-    const m = getMonthsInRange(sem === 1 ? sem1DailyLog : sem2DailyLog);
+    const m = getMonthsInRange(sem === 1 ? sem1DailyLog : sem === 3 ? sem3DailyLog : sem2DailyLog);
     setSelectedMonthIdx(m.length - 1);
   }, [sem]);
 
-  const lowAttendance = (sem <= 2) ? data.subjects.filter((s) => pct(s.present, s.total) < 75) : [];
+  const lowAttendance = (sem <= 3) ? data.subjects.filter((s) => pct(s.present, s.total) < 75) : [];
 
   async function handleDownloadReport() {
     setPdfLoading(true);
@@ -182,17 +182,17 @@ export default function AttendancePage() {
   }
 
   const semTabs = [
-    { val: 1, label: "Semester 1 — 99.07%", tag: "" },
-    { val: 2, label: "Semester 2 — 86%", tag: "" },
-    { val: 3, label: "Semester 3", tag: "Upcoming" },
-    { val: 4, label: "Semester 4", tag: "Upcoming" },
+    { val: 1, label: "Semester 1 — 99.07%", tag: "Completed" },
+    { val: 2, label: "Semester 2 — 86%",    tag: "Completed" },
+    { val: 3, label: "Semester 3 — 85.19%", tag: "Active" },
+    { val: 4, label: "Semester 4",          tag: "Upcoming" },
   ];
 
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
         <h1 style={{ fontSize: 20, fontWeight: 700, color: TEXT_DARK, margin: 0 }}>Attendance Record</h1>
-        {sem <= 2 && (
+        {sem <= 3 && (
           <button
             onClick={handleDownloadReport}
             disabled={pdfLoading}
@@ -215,7 +215,7 @@ export default function AttendancePage() {
         borderRadius: 4, padding: "8px 14px", marginBottom: 12,
         fontSize: 12, color: "#166534",
       }}>
-        ✅ Attendance is automatically recorded for each working day. Last updated: <strong>March 31, 2026</strong>
+        ✅ Attendance is automatically recorded for each working day. Last updated: <strong>August 26, 2026</strong>
       </div>
 
       {/* Tabs */}
@@ -243,22 +243,32 @@ export default function AttendancePage() {
                 UPCOMING
               </span>
             )}
+            {t.tag === "Active" && (
+              <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 5px", borderRadius: 3, backgroundColor: "#16a34a", color: "white" }}>
+                ACTIVE
+              </span>
+            )}
+            {t.tag === "Completed" && (
+              <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 5px", borderRadius: 3, backgroundColor: NAVY, color: "white" }}>
+                DONE
+              </span>
+            )}
           </button>
         ))}
       </div>
 
-      {/* Upcoming semester notice */}
-      {(sem === 3 || sem === 4) && (
+      {/* Upcoming semester 4 notice */}
+      {sem === 4 && (
         <div style={{
           backgroundColor: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 8,
           padding: 32, textAlign: "center", marginBottom: 20,
         }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>📅</div>
           <div style={{ fontSize: 18, fontWeight: 700, color: TEXT_DARK, marginBottom: 8 }}>
-            Semester {sem} begins {sem === 3 ? "July 6, 2026" : "January 5, 2027"}
+            Semester 4 begins January 5, 2027
           </div>
           <div style={{ fontSize: 14, color: SLATE, marginBottom: 16 }}>
-            Attendance tracking will begin automatically from {sem === 3 ? "July 6, 2026" : "January 5, 2027"}
+            Attendance tracking will begin automatically from January 5, 2027
           </div>
           <div style={{ display: "flex", justifyContent: "center", gap: 24, flexWrap: "wrap" }}>
             <div style={{ textAlign: "center" }}>
@@ -266,14 +276,12 @@ export default function AttendancePage() {
               <div style={{ fontSize: 11, color: SLATE, marginTop: 2 }}>TARGET ATTENDANCE</div>
             </div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 24, fontWeight: 700, color: NAVY }}>
-                {sem === 3 ? sem3Subjects.length : sem4Subjects.length}
-              </div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: NAVY }}>{sem4Subjects.length}</div>
               <div style={{ fontSize: 11, color: SLATE, marginTop: 2 }}>SUBJECTS ENROLLED</div>
             </div>
             <div style={{ textAlign: "center" }}>
               <div style={{ fontSize: 24, fontWeight: 700, color: NAVY }}>
-                {sem === 3 ? (semesterTimeline.find(s => s.sem === 3)?.credits ?? 24) : (semesterTimeline.find(s => s.sem === 4)?.credits ?? 26)}
+                {semesterTimeline.find(s => s.sem === 4)?.credits ?? 26}
               </div>
               <div style={{ fontSize: 11, color: SLATE, marginTop: 2 }}>TOTAL CREDITS</div>
             </div>
@@ -281,8 +289,8 @@ export default function AttendancePage() {
         </div>
       )}
 
-      {/* Active semester content */}
-      {sem <= 2 && (
+      {/* Active semester content — Sem 1, 2, 3 */}
+      {sem <= 3 && (
         <>
           {/* Warning banner for subjects below 75% */}
           {lowAttendance.length > 0 && (
@@ -333,19 +341,39 @@ export default function AttendancePage() {
           {sem === 2 && (
             <div
               style={{
-                backgroundColor: WARN_BG,
-                border: `1px solid ${WARN_BORDER}`,
-                borderLeft: `3px solid ${AMBER}`,
+                backgroundColor: "#f0fdf4",
+                border: `1px solid #bbf7d0`,
+                borderLeft: `3px solid ${GREEN}`,
                 borderRadius: 4,
                 padding: "12px 16px",
                 marginBottom: 16,
               }}
             >
-              <div style={{ fontSize: 13, fontWeight: 600, color: WARN_TEXT, marginBottom: 2 }}>
-                Semester 2 is in progress. Attendance records are being updated.
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#166534", marginBottom: 2 }}>
+                Semester 2 Completed. Results Awaited.
               </div>
-              <div style={{ fontSize: 13, color: WARN_TEXT2 }}>
-                Data shown reflects records up to March 31, 2026.
+              <div style={{ fontSize: 13, color: "#14532d" }}>
+                Practical exams concluded July 7, 2026. Final attendance: 86%. Results expected Feb 2027.
+              </div>
+            </div>
+          )}
+
+          {sem === 3 && (
+            <div
+              style={{
+                backgroundColor: "#eff6ff",
+                border: `1px solid #bfdbfe`,
+                borderLeft: `3px solid #2563eb`,
+                borderRadius: 4,
+                padding: "12px 16px",
+                marginBottom: 16,
+              }}
+            >
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#1e40af", marginBottom: 2 }}>
+                Semester 3 — Active (Started July 21, 2026)
+              </div>
+              <div style={{ fontSize: 13, color: "#1e3a8a" }}>
+                Attendance being tracked live. Current attendance: 85.19% as of August 26, 2026.
               </div>
             </div>
           )}

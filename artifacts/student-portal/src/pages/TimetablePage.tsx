@@ -12,15 +12,15 @@ const timetableMap: Record<number, typeof sem1TimetableDaily> = {
 
 const semTabs = [
   { val: 1, label: "Semester 1", tag: "Completed" },
-  { val: 2, label: "Semester 2", tag: "Active" },
-  { val: 3, label: "Semester 3", tag: "Upcoming" },
+  { val: 2, label: "Semester 2", tag: "Completed" },
+  { val: 3, label: "Semester 3", tag: "Active" },
   { val: 4, label: "Semester 4", tag: "Upcoming" },
 ];
 
 export default function TimetablePage() {
-  const [sem, setSem] = useState(2);
+  const [sem, setSem] = useState(3);
   const [pdfLoading, setPdfLoading] = useState(false);
-  const rows = timetableMap[sem] ?? sem2TimetableDaily;
+  const rows = timetableMap[sem] ?? sem3TimetableDaily;
   const showFaculty = sem >= 2;
 
   async function handleExportPDF() {
@@ -43,12 +43,12 @@ export default function TimetablePage() {
         <h1 style={{ fontSize: 20, fontWeight: 700, color: TEXT_DARK, margin: 0 }}>Weekly Timetable</h1>
         <button
           onClick={handleExportPDF}
-          disabled={pdfLoading || sem > 2}
+          disabled={pdfLoading || sem > 3}
           style={{
             display: "inline-flex", alignItems: "center", gap: 6,
-            padding: "7px 16px", backgroundColor: pdfLoading || sem > 2 ? BG_TABLE : NAVY,
-            color: pdfLoading || sem > 2 ? SLATE : "white", border: "none", borderRadius: 4,
-            fontSize: 12, fontWeight: 600, cursor: pdfLoading || sem > 2 ? "not-allowed" : "pointer",
+            padding: "7px 16px", backgroundColor: pdfLoading || sem > 3 ? BG_TABLE : NAVY,
+            color: pdfLoading || sem > 3 ? SLATE : "white", border: "none", borderRadius: 4,
+            fontSize: 12, fontWeight: 600, cursor: pdfLoading || sem > 3 ? "not-allowed" : "pointer",
             fontFamily: "inherit",
           }}
         >
@@ -81,14 +81,24 @@ export default function TimetablePage() {
                 UPCOMING
               </span>
             )}
+            {t.tag === "Active" && (
+              <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 5px", borderRadius: 3, backgroundColor: "#16a34a", color: "white" }}>
+                ACTIVE
+              </span>
+            )}
+            {t.tag === "Completed" && (
+              <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 5px", borderRadius: 3, backgroundColor: NAVY, color: "white" }}>
+                DONE
+              </span>
+            )}
           </button>
         ))}
       </div>
 
-      {/* Upcoming Notice */}
+      {/* Active Semester 3 notice */}
       {sem === 3 && (
         <div style={{ backgroundColor: INFO_BG, border: `1px solid #bfdbfe`, borderLeft: `3px solid #2563eb`, borderRadius: 4, padding: "10px 14px", fontSize: 13, color: "#1e40af", marginBottom: 16 }}>
-          <strong>📅 Semester 3 begins July 6, 2026.</strong> This is the upcoming timetable — subject to changes before the semester starts.
+          <strong>📅 Semester 3 — Active (Jul 21, 2026 – Dec 20, 2026).</strong> Reduced theory hours with more practical labs and project-focused afternoons.
         </div>
       )}
       {sem === 4 && (

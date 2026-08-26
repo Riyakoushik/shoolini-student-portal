@@ -5,7 +5,7 @@ import {
 import StatusBadge from "../components/StatusBadge";
 import {
   sem2MidtermResults, sem1Assignments, sem2Assignments, sem3Assignments, sem4Assignments, semesterTimeline,
-  sem2TimetableDaily, sem3TimetableDaily, sem4TimetableDaily, sem2Attendance, student,
+  sem2TimetableDaily, sem3TimetableDaily, sem4TimetableDaily, sem2Attendance, sem3Attendance, student,
   sem3IASchedule, sem4IASchedule,
   type SemesterAttendance, type DailyClass,
 } from "../data/studentData";
@@ -31,7 +31,7 @@ const semColors: Record<string, string> = {
 
 const activeSem =
   PORTAL_DATE >= new Date("2027-01-05") ? 4 :
-    PORTAL_DATE >= new Date("2026-07-06") ? 3 :
+    PORTAL_DATE >= new Date("2026-07-21") ? 3 :
       PORTAL_DATE >= new Date("2026-01-19") ? 2 : 1;
 
 const activeAssignments =
@@ -122,7 +122,9 @@ export default function DashboardPage() {
 
   const [liveClass, setLiveClass] = useState(() => getLiveClass(new Date()));
   const [marked, setMarked] = useState(false);
-  const [attendance, setAttendance] = useState<SemesterAttendance | null>(activeSem === 2 ? sem2Attendance : null);
+  const [attendance, setAttendance] = useState<SemesterAttendance | null>(
+    activeSem === 3 ? sem3Attendance : activeSem === 2 ? sem2Attendance : null
+  );
   const [pendingCount, setPendingCount] = useState(() =>
     activeAssignments.filter((a) => a.status === "Pending").length
   );
@@ -331,34 +333,36 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Semester 2 Practical Exams Notice */}
+      {/* Semester 3 Active Notice */}
       <div style={{
-        backgroundColor: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 4,
+        backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 4,
         padding: isMobile ? "12px" : "14px 16px", marginTop: 16,
         display: "flex", alignItems: "flex-start", gap: 12
       }}>
-        <div style={{ fontSize: 24 }}>📅</div>
+        <div style={{ fontSize: 24 }}>🚀</div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 700, color: "#1e3a8a", fontSize: 14, marginBottom: 2 }}>Upcoming: Semester 2 Practical Examinations</div>
-          <p style={{ margin: 0, fontSize: 13, color: "#1e40af", lineHeight: 1.5 }}>
-            Practical examinations for Semester 2 lab courses (<strong>Data Structures</strong> and <strong>Python</strong>) are scheduled for <strong>July 6 & July 7, 2026</strong>.
-            Please verify your batch schedules, lab files, and room assignments.
+          <div style={{ fontWeight: 700, color: "#166534", fontSize: 14, marginBottom: 2 }}>Semester 3 — Now Active</div>
+          <p style={{ margin: 0, fontSize: 13, color: "#14532d", lineHeight: 1.5 }}>
+            Semester 3 started on <strong>July 21, 2026</strong>. Focusing on <strong>Reinforcement Learning</strong>, <strong>Big Data Analytics</strong>, <strong>Generative AI & LLMs</strong> and more.
+            Reduced theory hours with more practical labs and dedicated project work afternoons.
           </p>
           <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
             <button
               onClick={() => window.location.href = '/timetable'}
               style={{
-                background: "#2563eb", color: "white", border: "none", padding: "6px 12px",
+                background: "#16a34a", color: "white", border: "none", padding: "6px 12px",
                 fontSize: 12, borderRadius: 4, fontWeight: 600, cursor: "pointer"
               }}>
               View Timetable
             </button>
-            <a href="/practical_exams.png" target="_blank" rel="noreferrer" style={{
-              background: "transparent", color: "#1d4ed8", border: "1px solid #bfdbfe", padding: "5px 11px",
-              fontSize: 12, borderRadius: 4, fontWeight: 600, cursor: "pointer", textDecoration: "none"
-            }}>
-              View Notice
-            </a>
+            <button
+              onClick={() => window.location.href = '/assignments'}
+              style={{
+                background: "transparent", color: "#166534", border: "1px solid #bbf7d0", padding: "5px 11px",
+                fontSize: 12, borderRadius: 4, fontWeight: 600, cursor: "pointer"
+              }}>
+              View Assignments
+            </button>
           </div>
         </div>
       </div>
@@ -366,8 +370,8 @@ export default function DashboardPage() {
       {/* KPI Row */}
       <div style={{ display: "grid", gridTemplateColumns: kpiCols, gap: 12, marginTop: 16 }}>
         {[
-          { label: "Current Semester", value: "2 of 4", border: BLUE },
-          { label: "Mid-term Average", value: "85 / 100", border: GREEN },
+          { label: "Current Semester", value: "3 of 4", border: BLUE },
+          { label: "Mid-term Average", value: "—", border: GREEN },
           { label: "Attendance", value: attendancePct, border: AMBER },
           { label: "Pending Tasks", value: String(pendingCount), border: RED },
         ].map((kpi) => (

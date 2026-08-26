@@ -276,8 +276,8 @@ export const student: Student = {
   specialization: "Artificial Intelligence & Learning",
   batch: "2025–2027",
   totalSemesters: 4,
-  currentSemester: 2,
-  academicYear: "2025–2026",
+  currentSemester: 3,
+  academicYear: "2026–2027",
   email: "koushik.thalari@shooliniuniversity.com",
   advisor: "Dr. Priya Sharma",
   personalEmail: "tkjs.koushik@gmail.com",
@@ -367,9 +367,9 @@ export const student: Student = {
 
 export const semesterTimeline: SemesterTimelineEntry[] = [
   { sem: 1, label: "Semester 1", period: "Aug 11, 2025 – Jan 17, 2026", start: "Aug 11, 2025", end: "Jan 17, 2026", status: "Completed", subjects: 11, credits: 36, result: "SGPA 9.11", sgpa: 9.11, cgpa: 9.11, attendance: "99.07%" },
-  { sem: 2, label: "Semester 2", period: "Jan 19, 2026 – Jun 30, 2026", start: "Jan 19, 2026", end: "Jun 30, 2026", status: "Active", subjects: 10, credits: 32, result: "In Progress", sgpa: null, cgpa: null, attendance: "86%" },
-  { sem: 3, label: "Semester 3", period: "Jul 6, 2026 – Dec 20, 2026", start: "Jul 6, 2026", end: "Dec 20, 2026", status: "Upcoming", subjects: 9, credits: 24, result: "—", sgpa: null, cgpa: null, attendance: null },
-  { sem: 4, label: "Semester 4", period: "Jan 5, 2027 – Jun 30, 2027", start: "Jan 5, 2027", end: "Jun 30, 2027", status: "Upcoming", subjects: 6, credits: 26, result: "—", sgpa: null, cgpa: null, attendance: null },
+  { sem: 2, label: "Semester 2", period: "Jan 19, 2026 – Jul 8, 2026",  start: "Jan 19, 2026", end: "Jul 8, 2026",  status: "Completed", subjects: 10, credits: 32, result: "Result Awaited", sgpa: null, cgpa: null, attendance: "86%" },
+  { sem: 3, label: "Semester 3", period: "Jul 21, 2026 – Dec 20, 2026", start: "Jul 21, 2026", end: "Dec 20, 2026", status: "Active",    subjects: 9, credits: 24, result: "In Progress", sgpa: null, cgpa: null, attendance: null },
+  { sem: 4, label: "Semester 4", period: "Jan 5, 2027 – Jun 30, 2027",  start: "Jan 5, 2027",  end: "Jun 30, 2027", status: "Upcoming",  subjects: 6, credits: 26, result: "—", sgpa: null, cgpa: null, attendance: null },
 ];
 
 // ── Subjects ──────────────────────────────────────────────────────────────────
@@ -473,6 +473,41 @@ export const sem2AttendanceDetailed = {
     { name: "Cloud Computing", day: "Saturday", faculty: "Prof. Meera Iyer", present: 12, absent: 1, total: 13, percentage: 92.3, absentDates: ["2026-02-28"] },
   ],
 };
+
+export const sem3Attendance: SemesterAttendance = {
+  totalDays: 27,
+  present: 23,
+  absent: 4,
+  percentage: 85.19,
+  subjects: [
+    { name: "Reinforcement Learning",              present: 4, total: 5 },
+    { name: "Reinforcement Learning Lab",          present: 4, total: 5 },
+    { name: "Big Data Analytics",                  present: 4, total: 5 },
+    { name: "Big Data Lab",                        present: 4, total: 5 },
+    { name: "Generative AI & LLMs",               present: 3, total: 4 },
+    { name: "GenAI & LLM Lab",                    present: 3, total: 4 },
+    { name: "Cloud Architecture & DevOps",         present: 4, total: 5 },
+    { name: "Cybersecurity & AI",                  present: 4, total: 5 },
+    { name: "Research Methodology & Tech Writing", present: 3, total: 4 },
+  ],
+};
+
+export const sem3AttendanceDetailed = {
+  overall: { totalClasses: 27, present: 23, absent: 4, percentage: 85.19 },
+  subjects: [
+    { name: "Reinforcement Learning",              day: "Monday",    faculty: "Dr. Priya Sharma",  present: 4, absent: 1, total: 5, percentage: 80,    absentDates: ["2026-07-28"] },
+    { name: "Reinforcement Learning Lab",          day: "Monday",    faculty: "Dr. Priya Sharma",  present: 4, absent: 1, total: 5, percentage: 80,    absentDates: ["2026-07-28"] },
+    { name: "Big Data Analytics",                  day: "Tuesday",   faculty: "Dr. Suresh Patel",  present: 4, absent: 1, total: 5, percentage: 80,    absentDates: ["2026-08-04"] },
+    { name: "Big Data Lab",                        day: "Tuesday",   faculty: "Dr. Suresh Patel",  present: 4, absent: 1, total: 5, percentage: 80,    absentDates: ["2026-08-04"] },
+    { name: "Generative AI & LLMs",               day: "Wednesday", faculty: "Dr. Anita Desai",   present: 3, absent: 1, total: 4, percentage: 75,    absentDates: ["2026-08-11"] },
+    { name: "GenAI & LLM Lab",                    day: "Wednesday", faculty: "Dr. Anita Desai",   present: 3, absent: 1, total: 4, percentage: 75,    absentDates: ["2026-08-11"] },
+    { name: "Cloud Architecture & DevOps",         day: "Thursday",  faculty: "Prof. Meera Iyer",  present: 4, absent: 0, total: 4, percentage: 100,   absentDates: [] },
+    { name: "Cybersecurity & AI",                  day: "Friday",    faculty: "Dr. Rajesh Kumar",  present: 4, absent: 1, total: 5, percentage: 80,    absentDates: ["2026-08-19"] },
+    { name: "Research Methodology & Tech Writing", day: "Saturday",  faculty: "Dr. Arjun Reddy",   present: 3, absent: 0, total: 3, percentage: 100,   absentDates: [] },
+  ],
+};
+
+
 
 // ── Assignments ────────────────────────────────────────────────────────────────
 
@@ -930,7 +965,7 @@ export const calendarEvents: CalendarEvent[] = [
   { date: "2026-07-07", label: "Practical Exam: Python Programming",                 type: "exam" },
   { date: "2026-07-08", label: "Semester 2 Ends",                                   type: "semester" },
   // ── Semester 3 ──
-  { date: "2026-07-15", label: "Semester 3 Begins",                                  type: "semester" },
+  { date: "2026-07-21", label: "Semester 3 Begins",                                  type: "semester" },
   { date: "2026-08-15", label: "Independence Day Holiday",                           type: "holiday" },
   { date: "2026-08-18", label: "Assignment Due: Research Paper Review",              type: "assignment" },
   { date: "2026-08-20", label: "Assignment Due: MDP & Bellman Equation",             type: "assignment" },
@@ -1201,8 +1236,13 @@ export const sem1DailyLog: DailyAttendanceRecord[] = generateDailyAttendance(
 );
 
 export const sem2DailyLog: DailyAttendanceRecord[] = generateDailyAttendance(
-  "2026-01-19", "2026-06-30",
+  "2026-01-19", "2026-07-08",
   ["2026-02-23","2026-03-03","2026-03-18","2026-02-19","2026-03-06","2026-02-28"]
+);
+
+export const sem3DailyLog: DailyAttendanceRecord[] = generateDailyAttendance(
+  "2026-07-21", "2026-12-20",
+  ["2026-07-28","2026-08-04","2026-08-11","2026-08-19"]
 );
 
 // ── Semester 3 Full Data ───────────────────────────────────────────────────────
@@ -1310,15 +1350,18 @@ export const sem3Subjects: Sem3Subject[] = [
 ];
 
 export const sem3TimetableDaily: DailyClass[] = [
-  { day: "Monday",    subject: "Reinforcement Learning",              faculty: "Dr. Priya Sharma",  time: "9:00 AM – 1:00 PM",  room: "LH-301",     color: "#2563eb", duration: "4 Hours" },
-  { day: "Monday",    subject: "Reinforcement Learning Lab",          faculty: "Dr. Priya Sharma",  time: "2:00 PM – 5:00 PM",  room: "AI Lab-1",   color: "#2563eb", duration: "3 Hours", note: "Practical Lab" },
-  { day: "Tuesday",   subject: "Big Data Analytics",                  faculty: "Dr. Suresh Patel",  time: "9:00 AM – 1:00 PM",  room: "LH-302",     color: "#16a34a", duration: "4 Hours" },
-  { day: "Tuesday",   subject: "Big Data Lab",                        faculty: "Dr. Suresh Patel",  time: "2:00 PM – 5:00 PM",  room: "Data Lab-2", color: "#16a34a", duration: "3 Hours", note: "Practical Lab" },
-  { day: "Wednesday", subject: "Generative AI & LLMs",                faculty: "Dr. Anita Desai",   time: "9:00 AM – 1:00 PM",  room: "LH-301",     color: "#7c3aed", duration: "4 Hours" },
-  { day: "Wednesday", subject: "GenAI & LLM Lab",                     faculty: "Dr. Anita Desai",   time: "2:00 PM – 5:00 PM",  room: "AI Lab-2",   color: "#7c3aed", duration: "3 Hours", note: "Practical Lab" },
-  { day: "Thursday",  subject: "Cloud Architecture & DevOps",         faculty: "Prof. Meera Iyer",  time: "9:00 AM – 1:00 PM",  room: "LH-303",     color: "#d97706", duration: "4 Hours" },
-  { day: "Friday",    subject: "Cybersecurity & AI",                  faculty: "Dr. Rajesh Kumar",  time: "9:00 AM – 1:00 PM",  room: "LH-302",     color: "#dc2626", duration: "4 Hours" },
+  { day: "Monday",    subject: "Reinforcement Learning",               faculty: "Dr. Priya Sharma",  time: "9:00 AM – 12:00 PM", room: "LH-301",     color: "#2563eb", duration: "3 Hours" },
+  { day: "Monday",    subject: "Reinforcement Learning Lab",           faculty: "Dr. Priya Sharma",  time: "1:00 PM – 4:00 PM",  room: "AI Lab-1",   color: "#2563eb", duration: "3 Hours", note: "Practical Lab" },
+  { day: "Tuesday",   subject: "Big Data Analytics",                   faculty: "Dr. Suresh Patel",  time: "9:00 AM – 12:00 PM", room: "LH-302",     color: "#16a34a", duration: "3 Hours" },
+  { day: "Tuesday",   subject: "Big Data Lab",                         faculty: "Dr. Suresh Patel",  time: "1:00 PM – 4:00 PM",  room: "Data Lab-2", color: "#16a34a", duration: "3 Hours", note: "Practical Lab" },
+  { day: "Wednesday", subject: "Generative AI & LLMs",                 faculty: "Dr. Anita Desai",   time: "9:00 AM – 12:00 PM", room: "LH-301",     color: "#7c3aed", duration: "3 Hours" },
+  { day: "Wednesday", subject: "GenAI & LLM Lab",                      faculty: "Dr. Anita Desai",   time: "1:00 PM – 4:00 PM",  room: "AI Lab-2",   color: "#7c3aed", duration: "3 Hours", note: "Practical Lab" },
+  { day: "Thursday",  subject: "Cloud Architecture & DevOps",          faculty: "Prof. Meera Iyer",  time: "9:00 AM – 11:00 AM", room: "LH-303",     color: "#d97706", duration: "2 Hours" },
+  { day: "Thursday",  subject: "Project Work (AI-Powered Learning)",   faculty: "Dr. Priya Sharma",  time: "11:00 AM – 5:00 PM", room: "Research Lab", color: "#d97706", duration: "6 Hours", note: "Self-directed project development" },
+  { day: "Friday",    subject: "Cybersecurity & AI",                   faculty: "Dr. Rajesh Kumar",  time: "9:00 AM – 11:00 AM", room: "LH-302",     color: "#dc2626", duration: "2 Hours" },
+  { day: "Friday",    subject: "Project / Self-Study",                 faculty: "Self-directed",      time: "11:00 AM – 5:00 PM", room: "Library / Lab", color: "#94a3b8", duration: "6 Hours", note: "Open study & project work" },
   { day: "Saturday",  subject: "Research Methodology & Technical Writing", faculty: "Dr. Arjun Reddy", time: "9:00 AM – 11:00 AM", room: "LH-301",   color: "#c8a84b", duration: "2 Hours" },
+  { day: "Saturday",  subject: "Project Mentor Meeting",               faculty: "Dr. Priya Sharma",  time: "11:00 AM – 12:00 PM", room: "Research Lab", color: "#d97706", duration: "1 Hour", note: "Weekly project progress review" },
 ];
 
 export const sem3IASchedule = {
@@ -1331,17 +1374,17 @@ export const sem3IASchedule = {
 };
 
 export const sem3Assignments: Assignment[] = [
-  { no: 1,  subject: "Reinforcement Learning",             title: "MDP and Bellman Equation Implementation",     due: "Aug 20, 2026", type: "Theory",     dueDate: new Date("2026-08-20"), status: "Pending" },
+  { no: 1,  subject: "Reinforcement Learning",             title: "MDP and Bellman Equation Implementation",     due: "Aug 20, 2026", type: "Theory",     dueDate: new Date("2026-08-20"), status: "Submitted" },
   { no: 2,  subject: "Reinforcement Learning",             title: "Q-Learning vs SARSA Comparison Report",       due: "Sep 5, 2026",  type: "Assignment", dueDate: new Date("2026-09-05"), status: "Pending" },
-  { no: 3,  subject: "Big Data Analytics",                  title: "Hadoop MapReduce Word Count Program",         due: "Aug 22, 2026", type: "Lab",        dueDate: new Date("2026-08-22"), status: "Pending" },
+  { no: 3,  subject: "Big Data Analytics",                  title: "Hadoop MapReduce Word Count Program",         due: "Aug 22, 2026", type: "Lab",        dueDate: new Date("2026-08-22"), status: "Submitted" },
   { no: 4,  subject: "Big Data Analytics",                  title: "Spark DataFrame Analysis on Dataset",         due: "Sep 10, 2026", type: "Assignment", dueDate: new Date("2026-09-10"), status: "Pending" },
-  { no: 5,  subject: "Generative AI & LLMs",               title: "Transformer Architecture Diagram & Report",   due: "Aug 25, 2026", type: "Assignment", dueDate: new Date("2026-08-25"), status: "Pending" },
+  { no: 5,  subject: "Generative AI & LLMs",               title: "Transformer Architecture Diagram & Report",   due: "Aug 25, 2026", type: "Assignment", dueDate: new Date("2026-08-25"), status: "Submitted" },
   { no: 6,  subject: "Generative AI & LLMs",               title: "Fine-tune BERT for Sentiment Analysis",       due: "Sep 15, 2026", type: "Lab",        dueDate: new Date("2026-09-15"), status: "Pending" },
   { no: 7,  subject: "Cloud Architecture & DevOps",         title: "Docker Containerization Lab Report",          due: "Sep 1, 2026",  type: "Lab",        dueDate: new Date("2026-09-01"), status: "Pending" },
   { no: 8,  subject: "Cloud Architecture & DevOps",         title: "CI/CD Pipeline Setup using GitHub Actions",   due: "Sep 20, 2026", type: "Lab",        dueDate: new Date("2026-09-20"), status: "Pending" },
   { no: 9,  subject: "Cybersecurity & AI",                  title: "Network Vulnerability Assessment Report",     due: "Sep 8, 2026",  type: "Assignment", dueDate: new Date("2026-09-08"), status: "Pending" },
   { no: 10, subject: "Cybersecurity & AI",                  title: "OWASP Top 10 Case Study Analysis",            due: "Sep 25, 2026", type: "Assignment", dueDate: new Date("2026-09-25"), status: "Pending" },
-  { no: 11, subject: "Research Methodology & Technical Writing", title: "Research Paper Review & Summary",        due: "Aug 18, 2026", type: "Assignment", dueDate: new Date("2026-08-18"), status: "Pending" },
+  { no: 11, subject: "Research Methodology & Technical Writing", title: "Research Paper Review & Summary",        due: "Aug 18, 2026", type: "Assignment", dueDate: new Date("2026-08-18"), status: "Submitted" },
   { no: 12, subject: "Research Methodology & Technical Writing", title: "IEEE Format Paper Draft Submission",     due: "Oct 5, 2026",  type: "Assignment", dueDate: new Date("2026-10-05"), status: "Pending" },
   { no: 13, subject: "Reinforcement Learning Lab",          title: "RL Agent Training — CartPole Environment",    due: "Sep 12, 2026", type: "Lab",        dueDate: new Date("2026-09-12"), status: "Pending" },
   { no: 14, subject: "Reinforcement Learning Lab",          title: "Deep Q-Network Implementation Report",        due: "Oct 8, 2026",  type: "Lab",        dueDate: new Date("2026-10-08"), status: "Pending" },
@@ -1362,8 +1405,8 @@ export const sem3Project: ProjectData = {
   submissionDate: "November 25, 2026",
   vivaDate: "December 15, 2026",
   milestones: [
-    { title: "Topic Approval & Literature Review",  due: "Aug 20, 2026",  status: "Upcoming" },
-    { title: "System Design & Architecture",         due: "Sep 10, 2026",  status: "Upcoming" },
+    { title: "Topic Approval & Literature Review",  due: "Aug 20, 2026",  status: "Completed" },
+    { title: "System Design & Architecture",         due: "Sep 10, 2026",  status: "In Progress" },
     { title: "Module 1 — RL Recommendation Engine", due: "Sep 30, 2026",  status: "Upcoming" },
     { title: "Module 2 — NLP Quiz Generator",       due: "Oct 20, 2026",  status: "Upcoming" },
     { title: "Integration & Testing",               due: "Nov 10, 2026",  status: "Upcoming" },
