@@ -320,7 +320,7 @@ export default function ProfilePage() {
           {[
             { label: "Overall Attendance", value: "99.07%",   sub: "Semester 1", border: GREEN },
             { label: "Mid-term Average",   value: "85 / 100", sub: "Semester 2", border: BLUE },
-            { label: "Assignments Done",   value: "21 of 26", sub: "Both semesters", border: AMBER },
+            { label: "Assignments Done",   value: "32 of 45", sub: "Semesters 1-3", border: AMBER },
           ].map((k) => (
             <div key={k.label} style={{ padding: "12px 16px", border: `1px solid ${BORDER}`, borderLeft: `3px solid ${k.border}`, borderRadius: 4 }}>
               <div style={{ fontSize: 24, fontWeight: 700, color: TEXT_DARK }}>{k.value}</div>

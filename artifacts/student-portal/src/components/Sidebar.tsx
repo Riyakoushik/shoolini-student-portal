@@ -1,7 +1,7 @@
 import { useLocation, Link } from "wouter";
 import shooliniLogo from "@/assets/shoolini-logo.png";
 import { NAVY, GOLD, AMBER, RED, BLUE } from "../constants";
-import { student, sem2Assignments, feesData } from "../data/studentData";
+import { student, sem3Assignments, feesData } from "../data/studentData";
 import { borrowedBooks, fineRecords } from "../data/libraryData";
 
 export default function Sidebar({
@@ -18,7 +18,7 @@ export default function Sidebar({
   const [location] = useLocation();
 
   // Dynamically calculate alert badges
-  const pendingAssignmentsCount = sem2Assignments.filter(a => a.status === "Pending").length;
+  const pendingAssignmentsCount = sem3Assignments.filter(a => a.status === "Pending").length;
   const outstandingFeesCount = feesData.pendingDues.length;
   const overdueBooksCount = borrowedBooks.filter(b => b.status === "Overdue" || b.status === "Due Soon").length;
   const outstandingFinesCount = fineRecords.filter(f => f.status === "Outstanding").length;

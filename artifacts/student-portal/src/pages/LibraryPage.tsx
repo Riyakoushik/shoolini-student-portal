@@ -23,6 +23,7 @@ export default function LibraryPage() {
   const [catalogFilter, setCatalogFilter] = useState<CatalogFilter>("All");
   const [search, setSearch] = useState("");
   const [renewedIds, setRenewedIds] = useState<Set<string>>(new Set());
+  const [reservedIds, setReservedIds] = useState<Set<string>>(new Set());
 
   const overdue = borrowedBooks.filter((b) => b.status === "Overdue");
   const totalFine = borrowedBooks.reduce((sum, b) => sum + computeFine(b), 0);
@@ -36,7 +37,18 @@ export default function LibraryPage() {
     { label: "Fines & Payment", val: "fines" },
   ];
 
-  const filteredCatalog = catalogBooks.filter((b) => {
+  const processedCatalog = catalogBooks.map(b => {
+    if (reservedIds.has(b.id)) {
+      return {
+        ...b,
+        status: "Reserved" as const,
+        availableCopies: Math.max(0, b.availableCopies - 1)
+      };
+    }
+    return b;
+  });
+
+  const filteredCatalog = processedCatalog.filter((b) => {
     const matchSearch = search === "" ||
       b.title.toLowerCase().includes(search.toLowerCase()) ||
       b.author.toLowerCase().includes(search.toLowerCase()) ||
@@ -236,21 +248,58 @@ export default function LibraryPage() {
                         </span>
                       </td>
                       <td style={td}>
-                        {b.status === "Available" ? (
-                          <button
-                            onClick={() => alert(`Reservation placed for: ${b.title}`)}
-                            style={{ backgroundColor: NAVY, color: "white", border: "none", borderRadius: 4, padding: "5px 12px", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}
-                          >
-                            Reserve
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => alert(`You will be notified when "${b.title}" becomes available.`)}
-                            style={{ backgroundColor: BG_TABLE, color: SLATE, border: `1px solid ${BORDER}`, borderRadius: 4, padding: "5px 12px", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}
-                          >
-                            Notify Me
-                          </button>
-                        )}
+                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                          {b.status === "Available" ? (
+                            <button
+                              onClick={() => {
+                                setReservedIds((prev) => {
+                                  const next = new Set(prev);
+                                  next.add(b.id);
+                                  return next;
+                                });
+                                alert(`Reservation placed for: ${b.title}`);
+                              }}
+                              style={{ backgroundColor: NAVY, color: "white", border: "none", borderRadius: 4, padding: "5px 12px", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}
+                            >
+                              Reserve
+                            </button>
+                          ) : b.status === "Reserved" && reservedIds.has(b.id) ? (
+                            <button
+                              onClick={() => {
+                                setReservedIds((prev) => {
+                                  const next = new Set(prev);
+                                  next.delete(b.id);
+                                  return next;
+                                });
+                                alert(`Reservation cancelled for: ${b.title}`);
+                              }}
+                              style={{ backgroundColor: RED, color: "white", border: "none", borderRadius: 4, padding: "5px 12px", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}
+                            >
+                              Cancel
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => alert(`You will be notified when "${b.title}" becomes available.`)}
+                              style={{ backgroundColor: BG_TABLE, color: SLATE, border: `1px solid ${BORDER}`, borderRadius: 4, padding: "5px 12px", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}
+                            >
+                              Notify Me
+                            </button>
+                          )}
+                          
+                          {b.pdfUrl && (
+                            <a
+                              href={b.pdfUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{
+                                display: "inline-block", backgroundColor: GREEN, color: "white", textDecoration: "none",
+                                borderRadius: 4, padding: "5px 12px", fontSize: 12, cursor: "pointer", fontWeight: 500
+                              }}
+                            >
+                              View PDF
+                            </a>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))

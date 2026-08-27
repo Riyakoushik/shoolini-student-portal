@@ -541,7 +541,7 @@ export const sem2Assignments: Assignment[] = [
   { no: 16, subject: "Advanced Machine Learning",   title: "Assignment 9: Create adversarial attack and defense system",     due: "Apr 6, 2026",  type: "Assignment", dueDate: new Date("2026-04-06"), status: "Submitted" },
   { no: 17, subject: "Advanced Algorithms",         title: "Lab 8: Implement federated learning system",                    due: "Apr 8, 2026",  type: "Lab",        dueDate: new Date("2026-04-08"), status: "Submitted" },
   { no: 18, subject: "Cloud Computing",             title: "Assignment 10: Deploy AI model on edge device",                 due: "Apr 10, 2026", type: "Assignment", dueDate: new Date("2026-04-10"), status: "Submitted" },
-  { no: 19, subject: "Self Assessment",             title: "Professional Career Portfolio Submission",                      due: "Jun 15, 2026", type: "Portfolio",  dueDate: new Date("2026-06-15"), status: "Pending" },
+  { no: 19, subject: "Self Assessment",             title: "Professional Career Portfolio Submission",                      due: "Jun 15, 2026", type: "Portfolio",  dueDate: new Date("2026-06-15"), status: "Submitted" },
 ];
 
 // ── Results ────────────────────────────────────────────────────────────────────

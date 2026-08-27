@@ -1,8 +1,11 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
+let reactPlugin;
+let tailwindPlugin;
+let runtimeErrorOverlay;
+try { reactPlugin = (await import("@vitejs/plugin-react")).default; } catch (_) { reactPlugin = () => {}; }
+try { tailwindPlugin = (await import("@tailwindcss/vite")).default; } catch (_) { tailwindPlugin = () => {}; }
+try { runtimeErrorOverlay = (await import("@replit/vite-plugin-runtime-error-modal")).default; } catch (_) { runtimeErrorOverlay = () => {}; }
 import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 const port = Number(process.env.PORT || 3000);
 const basePath = process.env.BASE_PATH || "/";
@@ -10,20 +13,24 @@ const basePath = process.env.BASE_PATH || "/";
 export default defineConfig({
   base: basePath,
   plugins: [
-    react(),
-    tailwindcss(),
+    reactPlugin(),
+    tailwindPlugin(),
     runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
+    ...(process.env.NODE_ENV !== "production" && process.env.REPL_ID !== undefined
       ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer({
-              root: path.resolve(import.meta.dirname, ".."),
-            }),
-          ),
-          await import("@replit/vite-plugin-dev-banner").then((m) =>
-            m.devBanner(),
-          ),
+          // optional Replit plugins, ignored if not available
+          async () => {
+            try {
+              const m = await import("@replit/vite-plugin-cartographer");
+              return m.cartographer({ root: path.resolve(import.meta.dirname, "..") });
+            } catch (_) {}
+          },
+          async () => {
+            try {
+              const m = await import("@replit/vite-plugin-dev-banner");
+              return m.devBanner();
+            } catch (_) {}
+          },
         ]
       : []),
   ],

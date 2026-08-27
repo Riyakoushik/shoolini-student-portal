@@ -90,7 +90,7 @@ function SubmittingOverlay() {
 }
 
 export default function AssignmentsPage() {
-  const [sem, setSem] = useState(2);
+  const [sem, setSem] = useState(3);
   const [filter, setFilter] = useState<Filter>("All");
   const [selectedNo, setSelectedNo] = useState<number | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -99,18 +99,23 @@ export default function AssignmentsPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [submitTimestamps, setSubmitTimestamps] = useState<Record<number, string>>({});
 
-  const [sem2Items, setSem2Items] = useState<Sem2Assignment[]>(() =>
-    sem2Assignments.map((a) => ({
-      ...a,
-      no: a.no ?? 0,
-      type: a.type ?? "Assignment",
-      dueDate: a.dueDate ?? new Date(),
-      computedStatus: a.status as "Submitted" | "Pending" | "Overdue",
-    }))
-  );
+  const [activeItems, setActiveItems] = useState<Sem2Assignment[]>([]);
 
   useEffect(() => {
-    setSem2Items((prev) =>
+    const list = sem === 3 ? sem3Assignments : sem2Assignments;
+    setActiveItems(
+      list.map((a) => ({
+        ...a,
+        no: a.no ?? 0,
+        type: a.type ?? "Assignment",
+        dueDate: a.dueDate ?? new Date(),
+        computedStatus: a.status as "Submitted" | "Pending" | "Overdue",
+      }))
+    );
+  }, [sem]);
+
+  useEffect(() => {
+    setActiveItems((prev) =>
       prev.map((a) => {
         if (a.computedStatus === "Pending" && a.dueDate < PORTAL_DATE) {
           return { ...a, computedStatus: "Overdue" as const };
@@ -118,23 +123,23 @@ export default function AssignmentsPage() {
         return a;
       })
     );
-  }, []);
+  }, [sem]);
 
-  const sem2Sorted = [
-    ...sem2Items.filter((a) => a.computedStatus === "Pending"),
-    ...sem2Items.filter((a) => a.computedStatus === "Overdue"),
-    ...sem2Items.filter((a) => a.computedStatus === "Submitted"),
+  const activeSorted = [
+    ...activeItems.filter((a) => a.computedStatus === "Pending"),
+    ...activeItems.filter((a) => a.computedStatus === "Overdue"),
+    ...activeItems.filter((a) => a.computedStatus === "Submitted"),
   ];
 
-  const submittedCount = sem2Items.filter((a) => a.computedStatus === "Submitted").length;
-  const pendingCount   = sem2Items.filter((a) => a.computedStatus === "Pending").length;
-  const overdueCount   = sem2Items.filter((a) => a.computedStatus === "Overdue").length;
+  const submittedCount = activeItems.filter((a) => a.computedStatus === "Submitted").length;
+  const pendingCount   = activeItems.filter((a) => a.computedStatus === "Pending").length;
+  const overdueCount   = activeItems.filter((a) => a.computedStatus === "Overdue").length;
 
-  const filteredSem2 =
-    filter === "All"       ? sem2Sorted :
-    filter === "Submitted" ? sem2Sorted.filter((a) => a.computedStatus === "Submitted") :
-    filter === "Pending"   ? sem2Sorted.filter((a) => a.computedStatus === "Pending") :
-    filter === "Overdue"   ? sem2Sorted.filter((a) => a.computedStatus === "Overdue") :
+  const filteredItems =
+    filter === "All"       ? activeSorted :
+    filter === "Submitted" ? activeSorted.filter((a) => a.computedStatus === "Submitted") :
+    filter === "Pending"   ? activeSorted.filter((a) => a.computedStatus === "Pending") :
+    filter === "Overdue"   ? activeSorted.filter((a) => a.computedStatus === "Overdue") :
     [];
 
   function toggleDetail(no: number) {
@@ -164,7 +169,7 @@ export default function AssignmentsPage() {
       const subId = `SUB-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`;
       const now = new Date();
       const ts = now.toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
-      setSem2Items((prev) =>
+      setActiveItems((prev) =>
         prev.map((a) =>
           a.no === confirmFor.no
             ? { ...a, computedStatus: "Submitted" as const }
@@ -177,7 +182,7 @@ export default function AssignmentsPage() {
     }, 1500);
   }
 
-  const selectedAssignment = selectedNo !== null ? sem2Items.find((a) => a.no === selectedNo) ?? null : null;
+  const selectedAssignment = selectedNo !== null ? activeItems.find((a) => a.no === selectedNo) ?? null : null;
   const selectedDetail = selectedNo !== null ? assignmentDetails[selectedNo] ?? null : null;
 
   return (
@@ -192,8 +197,8 @@ export default function AssignmentsPage() {
       <div style={{ display: "flex", gap: 0, marginBottom: 16, borderBottom: `1px solid ${BORDER}`, flexWrap: "wrap" }}>
         {[
           { label: "Semester 1 — Completed", val: 1, tag: "" },
-          { label: "Semester 2 — Active",    val: 2, tag: "" },
-          { label: "Semester 3",             val: 3, tag: "Upcoming" },
+          { label: "Semester 2 — Completed", val: 2, tag: "" },
+          { label: "Semester 3 — Active",    val: 3, tag: "" },
           { label: "Semester 4",             val: 4, tag: "Upcoming" },
         ].map((t) => (
           <button
@@ -244,7 +249,7 @@ export default function AssignmentsPage() {
             </tbody>
           </table>
         </div>
-      ) : sem === 2 ? (
+      ) : (sem === 2 || sem === 3) ? (
         <div style={{ backgroundColor: WHITE, border: `1px solid ${BORDER}`, borderRadius: 4, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
           {/* Summary */}
           <div style={{ display: "flex", gap: 24, padding: "12px 16px", borderBottom: `1px solid ${BORDER}`, backgroundColor: BG_LIGHT, flexWrap: "wrap" }}>
@@ -256,7 +261,7 @@ export default function AssignmentsPage() {
           {/* Filter buttons */}
           <div style={{ display: "flex", gap: 8, padding: "10px 16px", borderBottom: `1px solid ${BORDER}`, flexWrap: "wrap" }}>
             {([
-              { label: "All",       count: sem2Items.length },
+              { label: "All",       count: activeItems.length },
               { label: "Submitted", count: submittedCount },
               { label: "Pending",   count: pendingCount },
               { label: "Overdue",   count: overdueCount },
@@ -286,7 +291,7 @@ export default function AssignmentsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredSem2.map((a, i) => {
+                {filteredItems.map((a, i) => {
                   const daysLeft = a.computedStatus === "Pending"
                     ? Math.ceil((a.dueDate.getTime() - PORTAL_DATE.getTime()) / 86400000)
                     : null;
@@ -346,59 +351,6 @@ export default function AssignmentsPage() {
                     </>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ) : sem === 3 ? (
-        <div>
-          <div style={{ backgroundColor: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 8, padding: 32, textAlign: "center", marginBottom: 24 }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>📋</div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: NAVY, marginBottom: 8 }}>Semester 3 Assignments</div>
-            <div style={{ fontSize: 14, color: SLATE, marginBottom: 16 }}>Semester 3 begins <strong>July 6, 2026</strong>. {sem3Assignments.length} assignments are planned.</div>
-            <div style={{ display: "flex", justifyContent: "center", gap: 20, flexWrap: "wrap" }}>
-              <div style={{ textAlign: "center", padding: "10px 20px", backgroundColor: WHITE, borderRadius: 4, border: `1px solid ${BORDER}` }}>
-                <div style={{ fontSize: 22, fontWeight: 700, color: NAVY }}>{sem3Assignments.length}</div>
-                <div style={{ fontSize: 10, color: SLATE, marginTop: 2 }}>TOTAL ASSIGNMENTS</div>
-              </div>
-              <div style={{ textAlign: "center", padding: "10px 20px", backgroundColor: WHITE, borderRadius: 4, border: `1px solid ${BORDER}` }}>
-                <div style={{ fontSize: 22, fontWeight: 700, color: NAVY }}>{sem3Assignments.filter(a => a.type === "Lab").length}</div>
-                <div style={{ fontSize: 10, color: SLATE, marginTop: 2 }}>LAB WORK</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Mini Project preview */}
-          <div style={{ backgroundColor: WHITE, border: `1px solid ${BORDER}`, borderRadius: 4, padding: 16, marginBottom: 20, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: NAVY }}>🔬 Mini Project — {sem3Project.projectTitle}</div>
-              <span style={{ fontSize: 10, padding: "2px 8px", backgroundColor: "#fef3c7", color: "#b45309", borderRadius: 3, fontWeight: 700 }}>UPCOMING</span>
-            </div>
-            <div style={{ fontSize: 13, color: TEXT_DARK, marginBottom: 8 }}>{sem3Project.description}</div>
-            <div style={{ fontSize: 12, color: SLATE }}>Guide: {sem3Project.guide} | Credits: {sem3Project.credits} | Submission: {sem3Project.submissionDate}</div>
-          </div>
-
-          {/* Assignment preview table */}
-          <div style={{ backgroundColor: WHITE, border: `1px solid ${BORDER}`, borderRadius: 4, boxShadow: "0 1px 3px rgba(0,0,0,0.06)", overflowX: "auto" }}>
-            <div style={{ padding: "10px 16px", backgroundColor: BG_LIGHT, borderBottom: `1px solid ${BORDER}`, fontSize: 12, fontWeight: 600, color: SLATE }}>UPCOMING ASSIGNMENT SCHEDULE</div>
-            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 560 }}>
-              <thead>
-                <tr style={{ backgroundColor: BG_TABLE }}>
-                  {["#", "Subject", "Assignment Title", "Due Date", "Type"].map((h) => <th key={h} style={th}>{h}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {sem3Assignments.map((a, i) => (
-                  <tr key={i} style={{ backgroundColor: i % 2 === 0 ? WHITE : BG_LIGHT }}>
-                    <td style={{ ...td, color: SLATE }}>{a.no}</td>
-                    <td style={{ ...td, fontWeight: 500 }}>{a.subject}</td>
-                    <td style={td}>{a.title}</td>
-                    <td style={{ ...td, color: AMBER, fontWeight: 600 }}>{a.due}</td>
-                    <td style={td}>
-                      <span style={{ padding: "2px 8px", backgroundColor: a.type === "Lab" ? BG_TABLE : INFO_BG, color: a.type === "Lab" ? SLATE : DARK_BLUE, borderRadius: 4, fontSize: 11, fontWeight: 600 }}>{a.type}</span>
-                    </td>
-                  </tr>
-                ))}
               </tbody>
             </table>
           </div>
