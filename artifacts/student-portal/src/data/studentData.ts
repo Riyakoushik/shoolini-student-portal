@@ -1360,8 +1360,7 @@ export const sem3TimetableDaily: DailyClass[] = [
   { day: "Thursday",  subject: "Project Work (AI-Powered Learning)",   faculty: "Dr. Priya Sharma",  time: "11:00 AM – 5:00 PM", room: "Research Lab", color: "#d97706", duration: "6 Hours", note: "Self-directed project development" },
   { day: "Friday",    subject: "Cybersecurity & AI",                   faculty: "Dr. Rajesh Kumar",  time: "9:00 AM – 11:00 AM", room: "LH-302",     color: "#dc2626", duration: "2 Hours" },
   { day: "Friday",    subject: "Project / Self-Study",                 faculty: "Self-directed",      time: "11:00 AM – 5:00 PM", room: "Library / Lab", color: "#94a3b8", duration: "6 Hours", note: "Open study & project work" },
-  { day: "Saturday",  subject: "Research Methodology & Technical Writing", faculty: "Dr. Arjun Reddy", time: "9:00 AM – 11:00 AM", room: "LH-301",   color: "#c8a84b", duration: "2 Hours" },
-  { day: "Saturday",  subject: "Project Mentor Meeting",               faculty: "Dr. Priya Sharma",  time: "11:00 AM – 12:00 PM", room: "Research Lab", color: "#d97706", duration: "1 Hour", note: "Weekly project progress review" },
+  { day: "Saturday",  subject: "Project Work & Practical Lab",         faculty: "Dr. Priya Sharma",  time: "10:00 AM – 2:00 PM",  room: "AI Lab / Research Lab", color: "#0891b2", duration: "4 Hours", note: "Practicals only" },
 ];
 
 export const sem3IASchedule = {
