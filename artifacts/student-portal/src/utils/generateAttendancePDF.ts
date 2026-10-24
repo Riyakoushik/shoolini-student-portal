@@ -1,17 +1,40 @@
 import { jsPDF } from "jspdf";
 import logoUrl from "../assets/shoolini-logo.png";
 import { SemesterAttendance, student } from "../data/studentData";
+import { generateRubberStamp, generateCursiveSignature } from "./stampGenerator";
 
-const NR = 26, NG = 58, NB = 92;
-const GR = 200, GG = 168, GB = 75;
-const GRN_R = 22, GRN_G = 163, GRN_B = 74;
-const RED_R = 220, RED_G = 38, RED_B = 38;
-const GRAY_R = 100, GRAY_G = 116, GRAY_B = 139;
-const PAGE_W = 210;
-const PAGE_H = 297;
-const L = 14;
-const R = PAGE_W - 14;
-const CW = R - L;
+const NAVY = "#1a3a5c";
+const GOLD = "#c8a84b";
+const GREEN = "#16a34a";
+const RED = "#dc2626";
+const GRAY = "#64748b";
+const HEADER_BG = "#0f2744";
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : { r: 0, g: 0, b: 0 };
+}
+
+function setFill(doc: jsPDF, hex: string) {
+  const { r, g, b } = hexToRgb(hex);
+  doc.setFillColor(r, g, b);
+}
+
+function setStroke(doc: jsPDF, hex: string) {
+  const { r, g, b } = hexToRgb(hex);
+  doc.setDrawColor(r, g, b);
+}
+
+function setColor(doc: jsPDF, hex: string) {
+  const { r, g, b } = hexToRgb(hex);
+  doc.setTextColor(r, g, b);
+}
 
 async function getLogoBase64(url: string): Promise<string | null> {
   try {
@@ -28,153 +51,466 @@ async function getLogoBase64(url: string): Promise<string | null> {
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
     ctx.drawImage(img, 0, 0);
-    const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const d = id.data;
-    for (let i = 0; i < d.length; i += 4) {
-      if (d[i + 3] > 10) { d[i] = 255; d[i + 1] = 255; d[i + 2] = 255; }
-    }
-    ctx.putImageData(id, 0, 0);
     return canvas.toDataURL("image/png");
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 function pct(p: number, t: number) {
   return t === 0 ? 0 : Math.round((p / t) * 10000) / 100;
 }
 
-export async function generateAttendancePDF(data: SemesterAttendance, semester: number): Promise<void> {
+export async function generateAttendancePDF(
+  data: SemesterAttendance,
+  semester: number
+): Promise<void> {
   const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+  const PAGE_W = 210;
+  const PAGE_H = 297;
+  const L = 14;
+  const R = PAGE_W - 14;
+  const CW = R - L;
+
   const logo = await getLogoBase64(logoUrl);
 
-  // Header
-  doc.setFillColor(NR, NG, NB);
+  // ── 1. INSTITUTIONAL HEADER ────────────────────────────────────────────────
+  setFill(doc, HEADER_BG);
   doc.rect(0, 0, PAGE_W, 46, "F");
-  if (logo) { try { doc.addImage(logo, "PNG", L, 6, 30, 16); } catch { /* ok */ } }
-  doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(255, 255, 255);
+
+  // Branded Logo Card (keeps genuine university crest colors)
+  setFill(doc, "#ffffff");
+  doc.roundedRect(L, 8, 36, 18, 2, 2, "F");
+  if (logo) {
+    try {
+      doc.addImage(logo, "PNG", L + 3, 9.5, 30, 15);
+    } catch {
+      // fallback
+    }
+  }
+
+  setColor(doc, "#ffffff");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
   doc.text("SHOOLINI UNIVERSITY", R, 13, { align: "right" });
-  doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(200, 210, 225);
-  doc.text("Kasauli Hills, Solan, Himachal Pradesh — 173229", R, 19, { align: "right" });
-  doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(GR, GG, GB);
-  doc.text("ATTENDANCE REPORT", R, 27, { align: "right" });
-  doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(255, 255, 255);
-  doc.text(`MCA (AI/ML) — Semester ${semester} — Academic Year 2025–2026`, R, 36, { align: "right" });
-  doc.setDrawColor(GR, GG, GB); doc.setLineWidth(1);
-  doc.line(0, 46, PAGE_W, 46);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.setTextColor(203, 213, 225);
+  doc.text(
+    "Kasauli Hills, Solan, Himachal Pradesh — 173229 | www.shooliniuniversity.com",
+    R,
+    19,
+    { align: "right" }
+  );
+
+  setColor(doc, GOLD);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.text("OFFICIAL ATTENDANCE REPORT & AUDIT", R, 27, { align: "right" });
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.5);
+  doc.setTextColor(241, 245, 249);
+  doc.text(
+    `NAAC A+ Accredited  |  Top 100 NIRF  |  UGC Approved  |  Sem ${semester} (2025–2027)`,
+    R,
+    35,
+    { align: "right" }
+  );
+
+  // Gold separator ribbon
+  setFill(doc, GOLD);
+  doc.rect(0, 45, PAGE_W, 1.2, "F");
 
   let y = 52;
 
-  // Student info
-  doc.setFillColor(245, 248, 252);
-  doc.rect(L, y, CW, 14, "F");
-  doc.setDrawColor(221, 228, 234); doc.setLineWidth(0.4);
-  doc.rect(L, y, CW, 14, "S");
-  doc.setFont("helvetica", "normal"); doc.setFontSize(7.5); doc.setTextColor(GRAY_R, GRAY_G, GRAY_B);
-  doc.text("STUDENT:", L + 2, y + 5);
-  doc.setFont("helvetica", "bold"); doc.setTextColor(26, 42, 58);
-  doc.text(`${student.name}  |  Roll: ${student.rollNo}  |  ${student.program}  |  Batch ${student.batch}`, L + 20, y + 5);
-  doc.setFont("helvetica", "normal"); doc.setTextColor(GRAY_R, GRAY_G, GRAY_B);
-  doc.text(`Report generated: ${new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" })}`, L + 2, y + 11);
-  doc.text("School of Computer Science & Engineering", R, y + 11, { align: "right" });
-  y += 18;
+  // ── 2. STUDENT CREDENTIALS CARD ───────────────────────────────────────────
+  setFill(doc, "#f8fafc");
+  doc.rect(L, y, CW, 20, "F");
+  setStroke(doc, "#cbd5e1");
+  doc.setLineWidth(0.3);
+  doc.rect(L, y, CW, 20, "S");
 
-  // KPI row
+  // Left column
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  setColor(doc, GRAY);
+  doc.text("CANDIDATE NAME:", L + 4, y + 6);
+  setColor(doc, NAVY);
+  doc.text(student.name.toUpperCase(), L + 34, y + 6);
+
+  setColor(doc, GRAY);
+  doc.text("ROLL / REG NO:", L + 4, y + 12);
+  setColor(doc, "#1e293b");
+  doc.text(`${student.rollNo}  |  ${student.registrationNo}`, L + 34, y + 12);
+
+  setColor(doc, GRAY);
+  doc.text("DEGREE PROGRAM:", L + 4, y + 17);
+  setColor(doc, "#1e293b");
+  doc.text(student.program, L + 34, y + 17);
+
+  // Right column
+  const RX = L + 115;
+  setColor(doc, GRAY);
+  doc.text("CYCLE CUT-OFF:", RX, y + 6);
+  setColor(doc, "#1e293b");
+  const cycleText =
+    semester === 3
+      ? "26th of Month (Oct 26, 2026)"
+      : semester === 2
+      ? "Term End (May 2026)"
+      : "Term End (Dec 2025)";
+  doc.text(cycleText, RX + 26, y + 6);
+
+  setColor(doc, GRAY);
+  doc.text("SESSION STATUS:", RX, y + 12);
+  setColor(doc, semester === 3 ? GREEN : NAVY);
+  const statusNote =
+    semester === 3 ? "Active (Classes till Nov 12, 2026)" : "Semester Concluded";
+  doc.text(statusNote, RX + 26, y + 12);
+
+  setColor(doc, GRAY);
+  doc.text("REPORT DATE:", RX, y + 17);
+  setColor(doc, "#1e293b");
+  doc.text(
+    new Date().toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }),
+    RX + 26,
+    y + 17
+  );
+
+  y += 24;
+
+  // ── 3. KPI METRIC SUMMARY TILES ───────────────────────────────────────────
   const overallPct = pct(data.present, data.totalDays);
   const kpis = [
-    { label: "Total Classes", value: String(data.totalDays), color: [NR, NG, NB] },
-    { label: "Classes Attended", value: String(data.present), color: [GRN_R, GRN_G, GRN_B] },
-    { label: "Classes Absent", value: String(data.absent), color: [RED_R, RED_G, RED_B] },
-    { label: "Overall %", value: `${overallPct.toFixed(2)}%`, color: overallPct >= 75 ? [GRN_R, GRN_G, GRN_B] : [RED_R, RED_G, RED_B] },
+    { label: "Working Classes", value: String(data.totalDays), color: NAVY },
+    { label: "Classes Attended", value: String(data.present), color: GREEN },
+    { label: "Classes Absent", value: String(data.absent), color: RED },
+    {
+      label: "Aggregate Attendance",
+      value: `${overallPct.toFixed(2)}%`,
+      color: overallPct >= 75 ? GREEN : RED,
+    },
   ];
+
   const KW = CW / kpis.length;
   kpis.forEach((k, i) => {
     const kx = L + i * KW;
-    doc.setFillColor(245, 248, 252); doc.rect(kx, y, KW - 2, 18, "F");
-    doc.setDrawColor(k.color[0], k.color[1], k.color[2]); doc.setLineWidth(2);
-    doc.line(kx, y, kx, y + 18);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.setTextColor(k.color[0], k.color[1], k.color[2]);
-    doc.text(k.value, kx + KW / 2 - 1, y + 11, { align: "center" });
-    doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(GRAY_R, GRAY_G, GRAY_B);
-    doc.text(k.label.toUpperCase(), kx + KW / 2 - 1, y + 16, { align: "center" });
+    setFill(doc, "#f8fafc");
+    doc.rect(kx, y, KW - 2.5, 17, "F");
+
+    setFill(doc, k.color);
+    doc.rect(kx, y, 2.5, 17, "F");
+
+    setStroke(doc, "#e2e8f0");
+    doc.setLineWidth(0.3);
+    doc.rect(kx, y, KW - 2.5, 17, "S");
+
+    setColor(doc, k.color);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text(k.value, kx + (KW - 2.5) / 2 + 1, y + 9.5, { align: "center" });
+
+    setColor(doc, GRAY);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(6.5);
+    doc.text(k.label.toUpperCase(), kx + (KW - 2.5) / 2 + 1, y + 14.5, {
+      align: "center",
+    });
   });
+
   y += 22;
 
-  // Requirement notice
-  if (overallPct < 75) {
-    doc.setFillColor(254, 242, 242); doc.rect(L, y, CW, 10, "F");
-    doc.setDrawColor(RED_R, RED_G, RED_B); doc.setLineWidth(0.4); doc.rect(L, y, CW, 10, "S");
-    doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(RED_R, RED_G, RED_B);
-    doc.text("WARNING: Attendance below 75% threshold. Student may be barred from examinations.", L + 3, y + 6.5);
-    y += 13;
+  // ── 4. STATUTORY ELIGIBILITY BADGE ─────────────────────────────────────────
+  if (overallPct >= 75) {
+    setFill(doc, "#f0fdf4");
+    doc.rect(L, y, CW, 9, "F");
+    setStroke(doc, "#86efac");
+    doc.setLineWidth(0.4);
+    doc.rect(L, y, CW, 9, "S");
+
+    setColor(doc, GREEN);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.text(
+      "✓ ELIGIBLE FOR SEMESTER EXAMINATIONS — Attendance satisfies mandatory 75% UGC & University Academic Norms.",
+      L + 4,
+      y + 6
+    );
   } else {
-    doc.setFillColor(220, 252, 231); doc.rect(L, y, CW, 10, "F");
-    doc.setDrawColor(GRN_R, GRN_G, GRN_B); doc.setLineWidth(0.4); doc.rect(L, y, CW, 10, "S");
-    doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(GRN_R, GRN_G, GRN_B);
-    doc.text("Attendance meets the minimum 75% requirement. Student is eligible for examinations.", L + 3, y + 6.5);
-    y += 13;
+    setFill(doc, "#fef2f2");
+    doc.rect(L, y, CW, 9, "F");
+    setStroke(doc, "#fca5a5");
+    doc.setLineWidth(0.4);
+    doc.rect(L, y, CW, 9, "S");
+
+    setColor(doc, RED);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.text(
+      "⚠ SHORTFALL WARNING — Overall attendance is below 75%. Remedial makeup classes or medical condonation required.",
+      L + 4,
+      y + 6
+    );
   }
 
-  // Per-subject table
-  doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(NR, NG, NB);
-  doc.text("SUBJECT-WISE ATTENDANCE", L, y); y += 4;
+  y += 13;
 
-  doc.setFillColor(NR, NG, NB); doc.rect(L, y, CW, 8, "F");
-  doc.setFont("helvetica", "bold"); doc.setFontSize(7.5); doc.setTextColor(255, 255, 255);
-  doc.text("SUBJECT", L + 2, y + 5);
-  doc.text("PRESENT", L + 100, y + 5);
-  doc.text("ABSENT", L + 122, y + 5);
-  doc.text("TOTAL", L + 144, y + 5);
-  doc.text("PERCENTAGE", L + 162, y + 5);
+  // ── 5. SUBJECT-WISE DETAILED AUDIT TABLE ───────────────────────────────────
+  setColor(doc, NAVY);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.text("COURSE-WISE ATTENDANCE BREAKDOWN", L, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.5);
+  setColor(doc, GRAY);
+  doc.text(
+    `Updated Monthly on 26th  •  Classes ongoing until Nov 12, 2026`,
+    R,
+    y,
+    { align: "right" }
+  );
+
+  y += 4;
+
+  // Table Header
+  setFill(doc, HEADER_BG);
+  doc.rect(L, y, CW, 8, "F");
+
+  setColor(doc, "#ffffff");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.5);
+  doc.text("COURSE / SUBJECT NAME", L + 3, y + 5.5);
+  doc.text("PRESENT", L + 104, y + 5.5, { align: "center" });
+  doc.text("ABSENT", L + 124, y + 5.5, { align: "center" });
+  doc.text("TOTAL", L + 144, y + 5.5, { align: "center" });
+  doc.text("PERCENTAGE", L + 164, y + 5.5, { align: "center" });
+  doc.text("STATUS", R - 3, y + 5.5, { align: "right" });
+
   y += 8;
 
+  // Rows
   data.subjects.forEach((s, i) => {
     const p = pct(s.present, s.total);
     const isLow = p < 75;
-    if (i % 2 === 1) { doc.setFillColor(248, 250, 252); doc.rect(L, y, CW, 9, "F"); }
-    if (isLow) { doc.setFillColor(254, 245, 245); doc.rect(L, y, CW, 9, "F"); }
+    const abs = Math.max(0, s.total - s.present);
 
-    doc.setFont("helvetica", "bold"); doc.setFontSize(8.5); doc.setTextColor(26, 42, 58);
-    doc.text(s.name.length > 35 ? s.name.substring(0, 35) + "…" : s.name, L + 2, y + 6);
-    doc.setFont("helvetica", "normal"); doc.setTextColor(GRN_R, GRN_G, GRN_B);
-    doc.text(String(s.present), L + 100, y + 6);
-    doc.setTextColor(s.total - s.present > 0 ? RED_R : GRAY_R, s.total - s.present > 0 ? RED_G : GRAY_G, s.total - s.present > 0 ? RED_B : GRAY_B);
-    doc.text(String(s.total - s.present), L + 122, y + 6);
-    doc.setTextColor(GRAY_R, GRAY_G, GRAY_B);
-    doc.text(String(s.total), L + 144, y + 6);
+    if (i % 2 === 1) {
+      setFill(doc, "#f8fafc");
+      doc.rect(L, y, CW, 8, "F");
+    }
+
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(isLow ? RED_R : GRN_R, isLow ? RED_G : GRN_G, isLow ? RED_B : GRN_B);
-    doc.text(`${p.toFixed(2)}%${isLow ? " [LOW]" : ""}`, L + 162, y + 6);
+    doc.setFontSize(8);
+    setColor(doc, "#1e293b");
+    doc.text(
+      s.name.length > 46 ? s.name.substring(0, 46) + "…" : s.name,
+      L + 3,
+      y + 5.5
+    );
 
-    doc.setDrawColor(221, 228, 234); doc.setLineWidth(0.25);
-    doc.line(L, y + 9, R, y + 9);
-    y += 9;
+    doc.setFont("helvetica", "normal");
+    setColor(doc, GREEN);
+    doc.text(String(s.present), L + 104, y + 5.5, { align: "center" });
+
+    setColor(doc, abs > 0 ? RED : GRAY);
+    doc.text(String(abs), L + 124, y + 5.5, { align: "center" });
+
+    setColor(doc, GRAY);
+    doc.text(String(s.total), L + 144, y + 5.5, { align: "center" });
+
+    setColor(doc, isLow ? RED : GREEN);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${p.toFixed(1)}%`, L + 164, y + 5.5, { align: "center" });
+
+    // Status pill
+    if (isLow) {
+      setColor(doc, RED);
+      doc.text("CONDONATION", R - 3, y + 5.5, { align: "right" });
+    } else {
+      setColor(doc, GREEN);
+      doc.text("SATISFIED", R - 3, y + 5.5, { align: "right" });
+    }
+
+    setStroke(doc, "#e2e8f0");
+    doc.setLineWidth(0.2);
+    doc.line(L, y + 8, R, y + 8);
+
+    y += 8;
   });
 
-  y += 8;
-  doc.setFont("helvetica", "normal"); doc.setFontSize(7.5); doc.setTextColor(GRAY_R, GRAY_G, GRAY_B);
-  doc.text("* Minimum attendance requirement: 75% per subject. Students with less than 75% may be detained from exams.", L, y);
-  doc.text(`* Data recorded up to: March 26, 2026. Semester ${semester} ${semester === 1 ? "completed" : "in progress"}.`, L, y + 5);
+  // Table summary footer row
+  setFill(doc, "#f1f5f9");
+  doc.rect(L, y, CW, 8, "F");
+  setStroke(doc, "#cbd5e1");
+  doc.setLineWidth(0.3);
+  doc.rect(L, y, CW, 8, "S");
+
+  setColor(doc, NAVY);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.text("AGGREGATE ATTENDANCE (OCTOBER CYCLE)", L + 3, y + 5.5);
+
+  setColor(doc, GREEN);
+  doc.text(String(data.present), L + 104, y + 5.5, { align: "center" });
+  setColor(doc, RED);
+  doc.text(String(data.absent), L + 124, y + 5.5, { align: "center" });
+  setColor(doc, NAVY);
+  doc.text(String(data.totalDays), L + 144, y + 5.5, { align: "center" });
+  setColor(doc, overallPct >= 75 ? GREEN : RED);
+  doc.text(`${overallPct.toFixed(2)}%`, L + 164, y + 5.5, { align: "center" });
+  doc.text(overallPct >= 75 ? "SATISFACTORY" : "WARNING", R - 3, y + 5.5, {
+    align: "right",
+  });
 
   y += 14;
-  // Signature block
-  doc.setDrawColor(GR, GG, GB); doc.setLineWidth(0.5);
-  doc.line(L, y, R, y); y += 6;
-  doc.setFont("helvetica", "bold"); doc.setFontSize(8.5); doc.setTextColor(26, 42, 58);
-  doc.text("Academic Coordinator", L, y + 4);
-  doc.text("Dr. Priya Sharma", R, y + 4, { align: "right" });
-  doc.setFont("helvetica", "normal"); doc.setFontSize(7.5); doc.setTextColor(GRAY_R, GRAY_G, GRAY_B);
-  doc.text("School of Computer Science & Engineering", L, y + 9);
-  doc.text("Academic Advisor", R, y + 9, { align: "right" });
 
-  // Footer
-  const fy = PAGE_H - 20;
-  doc.setDrawColor(GR, GG, GB); doc.setLineWidth(0.6);
+  // ── 6. STATUTORY GUIDELINES & HOLIDAY NOTICE ───────────────────────────────
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.5);
+  setColor(doc, NAVY);
+  doc.text("INSTITUTIONAL ATTENDANCE REGULATIONS & CALENDAR NOTES:", L, y);
+  y += 4.5;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  setColor(doc, GRAY);
+  doc.text(
+    "1. Regular attendance is updated on the 26th of each calendar month as per academic regulations.",
+    L,
+    y
+  );
+  y += 4;
+  doc.text(
+    "2. Minimum attendance requirement for End-Term Examination eligibility is strictly 75.00% in each individual course.",
+    L,
+    y
+  );
+  y += 4;
+  doc.text(
+    "3. Official October 2026 Gazetted Holidays observed: Oct 2 (Gandhi Jayanti), Oct 11, Oct 17-20 (Dussehra), Oct 26, Oct 29 (Diwali).",
+    L,
+    y
+  );
+  y += 4;
+  doc.text(
+    "4. Semester 3 instructional classes will conclude on November 12, 2026, followed immediately by Preparatory Leave and End-Term Exams.",
+    L,
+    y
+  );
+
+  // ── 7. DIGITAL SIGNATURES & OFFICIAL SEAL ─────────────────────────────────
+  const signY = PAGE_H - 46;
+  setStroke(doc, GOLD);
+  doc.setLineWidth(0.5);
+  doc.line(L, signY, R, signY);
+
+  // Left - Academic Coordinator (Dr. Priya Sharma signature)
+  const coordSig = generateCursiveSignature({
+    signer: "coordinator",
+    color: "#1e40af",
+    width: 280,
+    height: 100,
+  });
+  if (coordSig) {
+    try {
+      doc.addImage(coordSig, "PNG", L + 2, signY - 12, 30, 10.7);
+    } catch {
+      // ok
+    }
+  }
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  setColor(doc, NAVY);
+  doc.text("Dr. Priya Sharma", L, signY + 5);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  setColor(doc, GRAY);
+  doc.text("Program Coordinator (MCA AI/ML)", L, signY + 9);
+  doc.text("School of Computer Science & Engineering", L, signY + 13);
+
+  // Center - Authentic Circular Rubber Stamp
+  const acadStamp = generateRubberStamp({
+    textTop: "SHOOLINI UNIVERSITY • ACADEMIC CELL",
+    textBottom: "NAAC A+ ACCREDITED • ESTD 2009",
+    centerLines: ["ACADEMIC CELL", "VERIFIED & AUDITED", "OCTOBER 2026"],
+    color: "#1e3a8a",
+    size: 360,
+    tiltDeg: -3.8,
+  });
+  if (acadStamp) {
+    try {
+      doc.addImage(acadStamp, "PNG", PAGE_W / 2 - 12, signY - 12, 24, 24);
+    } catch {
+      // ok
+    }
+  }
+
+  // Right - Dean of Academic Affairs (Prof. (Dr.) Sunil Puri signature)
+  const deanSig = generateCursiveSignature({
+    signer: "dean",
+    color: "#0f3ba2",
+    width: 280,
+    height: 100,
+  });
+  if (deanSig) {
+    try {
+      doc.addImage(deanSig, "PNG", R - 34, signY - 12, 30, 10.7);
+    } catch {
+      // ok
+    }
+  }
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  setColor(doc, NAVY);
+  doc.text("Prof. (Dr.) Sunil Puri", R, signY + 5, { align: "right" });
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  setColor(doc, GRAY);
+  doc.text("Dean (Academic Affairs)", R, signY + 9, { align: "right" });
+  doc.text("Shoolini University of Biotechnology", R, signY + 13, {
+    align: "right",
+  });
+  doc.text("Verification Hash: SU-ATT-24MCA-OCT26", R, signY + 14, {
+    align: "right",
+  });
+
+  // ── 8. FOOTER ─────────────────────────────────────────────────────────────
+  const fy = PAGE_H - 18;
+  setStroke(doc, "#cbd5e1");
+  doc.setLineWidth(0.3);
   doc.line(L, fy, R, fy);
-  doc.setFontSize(7); doc.setFont("helvetica", "normal"); doc.setTextColor(GRAY_R, GRAY_G, GRAY_B);
-  doc.text("Academic Section | Shoolini University | academics@shooliniuniversity.com | +91 7018007000", PAGE_W / 2, fy + 5, { align: "center" });
-  doc.text("This is a computer-generated report and is valid without signature.", PAGE_W / 2, fy + 10, { align: "center" });
-  doc.setFillColor(NR, NG, NB); doc.rect(0, PAGE_H - 8, PAGE_W, 8, "F");
-  doc.setFontSize(6.5); doc.setTextColor(200, 210, 225);
-  doc.text("Shoolini University of Biotechnology and Management Sciences  |  shooliniuniversity.com", PAGE_W / 2, PAGE_H - 3.5, { align: "center" });
 
-  doc.save(`SU_AttendanceReport_Sem${semester}_${student.rollNo}_KoushikThalari.pdf`);
+  doc.setFontSize(6.5);
+  doc.setFont("helvetica", "normal");
+  setColor(doc, GRAY);
+  doc.text(
+    "Academic Section | Shoolini University | academics@shooliniuniversity.com | +91 7018007000",
+    PAGE_W / 2,
+    fy + 4.5,
+    { align: "center" }
+  );
+
+  setFill(doc, HEADER_BG);
+  doc.rect(0, PAGE_H - 8, PAGE_W, 8, "F");
+  doc.setFontSize(6.5);
+  doc.setTextColor(203, 213, 225);
+  doc.text(
+    "Shoolini University of Biotechnology and Management Sciences  |  shooliniuniversity.com",
+    PAGE_W / 2,
+    PAGE_H - 3.2,
+    { align: "center" }
+  );
+
+  doc.save(
+    `SU_Official_Attendance_Sem${semester}_${student.rollNo}_KoushikThalari.pdf`
+  );
 }

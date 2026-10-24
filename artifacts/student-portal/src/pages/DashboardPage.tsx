@@ -6,7 +6,7 @@ import StatusBadge from "../components/StatusBadge";
 import {
   sem2MidtermResults, sem1Assignments, sem2Assignments, sem3Assignments, sem4Assignments, semesterTimeline,
   sem2TimetableDaily, sem3TimetableDaily, sem4TimetableDaily, sem2Attendance, sem3Attendance, student,
-  sem3IASchedule, sem4IASchedule,
+  sem3IASchedule, sem4IASchedule, sem3IA1, sem3IA2,
   type SemesterAttendance, type DailyClass,
 } from "../data/studentData";
 import { useIsMobile } from "../hooks/use-mobile";
@@ -50,6 +50,12 @@ const chartData = activeSem === 2 ? sem2MidtermResults.map((r) => ({
     .replace("Natural Language Processing", "NLP")
     .replace("Computer Vision", "Comp. Vision"),
   score: r.score,
+})) : activeSem === 3 ? sem3IA2.subjects.map((s) => ({
+  subject: s.name
+    .replace("Reinforcement Learning", "RL")
+    .replace("Research Methodology & Technical Writing", "Res. Method")
+    .replace("Cloud Architecture & DevOps", "Cloud & DevOps"),
+  score: Math.round((s.score / sem3IA2.maxMarks) * 100),
 })) : [];
 
 const TODAY_DISPLAY = PORTAL_DATE.toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
@@ -67,6 +73,8 @@ const upcomingExams = activeSem === 4 ? [
   { name: "Final Examinations", date: `${sem4IASchedule.theoryExams.start} – ${sem4IASchedule.theoryExams.end}`, status: "Upcoming" as const },
   { name: "Project Submission", date: sem4IASchedule.projectSubmission, status: "Upcoming" as const },
 ] : activeSem === 3 ? [
+  { name: "Internal Assessment 1 (IA 1)", date: `${sem3IASchedule.ia1.start} – ${sem3IASchedule.ia1.end}`, status: "Published" as const },
+  { name: "Internal Assessment 2 (IA 2)", date: `${sem3IASchedule.ia2.start} – ${sem3IASchedule.ia2.end}`, status: "Published" as const },
   { name: "Pre-final Exams", date: `${sem3IASchedule.preFinal.start} – ${sem3IASchedule.preFinal.end}`, status: "Upcoming" as const },
   { name: "Final Examinations", date: `${sem3IASchedule.theoryExams.start} – ${sem3IASchedule.theoryExams.end}`, status: "Upcoming" as const },
   { name: "Practical Exams", date: `${sem3IASchedule.practicalExams.start} – ${sem3IASchedule.practicalExams.end}`, status: "Upcoming" as const },
@@ -428,7 +436,7 @@ export default function DashboardPage() {
       <div style={{ display: "grid", gridTemplateColumns: chartRow, gap: 14, marginTop: 14 }}>
         <div style={{ backgroundColor: WHITE, border: `1px solid ${BORDER}`, borderRadius: 4, padding: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: SLATE, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>
-            Mid-term Performance — Semester {activeSem}
+            {activeSem === 3 ? "Internal Assessment Performance — Semester 3" : `Mid-term Performance — Semester ${activeSem}`}
           </div>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
@@ -436,7 +444,7 @@ export default function DashboardPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke={BORDER} />
                 <XAxis dataKey="subject" tick={{ fontSize: 11, fill: SLATE }} angle={-35} textAnchor="end" interval={0} />
                 <YAxis domain={[70, 100]} tick={{ fontSize: 11, fill: SLATE }} />
-                <Tooltip contentStyle={{ fontSize: 12, border: `1px solid ${BORDER}` }} formatter={(v) => [`${v}/100`, "Score"]} />
+                <Tooltip contentStyle={{ fontSize: 12, border: `1px solid ${BORDER}` }} formatter={(v) => activeSem === 3 ? [`${v}% (${Math.round((Number(v)/100)*20)}/20)`, "Score"] : [`${v}/100`, "Score"]} />
                 <Bar dataKey="score" fill={BLUE} radius={0} />
               </BarChart>
             </ResponsiveContainer>

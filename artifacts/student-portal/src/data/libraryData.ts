@@ -58,7 +58,64 @@ function computeStatus(due: Date): "Overdue" | "Due Soon" | "Borrowed" {
   return "Borrowed";
 }
 
-export const borrowedBooks: LibraryBook[] = [];
+export const borrowedBooks: LibraryBook[] = [
+  {
+    id: "LB001",
+    title: "Reinforcement Learning: An Introduction (2nd Edition)",
+    author: "Richard S. Sutton & Andrew G. Barto",
+    isbn: "978-0262039246",
+    category: "Reinforcement Learning",
+    issueDate: "Oct 10, 2026",
+    dueDate: new Date(Date.now() + 25 * 86400000),
+    dueDateStr: "Nov 18, 2026",
+    renewalsUsed: 0,
+    maxRenewals: 2,
+    status: "Borrowed",
+    finePerDay: 2,
+  },
+  {
+    id: "LB002",
+    title: "Designing Data-Intensive Applications: The Big Ideas Behind Reliable Systems",
+    author: "Martin Kleppmann",
+    isbn: "978-1449373320",
+    category: "Big Data & Distributed Systems",
+    issueDate: "Oct 12, 2026",
+    dueDate: new Date(Date.now() + 27 * 86400000),
+    dueDateStr: "Nov 20, 2026",
+    renewalsUsed: 0,
+    maxRenewals: 2,
+    status: "Borrowed",
+    finePerDay: 2,
+  },
+  {
+    id: "LB003",
+    title: "Generative AI, Transformers & LLM Architecture — Faculty Lecture Notes",
+    author: "Dr. Anita Desai (Dept. of AI/ML, Shoolini Univ)",
+    isbn: "SU-SCSE-LN-2026-03",
+    category: "Generative AI & LLMs",
+    issueDate: "Oct 15, 2026",
+    dueDate: new Date(Date.now() + 30 * 86400000),
+    dueDateStr: "Nov 23, 2026",
+    renewalsUsed: 1,
+    maxRenewals: 3,
+    status: "Borrowed",
+    finePerDay: 2,
+  },
+  {
+    id: "LB004",
+    title: "Cloud Native DevOps & Container Security Lab Handbook",
+    author: "Prof. Meera Iyer (Cloud & Systems Lab)",
+    isbn: "SU-SCSE-LN-2026-04",
+    category: "Cloud Architecture & DevOps",
+    issueDate: "Oct 18, 2026",
+    dueDate: new Date(Date.now() + 33 * 86400000),
+    dueDateStr: "Nov 26, 2026",
+    renewalsUsed: 0,
+    maxRenewals: 2,
+    status: "Borrowed",
+    finePerDay: 2,
+  },
+];
 
 export function computeFine(book: LibraryBook): number {
   if (book.status !== "Overdue") return 0;
@@ -88,7 +145,11 @@ export const catalogBooks: CatalogBook[] = [
   { id: "CAT019", title: "Mathematics for Machine Learning", author: "Marc Peter Deisenroth et al.", category: "Mathematics & ML", totalCopies: 4, availableCopies: 4, accessionNo: "SCSE-MATH-019", status: "Available", pdfUrl: "https://mml-book.github.io/book/mml-book.pdf" },
   { id: "CAT020", title: "Designing Data-Intensive Applications", author: "Martin Kleppmann", category: "Distributed Systems", totalCopies: 5, availableCopies: 3, accessionNo: "SCSE-DS-020", status: "Available", pdfUrl: "https://learning.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/" },
   { id: "CAT021", title: "Clean Code", author: "Robert C. Martin", category: "Software Engineering", totalCopies: 6, availableCopies: 4, accessionNo: "SCSE-SE-021", status: "Available", pdfUrl: "https://archive.org/details/CleanCode_201606" },
-  { id: "CAT022", title: "Design Patterns: Elements of Reusable Object-Oriented Software", author: "Erich Gamma et al.", category: "Software Engineering", totalCopies: 4, availableCopies: 2, accessionNo: "SCSE-SE-022", status: "Available", pdfUrl: "https://archive.org/details/designpatternsel00erich" }
+  { id: "CAT022", title: "Design Patterns: Elements of Reusable Object-Oriented Software", author: "Erich Gamma et al.", category: "Software Engineering", totalCopies: 4, availableCopies: 2, accessionNo: "SCSE-SE-022", status: "Available", pdfUrl: "https://archive.org/details/designpatternsel00erich" },
+  { id: "CAT023", title: "Semester 3: Generative AI & LLMs — Complete Course Pack & Lecture Notes", author: "Dr. Anita Desai", category: "Lecture Notes", totalCopies: 12, availableCopies: 9, accessionNo: "SCSE-LN-GENAI", status: "Available", pdfUrl: "https://arxiv.org/pdf/1706.03762.pdf" },
+  { id: "CAT024", title: "Semester 3: Reinforcement Learning & MDP Lab Handout", author: "Dr. Priya Sharma", category: "Lecture Notes", totalCopies: 10, availableCopies: 8, accessionNo: "SCSE-LN-RL", status: "Available", pdfUrl: "http://incompleteideas.net/book/the-book-2nd.html" },
+  { id: "CAT025", title: "Semester 3: Big Data Architecture (Kafka, Spark, Hadoop) Lab Manual", author: "Dr. Suresh Patel", category: "Lecture Notes", totalCopies: 10, availableCopies: 7, accessionNo: "SCSE-LN-BD", status: "Available", pdfUrl: "https://www.stat.cmu.edu/~ryantibs/statcomp/lectures/data_analytics.pdf" },
+  { id: "CAT026", title: "Semester 3: Cloud Native DevOps & Container Security Handout", author: "Prof. Meera Iyer", category: "Lecture Notes", totalCopies: 8, availableCopies: 6, accessionNo: "SCSE-LN-CLOUD", status: "Available", pdfUrl: "https://arxiv.org/pdf/1301.6960.pdf" }
 ];
 
 export const borrowHistory: BorrowHistory[] = [
@@ -104,6 +165,10 @@ export const borrowHistory: BorrowHistory[] = [
   { id: "HB010", title: "Database System Concepts", author: "Silberschatz et al.", issueDate: "Jan 20, 2026", returnDate: "Feb 20, 2026", status: "Returned", fine: "₹0", finePaid: true },
   { id: "HB011", title: "Probabilistic Graphical Models", author: "Koller & Friedman", issueDate: "Feb 1, 2026", returnDate: "Mar 3, 2026", status: "Returned Late", fine: "₹6", finePaid: true },
   { id: "HB012", title: "Mining of Massive Datasets", author: "Leskovec et al.", issueDate: "Mar 1, 2026", returnDate: "Mar 20, 2026", status: "Returned", fine: "₹0", finePaid: true },
+  { id: "HB013", title: "Hadoop & Spark Data Analytics: Hands-On Guide", author: "Dr. Suresh Patel", issueDate: "Aug 01, 2026", returnDate: "Aug 25, 2026", status: "Returned", fine: "₹0", finePaid: true },
+  { id: "HB014", title: "Cybersecurity & Network Vulnerability Assessment Handbook", author: "Dr. Rajesh Kumar", issueDate: "Aug 10, 2026", returnDate: "Sep 05, 2026", status: "Returned", fine: "₹0", finePaid: true },
+  { id: "HB015", title: "Research Methodology in Computing & Technical Writing", author: "Dr. Arjun Reddy", issueDate: "Aug 15, 2026", returnDate: "Sep 15, 2026", status: "Returned", fine: "₹0", finePaid: true },
+  { id: "HB016", title: "Deep Q-Networks & Policy Gradients Study Pack", author: "Dr. Priya Sharma", issueDate: "Sep 01, 2026", returnDate: "Oct 01, 2026", status: "Returned", fine: "₹0", finePaid: true },
 ];
 
 export const fineRecords: FineRecord[] = [

@@ -291,10 +291,10 @@ export default function ProfilePage() {
           </thead>
           <tbody>
             {[
-              { sem: 1, period: "Aug 2025 – Jan 2026", subjects: "8 subjects", status: "Completed", result: "Awaited",     attendance: "99.07%" },
-              { sem: 2, period: "Jan 2026 – Jun 2026", subjects: "7 subjects", status: "Active",    result: "In Progress", attendance: "97.9%" },
-              { sem: 3, period: "Jul 2026 – Dec 2026", subjects: "TBD",        status: "Upcoming",  result: "—",           attendance: "—" },
-              { sem: 4, period: "Jan 2027 – Jun 2027", subjects: "TBD",        status: "Upcoming",  result: "—",           attendance: "—" },
+              { sem: 1, period: "Aug 2025 – Jan 2026", subjects: "11 subjects", status: "Completed", result: "SGPA 9.11", attendance: "99.07%" },
+              { sem: 2, period: "Jan 2026 – Jul 2026", subjects: "10 subjects", status: "Completed", result: "Awaited",   attendance: "86%" },
+              { sem: 3, period: "Jul 2026 – Dec 2026", subjects: "9 subjects",  status: "Active",    result: "In Progress", attendance: "92.31%" },
+              { sem: 4, period: "Jan 2027 – Jun 2027", subjects: "6 subjects",  status: "Upcoming",  result: "—",         attendance: "—" },
             ].map((s, i) => (
               <tr key={i} style={{ backgroundColor: i % 2 === 0 ? WHITE : BG_LIGHT }}>
                 <td style={{ padding: "9px 12px", fontSize: 13, fontWeight: 600, color: TEXT_DARK, border: `1px solid ${BORDER}` }}>Semester {s.sem}</td>
@@ -320,7 +320,7 @@ export default function ProfilePage() {
           {[
             { label: "Overall Attendance", value: "99.07%",   sub: "Semester 1", border: GREEN },
             { label: "Mid-term Average",   value: "85 / 100", sub: "Semester 2", border: BLUE },
-            { label: "Assignments Done",   value: "32 of 45", sub: "Semesters 1-3", border: AMBER },
+            { label: "Assignments Done",   value: "43 of 45", sub: "Semesters 1-3 (2 pending)", border: AMBER },
           ].map((k) => (
             <div key={k.label} style={{ padding: "12px 16px", border: `1px solid ${BORDER}`, borderLeft: `3px solid ${k.border}`, borderRadius: 4 }}>
               <div style={{ fontSize: 24, fontWeight: 700, color: TEXT_DARK }}>{k.value}</div>

@@ -10,6 +10,7 @@ const pageTitles: Record<string, string> = {
   "/results":      "Results",
   "/attendance":   "Attendance",
   "/library":      "Library Portal",
+  "/class-group":  "Class Group & Hub",
   "/fees":         "Fees & Payments",
   "/study-planner":"Study Planner",
   "/calendar":     "Calendar",

@@ -16,6 +16,7 @@ const AttendancePage   = lazy(() => import("./pages/AttendancePage"));
 const FeesPage         = lazy(() => import("./pages/FeesPage"));
 const CalendarPage     = lazy(() => import("./pages/CalendarPage"));
 const LibraryPage      = lazy(() => import("./pages/LibraryPage"));
+const ClassGroupPage   = lazy(() => import("./pages/ClassGroupPage"));
 
 const pageTitleMap: Record<string, string> = {
   "/dashboard":    "Dashboard — Shoolini University",
@@ -27,6 +28,7 @@ const pageTitleMap: Record<string, string> = {
   "/fees":         "Fees & Payments — Shoolini University",
   "/calendar":     "Calendar — Shoolini University",
   "/library":      "Library Portal — Shoolini University",
+  "/class-group":  "Class Group & Hub — Shoolini University",
 };
 
 const pageFallback = (
@@ -160,6 +162,11 @@ function AppRouter({ isAuth, onLogin, onLogout }: { isAuth: boolean; onLogin: ()
       <Route path="/library">
         <ProtectedLayout isAuth={isAuth} onLogout={onLogout}>
           <LibraryPage />
+        </ProtectedLayout>
+      </Route>
+      <Route path="/class-group">
+        <ProtectedLayout isAuth={isAuth} onLogout={onLogout}>
+          <ClassGroupPage />
         </ProtectedLayout>
       </Route>
       <Route>

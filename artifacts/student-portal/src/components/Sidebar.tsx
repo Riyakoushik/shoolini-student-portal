@@ -40,6 +40,7 @@ export default function Sidebar({
       badge: libraryAlerts > 0 ? "!" : undefined,
       badgeColor: RED,
     },
+    { icon: "👥", label: "Class Group & Hub", path: "/class-group" },
     {
       icon: "💳", label: "Fees & Payments",path: "/fees",
       badge: outstandingFeesCount > 0 ? "!" : undefined,

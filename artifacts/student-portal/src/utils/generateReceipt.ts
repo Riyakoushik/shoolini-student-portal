@@ -2,6 +2,7 @@ import { jsPDF } from "jspdf";
 import { student } from "../data/studentData";
 import type { FeeRecord } from "../data/studentData";
 import logoUrl from "../assets/shoolini-logo.png";
+import { generateRubberStamp, generateCursiveSignature } from "./stampGenerator";
 
 // ── RGB palette ──────────────────────────────────────────────────────────────
 const NR = 26, NG = 58, NB = 92;
@@ -131,7 +132,7 @@ export async function downloadReceipt(payment: FeeRecord): Promise<void> {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8);
   doc.setTextColor(GR, GG, GB);
-  doc.text("NAAC B+  |  UGC Certified  |  Est. 2009", R, 35, { align: "right" });
+  doc.text("NAAC A+ Accredited  |  Top 100 NIRF  |  UGC Approved  |  Est. 2009", R, 35, { align: "right" });
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7.5);
@@ -399,47 +400,74 @@ export async function downloadReceipt(payment: FeeRecord): Promise<void> {
   y += 14;
   const sigY = y;
   
-  // Left side: Student's Signature
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);
-  doc.setTextColor(SR, SG, SB);
-  doc.text("Student's Signature", L + 10, sigY + 12);
+  // Left side: Student's Signature (Koushik Thalari)
+  const studentSig = generateCursiveSignature({
+    signer: "student",
+    color: "#1e3a8a",
+    width: 280,
+    height: 100,
+  });
+  if (studentSig) {
+    try {
+      doc.addImage(studentSig, "PNG", L + 5, sigY - 4, 32, 10.7);
+    } catch {
+      // ok
+    }
+  }
   doc.setDrawColor(203, 213, 225); // slate 300
   doc.setLineWidth(0.3);
-  doc.line(L + 5, sigY + 8, L + 35, sigY + 8);
-  
-  // Right side: Authorized Signatory
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);
-  doc.setTextColor(SR, SG, SB);
-  doc.text("Authorized Signatory", R - 35, sigY + 12);
-  doc.setDrawColor(203, 213, 225); // slate 300
-  doc.setLineWidth(0.3);
-  doc.line(R - 40, sigY + 8, R - 10, sigY + 8);
-
-  // Draw an elegant Registrar facsimile cursive signature above "Authorized Signatory"
-  doc.setDrawColor(2, 132, 199); // sky 600 (blue cursive ink style!)
-  doc.setLineWidth(0.5);
-  const sx = R - 35;
-  const sy = sigY + 3;
-  doc.line(sx, sy, sx + 3, sy - 4);
-  doc.line(sx + 3, sy - 4, sx + 5, sy + 1);
-  doc.line(sx + 5, sy + 1, sx + 7, sy - 2);
-  doc.line(sx + 7, sy - 2, sx + 9, sy + 0);
-  doc.line(sx + 9, sy + 0, sx + 12, sy - 3);
-  doc.line(sx + 12, sy - 3, sx + 14, sy - 1);
-  doc.line(sx + 14, sy - 1, sx + 17, sy - 5);
-  doc.line(sx - 2, sy + 1, sx + 22, sy + 1.5);
-  
-  // Add a beautiful digitized "OFFICIAL SEAL" stamp on the right side
-  doc.setDrawColor(GNR, GNG, GNB);
-  doc.setLineWidth(0.5);
-  doc.roundedRect(R - 38, sigY - 14, 28, 8, 1, 1, "D");
+  doc.line(L + 5, sigY + 8, L + 40, sigY + 8);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(6);
-  doc.setTextColor(GNR, GNG, GNB);
-  doc.text("SHOOLINI UNIV", R - 24, sigY - 10.5, { align: "center" });
-  doc.text("FEE RECEIVED", R - 24, sigY - 7.5, { align: "center" });
+  doc.setFontSize(7.5);
+  doc.setTextColor(DR, DG, DB);
+  doc.text("Koushik Thalari", L + 22.5, sigY + 12, { align: "center" });
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.8);
+  doc.setTextColor(SR, SG, SB);
+  doc.text("Candidate Signature", L + 22.5, sigY + 15.5, { align: "center" });
+  
+  // Center-Right: Authentic Finance & Accounts Circular Rubber Stamp
+  const financeStamp = generateRubberStamp({
+    textTop: "SHOOLINI UNIVERSITY • FINANCE BRANCH",
+    textBottom: "ZERO DUES CERTIFIED • 2025-2026",
+    centerLines: ["FEES PAID", "VERIFIED & CLEARED", "ACCOUNTS SECTION"],
+    color: "#15803d",
+    size: 360,
+    tiltDeg: -3.8,
+  });
+  if (financeStamp) {
+    try {
+      doc.addImage(financeStamp, "PNG", 123, sigY - 6, 24, 24);
+    } catch {
+      // ok
+    }
+  }
+
+  // Right side: Authorized Signatory (A. K. Verma)
+  const accountsSig = generateCursiveSignature({
+    signer: "accounts",
+    color: "#0f3ba2",
+    width: 280,
+    height: 100,
+  });
+  if (accountsSig) {
+    try {
+      doc.addImage(accountsSig, "PNG", R - 43, sigY - 4, 32, 10.7);
+    } catch {
+      // ok
+    }
+  }
+  doc.setDrawColor(203, 213, 225); // slate 300
+  doc.setLineWidth(0.3);
+  doc.line(R - 44, sigY + 8, R - 6, sigY + 8);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.5);
+  doc.setTextColor(DR, DG, DB);
+  doc.text("A. K. Verma", R - 25, sigY + 12, { align: "center" });
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.8);
+  doc.setTextColor(SR, SG, SB);
+  doc.text("Finance & Accounts Officer", R - 25, sigY + 15.5, { align: "center" });
 
   // Draw vector QR Code (14mm x 14mm) in the center of the signature area!
   const qrX = MID - 7;

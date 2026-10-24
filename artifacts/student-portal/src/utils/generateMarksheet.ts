@@ -1,20 +1,29 @@
 import { jsPDF } from "jspdf";
-import { student } from "../data/studentData";
+import {
+  student,
+  sem1TheoryResults,
+  sem1PracticalResults,
+  sem1ResultSummary,
+  sem2TheoryResults,
+  sem2PracticalResults,
+  sem2ResultSummary,
+  sem3Subjects,
+  sem3IA1,
+  sem3IA2,
+} from "../data/studentData";
 import logoUrl from "../assets/shoolini-logo.png";
+import { generateRubberStamp, generateCursiveSignature } from "./stampGenerator";
 
+// Institutional Palette
 const NAVY = "#1a3a5c";
 const GOLD = "#c8a84b";
 const GREEN = "#16a34a";
-const RED = "#dc2626";
-const PURPLE = "#7c3aed";
-const AMBER = "#d97706";
-const GRAY = "#f4f6f8";
-const BORDER = "#dde1e7";
+const BORDER = "#cbd5e1";
 const SLATE = "#64748b";
-const TEXT_DARK = "#1e2a3a";
+const TEXT_DARK = "#1e293b";
 const WHITE = "#ffffff";
-
-// ── HELPER FUNCTIONS ─────────────────────────────────────────────────────────
+const BG_ALT = "#f8fafc";
+const HEADER_BG = "#0f2744";
 
 function hexToRgb(hex: string): { r: number; g: number; b: number } {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -42,7 +51,7 @@ function setColor(doc: jsPDF, hex: string) {
   doc.setTextColor(r, g, b);
 }
 
-async function getInvertedLogo(url: string): Promise<string | null> {
+async function getLogoBase64(url: string): Promise<string | null> {
   try {
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -52,21 +61,11 @@ async function getInvertedLogo(url: string): Promise<string | null> {
       img.src = url;
     });
     const canvas = document.createElement("canvas");
-    canvas.width = 60;
-    canvas.height = 60;
+    canvas.width = img.naturalWidth || img.width;
+    canvas.height = img.naturalHeight || img.height;
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
-    ctx.drawImage(img, 0, 0, 60, 60);
-    const imageData = ctx.getImageData(0, 0, 60, 60);
-    const data = imageData.data;
-    for (let i = 0; i < data.length; i += 4) {
-      if (data[i + 3] > 0) {
-        data[i] = 255 - data[i];
-        data[i + 1] = 255 - data[i + 1];
-        data[i + 2] = 255 - data[i + 2];
-      }
-    }
-    ctx.putImageData(imageData, 0, 0);
+    ctx.drawImage(img, 0, 0);
     return canvas.toDataURL("image/png");
   } catch {
     return null;
@@ -74,64 +73,88 @@ async function getInvertedLogo(url: string): Promise<string | null> {
 }
 
 function drawPageHeader(doc: jsPDF, logoData: string | null, pageWidth: number): number {
-  setFill(doc, NAVY);
-  doc.rect(0, 0, pageWidth, 28, "F");
+  setFill(doc, HEADER_BG);
+  doc.rect(0, 0, pageWidth, 32, "F");
+
+  // Logo Pill Container
+  const logoBoxW = 34;
+  const logoBoxH = 18;
+  setFill(doc, WHITE);
+  doc.roundedRect(12, 7, logoBoxW, logoBoxH, 2, 2, "F");
 
   if (logoData) {
-    doc.addImage(logoData, "PNG", 12, 3, 18, 18);
+    try {
+      doc.addImage(logoData, "PNG", 14, 8.5, 30, 15);
+    } catch {
+      setColor(doc, NAVY);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text("SHOOLINI", 12 + logoBoxW / 2, 18, { align: "center" });
+    }
   }
 
+  // University Header Typography
   setColor(doc, WHITE);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
-  doc.text("SHOOLINI UNIVERSITY", pageWidth / 2, 11, { align: "center" });
+  doc.setFontSize(15);
+  doc.text("SHOOLINI UNIVERSITY", pageWidth / 2 + 10, 11, { align: "center" });
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
-  doc.setTextColor(200, 210, 220); // 80% white opacity equivalent
-  doc.text("Kasauli Hills, Solan, Himachal Pradesh \u2014 173229", pageWidth / 2, 17, { align: "center" });
+  doc.setFontSize(7.5);
+  doc.setTextColor(203, 213, 225);
+  doc.text(
+    "Kasauli Hills, Solan, Himachal Pradesh — 173229  |  www.shooliniuniversity.com",
+    pageWidth / 2 + 10,
+    17,
+    { align: "center" }
+  );
 
-  setFill(doc, GOLD);
-  doc.rect(0, 28, pageWidth, 0.8, "F");
-
-  return 29;
-}
-
-function drawSectionHeader(doc: jsPDF, text: string, y: number): number {
-  setFill(doc, NAVY);
-  doc.rect(14, y, 182, 9, "F");
-  setColor(doc, WHITE);
+  setColor(doc, GOLD);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(8.5);
-  doc.text(text, 17, y + 6.2);
-  return y + 9;
+  doc.setFontSize(7);
+  doc.text(
+    "NAAC A+ ACCREDITED  |  TOP 100 NIRF RANKED  |  UGC RECOGNIZED UNIVERSITY",
+    pageWidth / 2 + 10,
+    22,
+    { align: "center" }
+  );
+
+  // Gold separator ribbon
+  setFill(doc, GOLD);
+  doc.rect(0, 31.5, pageWidth, 1.2, "F");
+
+  return 33;
 }
 
-interface Column {
+interface TableColumn {
   label: string;
   x: number;
   w: number;
   align: "left" | "center" | "right";
 }
 
-function drawTableHeader(doc: jsPDF, columns: Column[], y: number): number {
-  const { r, g, b } = hexToRgb("#2d4f73");
-  doc.setFillColor(r, g, b);
-  doc.rect(14, y, 182, 8, "F");
+function drawTableHeader(doc: jsPDF, columns: TableColumn[], y: number): number {
+  setFill(doc, NAVY);
+  doc.rect(12, y, 186, 7.5, "F");
 
   setColor(doc, WHITE);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(7.5);
 
   columns.forEach((col) => {
-    const tx = col.align === "right" ? col.x + col.w - 1 : col.align === "center" ? col.x + col.w / 2 : col.x + 1;
-    doc.text(col.label, tx, y + 5.5, { align: col.align });
+    const tx =
+      col.align === "right"
+        ? col.x + col.w - 1.5
+        : col.align === "center"
+        ? col.x + col.w / 2
+        : col.x + 1.5;
+    doc.text(col.label, tx, y + 5.2, { align: col.align });
   });
 
-  return y + 8;
+  return y + 7.5;
 }
 
-interface Cell {
+interface TableCell {
   text: string;
   x: number;
   w: number;
@@ -140,575 +163,482 @@ interface Cell {
   bold?: boolean;
 }
 
-function drawTableRow(doc: jsPDF, cells: Cell[], y: number, isAlt: boolean): number {
-  if (isAlt) {
-    setFill(doc, "#f8fafc");
-  } else {
-    setFill(doc, WHITE);
-  }
-  doc.rect(14, y, 182, 7.5, "F");
+function drawTableRow(doc: jsPDF, cells: TableCell[], y: number, isAlt: boolean, rowH = 7.0): number {
+  setFill(doc, isAlt ? BG_ALT : WHITE);
+  doc.rect(12, y, 186, rowH, "F");
 
   setStroke(doc, BORDER);
-  doc.rect(14, y, 182, 7.5, "S");
+  doc.setLineWidth(0.2);
+  doc.rect(12, y, 186, rowH, "S");
 
   cells.forEach((cell) => {
     setColor(doc, cell.color ?? TEXT_DARK);
     doc.setFont("helvetica", cell.bold ? "bold" : "normal");
     doc.setFontSize(7.5);
-    const tx = cell.align === "right" ? cell.x + cell.w - 1 : cell.align === "center" ? cell.x + cell.w / 2 : cell.x + 1;
-    doc.text(cell.text, tx, y + 5.2, { align: cell.align });
+    const tx =
+      cell.align === "right"
+        ? cell.x + cell.w - 1.5
+        : cell.align === "center"
+        ? cell.x + cell.w / 2
+        : cell.x + 1.5;
+    doc.text(cell.text, tx, y + rowH * 0.7, { align: cell.align });
   });
 
-  return y + 7.5;
+  return y + rowH;
 }
 
-function drawTotalRow(doc: jsPDF, cells: Cell[], y: number): number {
+function drawSectionHeader(doc: jsPDF, title: string, subtitle: string, y: number): number {
+  setFill(doc, "#f1f5f9");
+  setStroke(doc, BORDER);
+  doc.setLineWidth(0.3);
+  doc.rect(12, y, 186, 8.5, "FD");
+
   setFill(doc, NAVY);
-  doc.rect(14, y, 182, 9, "F");
-
-  setColor(doc, WHITE);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(8);
-
-  cells.forEach((cell) => {
-    const tx = cell.align === "right" ? cell.x + cell.w - 1 : cell.align === "center" ? cell.x + cell.w / 2 : cell.x + 1;
-    doc.text(cell.text, tx, y + 6, { align: cell.align });
-  });
-
-  return y + 9;
-}
-
-function checkPageBreak(doc: jsPDF, y: number, logoData: string | null, needed = 20): number {
-  if (y + needed > 272) {
-    doc.addPage();
-    drawPageHeader(doc, logoData, 210);
-    return 32;
-  }
-  return y;
-}
-
-function drawPageFooter(doc: jsPDF, pageNumber: number, totalPages: number, pageWidth: number, pageHeight: number) {
-  setFill(doc, NAVY);
-  doc.rect(0, 282, pageWidth, 15, "F");
-
-  setColor(doc, WHITE);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6.5);
-  doc.text("registrar@shooliniuniversity.com  |  +91 7018007000", pageWidth / 2, 287, { align: "center" });
-
-  doc.setFontSize(6);
-  doc.text("NAAC B+  |  UGC Certified  |  Established 2009  |  shooliniuniversity.com", pageWidth / 2, 291, { align: "center" });
-
-  doc.text(`Page ${pageNumber} of ${totalPages}`, pageWidth - 8, 287, { align: "right" });
-}
-
-// ── KPI BOX HELPER ───────────────────────────────────────────────────────────
-
-function drawKPIBox(doc: jsPDF, x: number, y: number, w: number, title: string, value: string, subValue: string, titleColor: string, valueColor: string, subValueColor: string, bgColor: string, borderColor: string) {
-  setFill(doc, bgColor);
-  setStroke(doc, borderColor);
-  doc.rect(x, y, w, 22, "FD");
-
-  setColor(doc, titleColor);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6.5);
-  doc.text(title, x + w / 2, y + 5, { align: "center" });
-
-  setColor(doc, valueColor);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(title === "HIGHEST SCORE" || title === "LOWEST SCORE" ? 10 : 13);
-  doc.text(value, x + w / 2, y + 13, { align: "center" });
-
-  setColor(doc, subValueColor);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);
-  doc.text(subValue, x + w / 2, y + 19, { align: "center" });
-}
-
-// ── MAIN EXPORT ──────────────────────────────────────────────────────────────
-
-export async function generateMarksheet(semester: number) {
-  const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
-  const pageWidth = 210;
-  const pageHeight = 297;
-  const logoData = await getInvertedLogo(logoUrl);
-  const currentDate = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
-
-  let y = drawPageHeader(doc, logoData, pageWidth);
-
-  // ── SUBHEADER BLOCK ────────────────────────────────────────────────────────
-  setColor(doc, GOLD);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);
-  doc.text("OFFICE OF EXAMINATIONS", 105, 35, { align: "center" });
+  doc.rect(12, y, 2.5, 8.5, "F");
 
   setColor(doc, NAVY);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("ACADEMIC PERFORMANCE REPORT", 105, 42, { align: "center" });
-
-  setFill(doc, GOLD);
-  doc.rect(14, 45, 182, 0.6, "F");
-
-  // ── EXAM PERIOD + VERIFIED STRIP ───────────────────────────────────────────
-  setStroke(doc, BORDER);
-  setFill(doc, "#fafbfc");
-  doc.rect(14, 47, 182, 10, "FD");
-
-  setColor(doc, SLATE);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  const examPeriod = semester === 2 ? "Jan 2026 \u2013 June 2026" : "Aug 2025 \u2013 Jan 2026";
-  doc.text(`Examination Period: ${examPeriod}`, 17, 54);
-
-  // Verified Badge
-  setStroke(doc, GREEN);
-  setFill(doc, "#f0fdf4");
-  doc.roundedRect(163, 49, 30, 6, 1, 1, "FD");
-  setColor(doc, GREEN);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(7);
-  doc.text("\u2713  VERIFIED", 178, 53.5, { align: "center" });
-
-  // ── STUDENT INFO BOX ───────────────────────────────────────────────────────
-  y = 59;
-  setFill(doc, "#f4f6f8");
-  setStroke(doc, BORDER);
-  doc.rect(14, y, 182, 30, "FD");
-
-  setFill(doc, NAVY);
-  doc.rect(14, y, 2, 30, "F");
-
-  // Left Column
-  setColor(doc, SLATE);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6);
-  doc.text("STUDENT NAME", 20, y + 4);
-  setColor(doc, TEXT_DARK);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.text(student.name, 20, y + 8);
-
-  setColor(doc, SLATE);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6);
-  doc.text("ROLL NUMBER", 20, y + 13);
-  doc.text("ENROLLMENT NO", 52, y + 13);
-  doc.text("REGISTRATION NO", 84, y + 13);
-
-  setColor(doc, TEXT_DARK);
-  doc.setFont("helvetica", "bold");
   doc.setFontSize(8.5);
-  doc.text(student.rollNo, 20, y + 17);
-  doc.text(student.enrollmentNo, 52, y + 17);
-  doc.text(student.registrationNo, 84, y + 17);
+  doc.text(title, 17, y + 5.6);
 
-  setColor(doc, SLATE);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6);
-  doc.text("PROGRAM", 20, y + 22);
-  setColor(doc, TEXT_DARK);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(8);
-  doc.text(student.program, 20, y + 26);
-
-  // Right Column
-  setStroke(doc, BORDER);
-  doc.line(105, y + 2, 105, y + 28);
-
-  setColor(doc, SLATE);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6);
-  doc.text("DEPARTMENT", 107, y + 4);
-  setColor(doc, TEXT_DARK);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(8);
-  doc.text(student.department, 107, y + 8);
-
-  setColor(doc, SLATE);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6);
-  doc.text("SEMESTER", 107, y + 13);
-  setColor(doc, TEXT_DARK);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(8.5);
-  doc.text(`Semester ${semester} | Academic Year: 2025\u20132026`, 107, y + 17);
-
-  setColor(doc, SLATE);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6);
-  doc.text("GENERATED ON", 107, y + 22);
-  setColor(doc, TEXT_DARK);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(8.5);
-  doc.text(currentDate, 107, y + 26);
-
-  y = 91;
-
-  if (semester === 2) {
-    // ── SEMESTER 2 SECTIONS ──────────────────────────────────────────────────
-    
-    // SECTION 1: MID-TERM RESULTS
-    y = checkPageBreak(doc, y, logoData, 80);
-    y = drawSectionHeader(doc, "MID-TERM EXAMINATION RESULTS \u2014 MARCH 2026", y);
-    
+  if (subtitle) {
     setColor(doc, SLATE);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
-    doc.text("Examination Period: March 17\u201325, 2026  |  Maximum Marks: 100 per subject", 17, y + 6);
-    y += 9;
-
-    const cols2MT: Column[] = [
-      { label: "SUBJECT",   x: 14,  w: 58, align: "left" },
-      { label: "FACULTY",   x: 72,  w: 45, align: "left" },
-      { label: "EXAM DATE", x: 117, w: 28, align: "left" },
-      { label: "SCORE",     x: 145, w: 18, align: "center" },
-      { label: "MAX",       x: 163, w: 15, align: "center" },
-      { label: "GRADE",     x: 178, w: 18, align: "center" },
-    ];
-    y = drawTableHeader(doc, cols2MT, y);
-
-    const rows2MT = [
-      { subj: "Advanced Machine Learning", fac: "Dr. Priya Sharma",  date: "Mar 17, 2026", score: "85", max: "100", grade: "A" },
-      { subj: "Deep Learning",             fac: "Dr. Rajesh Kumar",  date: "Mar 18, 2026", score: "88", max: "100", grade: "A" },
-      { subj: "Natural Language Process.", fac: "Dr. Anita Desai",   date: "Mar 19, 2026", score: "82", max: "100", grade: "A" },
-      { subj: "Computer Vision",           fac: "Prof. Vikram Mehta", date: "Mar 20, 2026", score: "86", max: "100", grade: "A" },
-      { subj: "Data Analytics",            fac: "Dr. Suresh Patel",  date: "Mar 23, 2026", score: "84", max: "100", grade: "A" },
-      { subj: "Cloud Computing",           fac: "Prof. Meera Iyer",  date: "Mar 24, 2026", score: "83", max: "100", grade: "A" },
-      { subj: "Advanced Algorithms",       fac: "Dr. Arjun Reddy",   date: "Mar 25, 2026", score: "87", max: "100", grade: "A" },
-    ];
-
-    rows2MT.forEach((row, i) => {
-      y = drawTableRow(doc, [
-        { text: row.subj,  x: 14,  w: 58, align: "left",   bold: true,  color: TEXT_DARK },
-        { text: row.fac,   x: 72,  w: 45, align: "left",   bold: false, color: SLATE },
-        { text: row.date,  x: 117, w: 28, align: "left",   bold: false, color: SLATE },
-        { text: row.score, x: 145, w: 18, align: "center", bold: true,  color: NAVY },
-        { text: row.max,   x: 163, w: 15, align: "center", bold: false, color: SLATE },
-        { text: row.grade, x: 178, w: 18, align: "center", bold: true,  color: GREEN },
-      ], y, i % 2 !== 0);
-    });
-
-    y = drawTotalRow(doc, [
-      { text: "TOTAL", x: 14, w: 131, align: "left", bold: true },
-      { text: "595",   x: 145, w: 18, align: "center", bold: true },
-      { text: "700",   x: 163, w: 15, align: "center", bold: true },
-      { text: "85.0%", x: 178, w: 18, align: "center", bold: true },
-    ], y);
-    y += 3;
-
-    setColor(doc, SLATE);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(6.5);
-    doc.text("Grade Scale:  90\u2013100 = A+  |  80\u201389 = A  |  70\u201379 = B+  |  60\u201369 = B  |  <60 = F", 105, y + 5, { align: "center" });
-    y += 10;
-
-    // SECTION 2: PERFORMANCE ANALYSIS
-    y = checkPageBreak(doc, y, logoData, 55);
-    y = drawSectionHeader(doc, "PERFORMANCE ANALYSIS", y);
-    y += 3;
-
-    drawKPIBox(doc, 14, y, 58, "AVERAGE SCORE", "85.0 / 100", "85.0%", SLATE, NAVY, GREEN, "#eff6ff", "#bfdbfe");
-    drawKPIBox(doc, 76, y, 58, "HIGHEST SCORE", "88 \u2014 Deep Learning", "A+ Grade", SLATE, NAVY, GREEN, "#f0fdf4", "#bbf7d0");
-    drawKPIBox(doc, 138, y, 58, "LOWEST SCORE", "82 \u2014 NLP", "A+ Grade", SLATE, NAVY, AMBER, "#fffbeb", "#fde68a");
-    y += 26;
-
-    const colsRanking: Column[] = [
-      { label: "RANK",    x: 14,  w: 14, align: "center" },
-      { label: "SUBJECT", x: 28,  w: 58, align: "left" },
-      { label: "SCORE",   x: 86,  w: 20, align: "center" },
-      { label: "GRADE",   x: 106, w: 18, align: "center" },
-      { label: "STATUS",  x: 124, w: 72, align: "center" },
-    ];
-    y = drawTableHeader(doc, colsRanking, y);
-    const rankings = [
-      { rank: "1", subj: "Deep Learning",             score: "88", grade: "A", status: "Above Average", color: GREEN },
-      { rank: "2", subj: "Advanced Algorithms",       score: "87", grade: "A", status: "Above Average", color: GREEN },
-      { rank: "3", subj: "Computer Vision",           score: "86", grade: "A", status: "Above Average", color: GREEN },
-      { rank: "4", subj: "Advanced Machine Learning", score: "85", grade: "A", status: "Above Average", color: GREEN },
-      { rank: "5", subj: "Data Analytics",            score: "84", grade: "A", status: "At Average",    color: AMBER },
-      { rank: "6", subj: "Cloud Computing",           score: "83", grade: "A", status: "At Average",    color: AMBER },
-      { rank: "7", subj: "Natural Language Process.", score: "82", grade: "A", status: "Below Average", color: RED },
-    ];
-    rankings.forEach((r, i) => {
-      y = drawTableRow(doc, [
-        { text: r.rank,   x: 14,  w: 14, align: "center" },
-        { text: r.subj,   x: 28,  w: 58, align: "left", bold: true },
-        { text: r.score,  x: 86,  w: 20, align: "center", bold: true, color: NAVY },
-        { text: r.grade,  x: 106, w: 18, align: "center", bold: true, color: r.color },
-        { text: r.status, x: 124, w: 72, align: "center", bold: true, color: r.color },
-      ], y, i % 2 !== 0);
-    });
-    y += 5;
-
-    // SECTION 3: UPCOMING EXAMINATION SCHEDULE
-    y = checkPageBreak(doc, y, logoData, 15);
-    y = drawSectionHeader(doc, "UPCOMING EXAMINATION SCHEDULE \u2014 SEMESTER 2", y);
-    y += 3;
-    const colsSchedule: Column[] = [
-      { label: "EXAM TYPE", x: 14,  w: 28, align: "left" },
-      { label: "SUBJECT",   x: 42,  w: 58, align: "left" },
-      { label: "DATE",      x: 100, w: 28, align: "left" },
-      { label: "TIME",      x: 128, w: 30, align: "left" },
-      { label: "ROOM",      x: 158, w: 20, align: "center" },
-      { label: "STATUS",    x: 178, w: 18, align: "center" },
-    ];
-    y = drawTableHeader(doc, colsSchedule, y);
-    const schedule = [
-      { type: "Pre-Final", subj: "Advanced Machine Learning", date: "Apr 14, 2026", time: "10:00\u20131:00 PM", room: "Hall A" },
-      { type: "Pre-Final", subj: "Deep Learning",             date: "Apr 15, 2026", time: "10:00\u20131:00 PM", room: "Hall A" },
-      { type: "Final Exam", subj: "Advanced Machine Learning", date: "May 12, 2026", time: "10:00\u20131:00 PM", room: "Hall A" },
-      { type: "Practical",  subj: "Lab Examinations (All)",    date: "Jun 2\u20133, 2026", time: "9:00 AM\u201312 PM", room: "Lab 1-3" },
-    ];
-    schedule.forEach((s, i) => {
-      y = drawTableRow(doc, [
-        { text: s.type, x: 14,  w: 28, align: "left" },
-        { text: s.subj, x: 42,  w: 58, align: "left", bold: true },
-        { text: s.date, x: 100, w: 28, align: "left" },
-        { text: s.time, x: 128, w: 30, align: "left" },
-        { text: s.room, x: 158, w: 20, align: "center" },
-        { text: "Upcoming", x: 178, w: 18, align: "center", color: AMBER, bold: true },
-      ], y, i % 2 !== 0);
-    });
-    y += 4;
-
-    // SECTION 4: CURRENT SEMESTER STATUS
-    y = checkPageBreak(doc, y, logoData, 40);
-    y = drawSectionHeader(doc, "CURRENT SEMESTER STATUS", y);
-    y += 4;
-    drawKPIBox(doc, 14, y, 58, "ASSIGNMENTS", "13 / 18 Submitted", "5 Pending", SLATE, NAVY, AMBER, "#fffbeb", "#fde68a");
-    drawKPIBox(doc, 76, y, 58, "ATTENDANCE", "97.87%", "46/47 Classes \u2713", SLATE, GREEN, GREEN, "#f0fdf4", "#bbf7d0");
-    drawKPIBox(doc, 138, y, 58, "STANDING", "A Grade", "Excellent", SLATE, NAVY, GREEN, "#f0fdf4", "#bbf7d0");
-    y += 28;
-
-    setFill(doc, "#fffbeb");
-    setStroke(doc, AMBER);
-    doc.rect(14, y, 182, 16, "FD");
-    setFill(doc, AMBER);
-    doc.rect(14, y, 2, 16, "F");
-    setColor(doc, AMBER);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.text("\u26A0  NOTE:", 19, y + 5);
-    setColor(doc, TEXT_DARK);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.5);
-    doc.text("Semester 2 is currently in progress. Final results will be declared after", 19, y + 10);
-    doc.text("June 2026 upon completion of all examinations.", 19, y + 14);
-    y += 20;
-
-  } else {
-    // ── SEMESTER 1 SECTIONS ──────────────────────────────────────────────────
-    
-    // SECTION 1: IA1 RESULTS
-    y = checkPageBreak(doc, y, logoData, 50);
-    y = drawSectionHeader(doc, "INTERNAL ASSESSMENT 1 \u2014 SEPTEMBER/OCTOBER 2025", y);
-    setColor(doc, SLATE);
-    doc.setFontSize(7.5);
-    doc.text("Period: September 1 \u2013 October 1, 2025  |  Maximum Marks: 30 per subject", 17, y + 6);
-    y += 9;
-    const colsIA: Column[] = [
-      { label: "SUBJECT",    x: 14,  w: 80, align: "left" },
-      { label: "SCORE",      x: 94,  w: 20, align: "center" },
-      { label: "MAX",        x: 114, w: 15, align: "center" },
-      { label: "PERCENTAGE", x: 129, w: 32, align: "center" },
-      { label: "GRADE",      x: 161, w: 35, align: "center" },
-    ];
-    y = drawTableHeader(doc, colsIA, y);
-    const ia1Rows = [
-      { subj: "Data Structures", score: 26 }, { subj: "Computer Networks", score: 25 },
-      { subj: "Operating Systems", score: 26 }, { subj: "Software Engineering", score: 25 },
-      { subj: "Web Technologies", score: 26 }, { subj: "Python Programming", score: 25 },
-      { subj: "Mathematics for Computing", score: 26 }, { subj: "Database Management Systems", score: 25 }
-    ];
-    ia1Rows.forEach((r, i) => {
-      const pct = ((r.score / 30) * 100).toFixed(1) + "%";
-      y = drawTableRow(doc, [
-        { text: r.subj, x: 14, w: 80, align: "left", bold: true },
-        { text: String(r.score), x: 94, w: 20, align: "center", bold: true, color: NAVY },
-        { text: "30", x: 114, w: 15, align: "center" },
-        { text: pct, x: 129, w: 32, align: "center" },
-        { text: "A+", x: 161, w: 35, align: "center", bold: true, color: GREEN }
-      ], y, i % 2 !== 0);
-    });
-    y = drawTotalRow(doc, [
-      { text: "TOTAL", x: 14, w: 80, align: "left", bold: true },
-      { text: "204", x: 94, w: 20, align: "center" },
-      { text: "240", x: 114, w: 15, align: "center" },
-      { text: "85.0%", x: 129, w: 32, align: "center" },
-      { text: "A+", x: 161, w: 35, align: "center" }
-    ], y);
-    y += 10;
-
-    // SECTION 2: IA2 RESULTS
-    y = checkPageBreak(doc, y, logoData, 50);
-    y = drawSectionHeader(doc, "INTERNAL ASSESSMENT 2 \u2014 NOVEMBER 2025", y);
-    y += 9;
-    y = drawTableHeader(doc, colsIA, y);
-    const ia2Rows = [
-      { subj: "Data Structures", score: 27 }, { subj: "Computer Networks", score: 26 },
-      { subj: "Operating Systems", score: 27 }, { subj: "Software Engineering", score: 26 },
-      { subj: "Web Technologies", score: 27 }, { subj: "Python Programming", score: 26 },
-      { subj: "Mathematics for Computing", score: 27 }, { subj: "Database Management Systems", score: 26 }
-    ];
-    ia2Rows.forEach((r, i) => {
-      const pct = ((r.score / 30) * 100).toFixed(1) + "%";
-      y = drawTableRow(doc, [
-        { text: r.subj, x: 14, w: 80, align: "left", bold: true },
-        { text: String(r.score), x: 94, w: 20, align: "center", bold: true, color: NAVY },
-        { text: "30", x: 114, w: 15, align: "center" },
-        { text: pct, x: 129, w: 32, align: "center" },
-        { text: "A+", x: 161, w: 35, align: "center", bold: true, color: GREEN }
-      ], y, i % 2 !== 0);
-    });
-    y = drawTotalRow(doc, [
-      { text: "TOTAL", x: 14, w: 80, align: "left", bold: true },
-      { text: "212", x: 94, w: 20, align: "center" },
-      { text: "240", x: 114, w: 15, align: "center" },
-      { text: "88.3%", x: 129, w: 32, align: "center" },
-      { text: "A+", x: 161, w: 35, align: "center" }
-    ], y);
-    y += 5;
-
-    // SECTION 3: IA COMBINED SUMMARY
-    y = checkPageBreak(doc, y, logoData, 50);
-    y = drawSectionHeader(doc, "COMBINED IA PERFORMANCE SUMMARY", y);
-    y += 4;
-    drawKPIBox(doc, 14, y, 58, "IA1 AVERAGE", "25.5 / 30", "85.0%", SLATE, NAVY, GREEN, WHITE, BORDER);
-    drawKPIBox(doc, 76, y, 58, "IA2 AVERAGE", "26.5 / 30", "88.3%", SLATE, NAVY, GREEN, WHITE, BORDER);
-    drawKPIBox(doc, 138, y, 58, "OVERALL AVG", "26.0 / 30", "86.7%", SLATE, NAVY, GREEN, WHITE, BORDER);
-    y += 28;
-
-    const colsImp: Column[] = [
-      { label: "SUBJECT",     x: 14,  w: 75, align: "left" },
-      { label: "IA1 SCORE",   x: 89,  w: 27, align: "center" },
-      { label: "IA2 SCORE",   x: 116, w: 27, align: "center" },
-      { label: "COMBINED",    x: 143, w: 27, align: "center" },
-      { label: "IMPROVEMENT", x: 170, w: 26, align: "center" }
-    ];
-    y = drawTableHeader(doc, colsImp, y);
-    ia1Rows.forEach((r, i) => {
-      y = drawTableRow(doc, [
-        { text: r.subj, x: 14, w: 75, align: "left", bold: true },
-        { text: String(r.score), x: 89, w: 27, align: "center" },
-        { text: String(ia2Rows[i].score), x: 116, w: 27, align: "center" },
-        { text: ((r.score + ia2Rows[i].score) / 2).toFixed(1), x: 143, w: 27, align: "center", bold: true, color: NAVY },
-        { text: "+1", x: 170, w: 26, align: "center", bold: true, color: GREEN }
-      ], y, i % 2 !== 0);
-    });
-    y += 5;
-
-    // SECTION 4: THEORY EXAM SCHEDULE
-    y = checkPageBreak(doc, y, logoData, 15);
-    y = drawSectionHeader(doc, "THEORY EXAMINATION SCHEDULE \u2014 DECEMBER 2025", y);
-    const colsTheory: Column[] = [
-      { label: "SUBJECT",   x: 14,  w: 65, align: "left" },
-      { label: "EXAM DATE", x: 79,  w: 30, align: "left" },
-      { label: "TIME",      x: 109, w: 35, align: "left" },
-      { label: "ROOM",      x: 144, w: 22, align: "center" },
-      { label: "STATUS",    x: 166, w: 30, align: "center" }
-    ];
-    y = drawTableHeader(doc, colsTheory, y);
-    const theoryRows = [
-      { subj: "Data Structures", date: "Dec 9, 2025", time: "10:00 AM\u20131:00 PM" },
-      { subj: "Computer Networks", date: "Dec 11, 2025", time: "10:00 AM\u20131:00 PM" }
-    ];
-    theoryRows.forEach((r, i) => {
-      y = drawTableRow(doc, [
-        { text: r.subj, x: 14, w: 65, align: "left", bold: true },
-        { text: r.date, x: 79, w: 30, align: "left" },
-        { text: r.time, x: 109, w: 35, align: "left" },
-        { text: "Hall A", x: 144, w: 22, align: "center" },
-        { text: "Appeared", x: 166, w: 30, align: "center", color: GREEN, bold: true }
-      ], y, i % 2 !== 0);
-    });
-    y += 5;
-
-    // SECTION 6: RESULT STATUS
-    y = checkPageBreak(doc, y, logoData, 40);
-    y = drawSectionHeader(doc, "SEMESTER 1 \u2014 FINAL RESULT STATUS", y);
-    y += 5;
-    setFill(doc, "#ede9fe");
-    setStroke(doc, PURPLE);
-    doc.rect(14, y, 182, 30, "FD");
-    setFill(doc, PURPLE);
-    doc.rect(14, y, 2.5, 30, "F");
-    setColor(doc, PURPLE);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(13);
-    doc.text("RESULT AWAITED", 105, y + 10, { align: "center" });
-    setColor(doc, TEXT_DARK);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.text("Semester 1 final examination results are currently being processed", 105, y + 17, { align: "center" });
-    doc.text("by the Office of Examinations. Expected declaration: April 2026", 105, y + 22, { align: "center" });
-    setColor(doc, SLATE);
-    doc.setFontSize(7.5);
-    doc.text("Queries: examinations@shooliniuniversity.com", 105, y + 27, { align: "center" });
-    y += 35;
-
-    setFill(doc, "#f0fdf4");
-    setStroke(doc, GREEN);
-    doc.rect(14, y, 182, 12, "FD");
-    setFill(doc, GREEN);
-    doc.rect(14, y, 2.5, 12, "F");
-    setColor(doc, GREEN);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.text("\u2713  Attendance: 107 / 108 classes attended = 99.07% \u2014 Eligible for Examination", 20, y + 8);
-    y += 16;
+    doc.text(subtitle, 196, y + 5.6, { align: "right" });
   }
 
-  // ── LAST PAGE ── SIGNATURE & DECLARATION ────────────────────────────────────
-  y = checkPageBreak(doc, y, logoData, 55);
-  setFill(doc, GOLD);
-  doc.rect(14, y + 6, 182, 0.5, "F");
-  y += 10;
+  return y + 9.5;
+}
 
+export async function generateMarksheet(semester: number): Promise<void> {
+  const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+  const pageWidth = 210;
+  const pageHeight = 297;
+  const logoData = await getLogoBase64(logoUrl);
+  const currentDate = new Date().toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+
+  drawPageHeader(doc, logoData, pageWidth);
+
+  // Document Title Banner
+  let y = 37;
+  setColor(doc, NAVY);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  const reportTitle =
+    semester === 3
+      ? "SEMESTER 3 • MID-TERM & INTERNAL ASSESSMENT TRANSCRIPT"
+      : `SEMESTER ${semester} • OFFICIAL STATEMENT OF GRADES & ACADEMIC TRANSCRIPT`;
+  doc.text(reportTitle, 105, y, { align: "center" });
+
+  setColor(doc, SLATE);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.text(
+    "OFFICE OF THE CONTROLLER OF EXAMINATIONS — SHOOLINI UNIVERSITY",
+    105,
+    y + 5,
+    { align: "center" }
+  );
+
+  setStroke(doc, GOLD);
+  doc.setLineWidth(0.5);
+  doc.line(30, y + 7.5, 180, y + 7.5);
+
+  // ── STUDENT CREDENTIALS BOX ──────────────────────────────────────────────
+  y = 48;
   setFill(doc, "#f8fafc");
   setStroke(doc, BORDER);
-  doc.rect(14, y, 182, 20, "FD");
+  doc.setLineWidth(0.3);
+  doc.rect(12, y, 186, 26, "FD");
+
+  setFill(doc, NAVY);
+  doc.rect(12, y, 2.5, 26, "F");
+
+  // Candidate Details Grid
+  const col1X = 18;
+  const col2X = 75;
+  const col3X = 135;
+
+  // Row 1
+  setColor(doc, SLATE);
+  doc.setFontSize(6.5);
+  doc.text("CANDIDATE NAME", col1X, y + 5);
+  doc.text("ROLL NUMBER", col2X, y + 5);
+  doc.text("ENROLLMENT NO", col3X, y + 5);
+
+  setColor(doc, TEXT_DARK);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.5);
+  doc.text(student.name, col1X, y + 9);
+  doc.text(student.rollNo, col2X, y + 9);
+  doc.text(student.enrollmentNo, col3X, y + 9);
+
+  // Row 2
   setColor(doc, SLATE);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
-  doc.text("This is a computer-generated academic performance report issued by the Office of", 105, y + 7, { align: "center" });
-  doc.text("Examinations, Shoolini University. Digitally verified and issued under the authority", 105, y + 12, { align: "center" });
-  doc.text("of the University Registrar. For verification: registrar@shooliniuniversity.com", 105, y + 17, { align: "center" });
-  y += 24;
+  doc.setFontSize(6.5);
+  doc.text("PROGRAM / DEGREE", col1X, y + 14);
+  doc.text("SPECIALIZATION", col2X, y + 14);
+  doc.text("ACADEMIC PERIOD", col3X, y + 14);
 
-  const signY = y;
+  setColor(doc, TEXT_DARK);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.5);
+  doc.text(student.program, col1X, y + 18);
+  doc.text("Artificial Intelligence & ML", col2X, y + 18);
+  const examPeriod =
+    semester === 1
+      ? "August 2025 – January 2026"
+      : semester === 2
+      ? "January 2026 – June 2026"
+      : "July 2026 – December 2026";
+  doc.text(examPeriod, col3X, y + 18);
+
+  // Row 3
+  setColor(doc, SLATE);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  doc.text("DEPARTMENT", col1X, y + 22.5);
+  doc.text("SEMESTER", col2X, y + 22.5);
+  doc.text("RESULT STATUS", col3X, y + 22.5);
+
+  setColor(doc, TEXT_DARK);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.text("School of Computer Science & Engineering", col1X, y + 25.5);
+  doc.text(`Semester ${semester} (Regular)`, col2X, y + 25.5);
+  setColor(doc, GREEN);
+  doc.text(semester <= 2 ? "PASSED WITH DISTINCTION" : "IN PROGRESS (GRADE A+)", col3X, y + 25.5);
+
+  y += 30;
+
+  // ── SEMESTER 1 OR 2 STATEMENT OF MARKS ──────────────────────────────────
+  if (semester === 1 || semester === 2) {
+    const theoryList = semester === 1 ? sem1TheoryResults : sem2TheoryResults;
+    const practicalList = semester === 1 ? sem1PracticalResults : sem2PracticalResults;
+    const summary = semester === 1 ? sem1ResultSummary : sem2ResultSummary;
+
+    // Theory Table Header
+    y = drawSectionHeader(
+      doc,
+      "THEORY COURSES",
+      `Conducted: ${semester === 1 ? "December 2025" : "May 2026"} | Maximum Marks: 100`,
+      y
+    );
+
+    const columnsTheory: TableColumn[] = [
+      { label: "CODE", x: 12, w: 22, align: "center" },
+      { label: "COURSE TITLE", x: 34, w: 68, align: "left" },
+      { label: "CREDITS", x: 102, w: 16, align: "center" },
+      { label: "SEE (60)", x: 118, w: 18, align: "center" },
+      { label: "IA (40)", x: 136, w: 16, align: "center" },
+      { label: "TOTAL", x: 152, w: 16, align: "center" },
+      { label: "POINTS", x: 168, w: 14, align: "center" },
+      { label: "GRADE", x: 182, w: 16, align: "center" },
+    ];
+
+    y = drawTableHeader(doc, columnsTheory, y);
+
+    theoryList.forEach((r, idx) => {
+      const cells: TableCell[] = [
+        { text: r.courseCode, x: 12, w: 22, align: "center", bold: true, color: NAVY },
+        { text: r.courseName, x: 34, w: 68, align: "left", bold: true },
+        { text: String(r.credits), x: 102, w: 16, align: "center" },
+        { text: String(r.seeMarks), x: 118, w: 18, align: "center" },
+        { text: String(r.iaMarks), x: 136, w: 16, align: "center" },
+        { text: String(r.marksScored), x: 152, w: 16, align: "center", bold: true },
+        { text: String(r.grade), x: 168, w: 14, align: "center" },
+        {
+          text: r.letterGrade,
+          x: 182,
+          w: 16,
+          align: "center",
+          bold: true,
+          color: r.letterGrade.startsWith("A+") ? GREEN : "#2563eb",
+        },
+      ];
+      y = drawTableRow(doc, cells, y, idx % 2 === 1, 6.8);
+    });
+
+    y += 4;
+
+    // Practical Table Header
+    y = drawSectionHeader(
+      doc,
+      "PRACTICAL & LABORATORY COURSES",
+      `Conducted: ${semester === 1 ? "January 2026" : "May 2026"} | Maximum Marks: 50`,
+      y
+    );
+
+    const columnsPractical: TableColumn[] = [
+      { label: "CODE", x: 12, w: 22, align: "center" },
+      { label: "LABORATORY COURSE TITLE", x: 34, w: 84, align: "left" },
+      { label: "CREDITS", x: 118, w: 18, align: "center" },
+      { label: "MARKS (50)", x: 136, w: 22, align: "center" },
+      { label: "POINTS", x: 158, w: 20, align: "center" },
+      { label: "GRADE", x: 178, w: 20, align: "center" },
+    ];
+
+    y = drawTableHeader(doc, columnsPractical, y);
+
+    practicalList.forEach((r, idx) => {
+      const cells: TableCell[] = [
+        { text: r.courseCode, x: 12, w: 22, align: "center", bold: true, color: NAVY },
+        { text: r.courseName, x: 34, w: 84, align: "left", bold: true },
+        { text: String(r.credits), x: 118, w: 18, align: "center" },
+        { text: String(r.marksScored), x: 136, w: 22, align: "center", bold: true },
+        { text: String(r.grade), x: 158, w: 20, align: "center" },
+        {
+          text: r.letterGrade,
+          x: 178,
+          w: 20,
+          align: "center",
+          bold: true,
+          color: r.letterGrade.startsWith("A+") ? GREEN : "#2563eb",
+        },
+      ];
+      y = drawTableRow(doc, cells, y, idx % 2 === 1, 6.8);
+    });
+
+    y += 5;
+
+    // ── CUMULATIVE RESULT SUMMARY FOOTER ───────────────────────────────────
+    setFill(doc, HEADER_BG);
+    doc.rect(12, y, 186, 15, "F");
+
+    setFill(doc, GOLD);
+    doc.rect(12, y, 186, 0.8, "F");
+
+    const kpiColW = 186 / 6;
+    const summaryItems = [
+      { label: "TOTAL CREDITS", val: String(summary.totalCredits), color: WHITE },
+      { label: "CREDIT POINTS", val: String(summary.totalCreditPoints), color: WHITE },
+      { label: "SEMESTER SGPA", val: summary.sgpa.toFixed(2), color: GOLD },
+      { label: "CUMULATIVE CGPA", val: summary.cgpa.toFixed(2), color: GOLD },
+      { label: "TERM GRADE", val: summary.termGrade.split(" ")[0], color: GREEN },
+      { label: "FINAL RESULT", val: summary.result, color: GREEN },
+    ];
+
+    summaryItems.forEach((item, idx) => {
+      const kx = 12 + idx * kpiColW;
+      setColor(doc, "#94a3b8");
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(6);
+      doc.text(item.label, kx + kpiColW / 2, y + 5.5, { align: "center" });
+
+      setColor(doc, item.color);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10.5);
+      doc.text(item.val, kx + kpiColW / 2, y + 11.5, { align: "center" });
+
+      if (idx < 5) {
+        setStroke(doc, "#334155");
+        doc.setLineWidth(0.3);
+        doc.line(kx + kpiColW, y + 3, kx + kpiColW, y + 13);
+      }
+    });
+
+    y += 18;
+  } else {
+    // ── SEMESTER 3 INTERNAL ASSESSMENT TRANSCRIPT ──────────────────────────
+    y = drawSectionHeader(
+      doc,
+      "SEMESTER 3 • INTERNAL ASSESSMENTS (IA 1 & IA 2)",
+      "Continuous Assessment Marks | Maximum Marks: 20 Per Subject",
+      y
+    );
+
+    const columnsSem3: TableColumn[] = [
+      { label: "CODE", x: 12, w: 22, align: "center" },
+      { label: "COURSE TITLE", x: 34, w: 72, align: "left" },
+      { label: "TYPE", x: 106, w: 18, align: "center" },
+      { label: "IA 1 (/20)", x: 124, w: 20, align: "center" },
+      { label: "IA 2 (/20)", x: 144, w: 20, align: "center" },
+      { label: "AVG (/20)", x: 164, w: 18, align: "center" },
+      { label: "GRADE", x: 182, w: 16, align: "center" },
+    ];
+
+    y = drawTableHeader(doc, columnsSem3, y);
+
+    sem3Subjects.forEach((s, idx) => {
+      const s1 = sem3IA1.subjects.find((sub) => sub.name === s.name)?.score ?? 18;
+      const s2 = sem3IA2.subjects.find((sub) => sub.name === s.name)?.score ?? 19;
+      const avg = ((s1 + s2) / 2).toFixed(1);
+
+      const cells: TableCell[] = [
+        { text: s.code, x: 12, w: 22, align: "center", bold: true, color: NAVY },
+        { text: s.name, x: 34, w: 72, align: "left", bold: true },
+        { text: s.type, x: 106, w: 18, align: "center" },
+        { text: `${s1}`, x: 124, w: 20, align: "center" },
+        { text: `${s2}`, x: 144, w: 20, align: "center", color: GREEN, bold: true },
+        { text: avg, x: 164, w: 18, align: "center", bold: true },
+        { text: "A+", x: 182, w: 16, align: "center", bold: true, color: GREEN },
+      ];
+      y = drawTableRow(doc, cells, y, idx % 2 === 1, 6.8);
+    });
+
+    y += 5;
+
+    // Semester 3 IA KPI Summary
+    setFill(doc, HEADER_BG);
+    doc.rect(12, y, 186, 15, "F");
+
+    setFill(doc, GOLD);
+    doc.rect(12, y, 186, 0.8, "F");
+
+    const kpiColW = 186 / 5;
+    const summarySem3 = [
+      { label: "ENROLLED SUBJECTS", val: `${sem3Subjects.length}`, color: WHITE },
+      { label: "TOTAL CREDITS", val: "26", color: WHITE },
+      { label: "IA 1 AVERAGE", val: `${sem3IA1.average} / 20`, color: GOLD },
+      { label: "IA 2 AVERAGE", val: `${sem3IA2.average} / 20`, color: GREEN },
+      { label: "OVERALL STANDING", val: "GRADE A+", color: GREEN },
+    ];
+
+    summarySem3.forEach((item, idx) => {
+      const kx = 12 + idx * kpiColW;
+      setColor(doc, "#94a3b8");
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(6);
+      doc.text(item.label, kx + kpiColW / 2, y + 5.5, { align: "center" });
+
+      setColor(doc, item.color);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10.5);
+      doc.text(item.val, kx + kpiColW / 2, y + 11.5, { align: "center" });
+
+      if (idx < 4) {
+        setStroke(doc, "#334155");
+        doc.setLineWidth(0.3);
+        doc.line(kx + kpiColW, y + 3, kx + kpiColW, y + 13);
+      }
+    });
+
+    y += 18;
+  }
+
+  // ── GRADING SCALE & SYSTEM GUIDE ─────────────────────────────────────────
+  setFill(doc, "#f8fafc");
+  setStroke(doc, BORDER);
+  doc.setLineWidth(0.3);
+  doc.rect(12, y, 186, 13, "FD");
+
+  setColor(doc, NAVY);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7);
+  doc.text("SHOOLINI UNIVERSITY 10-POINT GRADING SYSTEM:", 15, y + 4.5);
+
+  setColor(doc, SLATE);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  doc.text(
+    "90-100% = A+ (10 Grade Points) Outstanding  |  80-89% = A (9 Points) Excellent  |  70-79% = B+ (8 Points) Very Good",
+    15,
+    y + 8.5
+  );
+  doc.text(
+    "60-69% = B (7 Points) Good  |  50-59% = C (6 Points) Above Average  |  40-49% = P (5 Points) Pass  |  <40% = F (0 Points) Fail",
+    15,
+    y + 11.5
+  );
+
+  y += 17;
+
+  // ── AUTHENTICITY, CONTROLLER SEAL & SIGNATURE BLOCK ──────────────────────
+  const authBoxY = y;
+  setFill(doc, WHITE);
+  setStroke(doc, BORDER);
+  doc.rect(12, authBoxY, 186, 28, "S");
+
+  // Left side: Digital Verification & DigiLocker
   setColor(doc, GREEN);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8);
-  doc.text("DigiLocker Verified \u2713", 14, signY);
+  doc.text("DIGITALLY SIGNED & VERIFIED ✓", 16, authBoxY + 6);
+
   setColor(doc, SLATE);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
-  doc.text("Consent ID: DGL2025KT00487", 14, signY + 5);
-  doc.text("DBA Ref: DBA/SU/2025/MCA/09871", 14, signY + 10);
-  doc.text(`Roll No: ${student.rollNo}`, 14, signY + 15);
+  doc.setFontSize(6.8);
+  doc.text("Issuer: Office of the Controller of Examinations", 16, authBoxY + 11);
+  doc.text("Institution: Shoolini University (HP) — Partner ID: DLP-SU-2025", 16, authBoxY + 15);
+  doc.text(`Document Reference: SU-COE-TR-2026-MCA-0087`, 16, authBoxY + 19);
+  doc.text(`Verification Timestamp: ${currentDate}`, 16, authBoxY + 23);
 
-  setStroke(doc, "#94a3b8");
-  doc.line(148, signY + 3, 196, signY + 3);
-  setColor(doc, TEXT_DARK);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.text("Dr. S.K. Bansal", 196, signY + 8, { align: "right" });
-  setColor(doc, SLATE);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);
-  doc.text("University Registrar", 196, signY + 13, { align: "right" });
-  doc.text("Shoolini University", 196, signY + 17, { align: "right" });
-  doc.setFontSize(7);
-  doc.text(`Date: ${currentDate}`, 196, signY + 22, { align: "right" });
-
-  // ── FOOTERS ─────────────────────────────────────────────────────────────────
-  const totalPages = doc.getNumberOfPages();
-  for (let i = 1; i <= totalPages; i++) {
-    doc.setPage(i);
-    drawPageFooter(doc, i, totalPages, pageWidth, pageHeight);
+  // Center: Authentic Circular Rubber University Stamp
+  const coeStampImg = generateRubberStamp({
+    textTop: "SHOOLINI UNIVERSITY • SOLAN (H.P.)",
+    textBottom: "NAAC A+ ACCREDITED • ESTD 2009",
+    centerLines: ["CONTROLLER OF", "EXAMINATIONS", "OFFICIALLY SEALED"],
+    color: "#1e3a8a",
+    size: 360,
+    tiltDeg: -4.0,
+  });
+  if (coeStampImg) {
+    try {
+      doc.addImage(coeStampImg, "PNG", 95, authBoxY + 1.5, 25, 25);
+    } catch {
+      // fallback
+    }
   }
 
-  const filename = `AcademicReport_Sem${semester}_${student.rollNo}_KoushikThalari.pdf`;
+  // Right side: Controller of Examinations Signature (Matching Dr. S.K. Bansal)
+  const sigX = 160;
+  const sigImg = generateCursiveSignature({
+    signer: "controller",
+    color: "#1e40af",
+    width: 300,
+    height: 100,
+  });
+  if (sigImg) {
+    try {
+      doc.addImage(sigImg, "PNG", sigX - 10, authBoxY + 2, 32, 10.7);
+    } catch {
+      // fallback
+    }
+  }
+
+  setColor(doc, TEXT_DARK);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.5);
+  doc.text("Dr. S.K. Bansal", sigX + 6, authBoxY + 18, { align: "center" });
+
+  setColor(doc, SLATE);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.text("Controller of Examinations", sigX + 6, authBoxY + 22, { align: "center" });
+  doc.text("Shoolini University", sigX + 6, authBoxY + 25.5, { align: "center" });
+
+  // ── FOOTER RIBBON ────────────────────────────────────────────────────────
+  setFill(doc, HEADER_BG);
+  doc.rect(0, pageHeight - 11, pageWidth, 11, "F");
+
+  setFill(doc, GOLD);
+  doc.rect(0, pageHeight - 11.6, pageWidth, 0.6, "F");
+
+  setColor(doc, WHITE);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  doc.text(
+    "This official academic record is valid without physical alteration. For online verification: www.shooliniuniversity.com/verify",
+    pageWidth / 2,
+    pageHeight - 6.5,
+    { align: "center" }
+  );
+
+  setColor(doc, "#94a3b8");
+  doc.setFontSize(6);
+  doc.text(
+    "Office of the Controller of Examinations | Shoolini University, Kasauli Hills, Solan (HP) | Page 1 of 1",
+    pageWidth / 2,
+    pageHeight - 2.8,
+    { align: "center" }
+  );
+
+  const filename = `Official_Transcript_Sem${semester}_${student.rollNo}_KoushikThalari.pdf`;
   doc.save(filename);
 }

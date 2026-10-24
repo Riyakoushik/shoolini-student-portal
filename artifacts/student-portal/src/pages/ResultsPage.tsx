@@ -8,6 +8,7 @@ import {
   sem1TheoryResults, sem1PracticalResults, sem1ResultSummary,
   sem2TheoryResults, sem2PracticalResults, sem2ResultSummary,
   sem3Subjects, sem4Subjects, sem3IASchedule, sem4IASchedule,
+  sem3IA1, sem3IA2,
   sem3Project, sem4Dissertation,
   student
 } from "../data/studentData";
@@ -731,8 +732,11 @@ export default function ResultsPage() {
           </div>
 
           {/* GPA notice */}
-          <div style={{ backgroundColor: BG_TABLE, border: `1px solid ${BORDER}`, borderRadius: 4, padding: "12px 16px", marginBottom: 16, fontSize: 13, color: SLATE }}>
-            ℹ Final GPA will be calculated after all exams are completed.
+          <div style={{ backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0", borderLeft: `4px solid ${GREEN}`, borderRadius: 4, padding: "12px 16px", marginBottom: 16, fontSize: 13, color: "#166534", display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 18 }}>✅</span>
+            <div>
+              <strong>Semester 2 Official Results Declared:</strong> SGPA <strong>9.31</strong> • CGPA <strong>9.21</strong> — First Class with Distinction (improved from Sem 1 SGPA 9.11).
+            </div>
           </div>
 
           <ResultSheet semNumber={2} />
@@ -740,7 +744,7 @@ export default function ResultsPage() {
           {/* Admit Cards */}
           <div style={{ backgroundColor: WHITE, border: `1px solid ${BORDER}`, borderRadius: 4, padding: 16, marginBottom: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
             <div style={{ fontSize: 15, fontWeight: 600, color: TEXT_DARK, marginBottom: 12 }}>Admit Cards</div>
-            <div style={{ color: SLATE, fontSize: 13 }}>Upcoming Exams</div>
+            <div style={{ color: GREEN, fontSize: 13, fontWeight: 600 }}>All Semester 2 Examinations Concluded (Appeared)</div>
           </div>
 
           {/* Pre-final */}
@@ -779,45 +783,184 @@ export default function ResultsPage() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
                   <div style={{ fontSize: 15, fontWeight: 600, color: TEXT_DARK }}>{section.title}</div>
-                  <div style={{ fontSize: 13, color: SLATE, marginTop: 4 }}>Scheduled: {section.date}</div>
+                  <div style={{ fontSize: 13, color: SLATE, marginTop: 4 }}>Conducted: {section.date}</div>
                 </div>
-                <span style={{ fontSize: 12, padding: "4px 10px", backgroundColor: BG_TABLE, color: SLATE, borderRadius: 4, fontWeight: 600 }}>Not Yet Conducted</span>
+                <span style={{ fontSize: 12, padding: "4px 10px", backgroundColor: "#dcfce7", color: GREEN, borderRadius: 4, fontWeight: 700 }}>Concluded (Appeared)</span>
               </div>
             </div>
           ))}
         </div>
       ) : sem === 3 ? (
         <div>
-          <div style={{ backgroundColor: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 8, padding: 32, textAlign: "center", marginBottom: 24 }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>📅</div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: NAVY, marginBottom: 8 }}>Semester 3 Results</div>
-            <div style={{ fontSize: 14, color: SLATE, marginBottom: 16 }}>Semester 3 begins <strong>July 6, 2026</strong>. Results will be available after exams.</div>
-            <div style={{ display: "flex", justifyContent: "center", gap: 20, flexWrap: "wrap" }}>
-              <div style={{ textAlign: "center", padding: "10px 20px", backgroundColor: WHITE, borderRadius: 4, border: `1px solid ${BORDER}` }}>
+          <div style={{ backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 8, padding: 28, textAlign: "center", marginBottom: 24 }}>
+            <div style={{ fontSize: 42, marginBottom: 10 }}>🎯</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: NAVY, marginBottom: 6 }}>Semester 3 • Internal Assessment Results Published</div>
+            <div style={{ fontSize: 13, color: SLATE, marginBottom: 18 }}>
+              Internal Assessments 1 &amp; 2 have concluded and official marks are published, demonstrating clear academic improvement from <strong>{sem3IA1.average}/20 (89%)</strong> in IA 1 to <strong>{sem3IA2.average}/20 (97%)</strong> in IA 2 (Grade A+).
+            </div>
+            <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap" }}>
+              <div style={{ textAlign: "center", padding: "10px 18px", backgroundColor: WHITE, borderRadius: 4, border: `1px solid ${BORDER}` }}>
                 <div style={{ fontSize: 22, fontWeight: 700, color: NAVY }}>{sem3Subjects.length}</div>
-                <div style={{ fontSize: 10, color: SLATE, marginTop: 2 }}>SUBJECTS</div>
+                <div style={{ fontSize: 10, color: SLATE, marginTop: 2 }}>ENROLLED SUBJECTS</div>
               </div>
-              <div style={{ textAlign: "center", padding: "10px 20px", backgroundColor: WHITE, borderRadius: 4, border: `1px solid ${BORDER}` }}>
+              <div style={{ textAlign: "center", padding: "10px 18px", backgroundColor: WHITE, borderRadius: 4, border: `1px solid ${BORDER}` }}>
                 <div style={{ fontSize: 22, fontWeight: 700, color: NAVY }}>{sem3Subjects.reduce((s, c) => s + c.credits, 0)}</div>
-                <div style={{ fontSize: 10, color: SLATE, marginTop: 2 }}>CREDITS</div>
+                <div style={{ fontSize: 10, color: SLATE, marginTop: 2 }}>TOTAL CREDITS</div>
+              </div>
+              <div style={{ textAlign: "center", padding: "10px 18px", backgroundColor: WHITE, borderRadius: 4, border: `1px solid #bfdbfe` }}>
+                <div style={{ fontSize: 22, fontWeight: 700, color: BLUE }}>{sem3IA1.average} / 20</div>
+                <div style={{ fontSize: 10, color: BLUE, marginTop: 2, fontWeight: 600 }}>IA 1 AVERAGE (89.0%)</div>
+              </div>
+              <div style={{ textAlign: "center", padding: "10px 18px", backgroundColor: WHITE, borderRadius: 4, border: `1px solid #bbf7d0` }}>
+                <div style={{ fontSize: 22, fontWeight: 700, color: GREEN }}>{sem3IA2.average} / 20</div>
+                <div style={{ fontSize: 10, color: GREEN, marginTop: 2, fontWeight: 600 }}>IA 2 AVERAGE (97.0%)</div>
+              </div>
+              <div style={{ textAlign: "center", padding: "10px 18px", backgroundColor: WHITE, borderRadius: 4, border: `1px solid #bbf7d0` }}>
+                <div style={{ fontSize: 22, fontWeight: 700, color: GREEN }}>+1.6 (+8.0%)</div>
+                <div style={{ fontSize: 10, color: GREEN, marginTop: 2, fontWeight: 600 }}>GROWTH GAIN</div>
+              </div>
+              <div style={{ textAlign: "center", padding: "10px 18px", backgroundColor: WHITE, borderRadius: 4, border: `1px solid ${BORDER}` }}>
+                <div style={{ fontSize: 22, fontWeight: 700, color: GREEN }}>A+</div>
+                <div style={{ fontSize: 10, color: SLATE, marginTop: 2 }}>OVERALL IA GRADE</div>
               </div>
             </div>
           </div>
 
+          {/* Download Report */}
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+            <button
+              className="no-print"
+              onClick={() => generateMarksheet(3)}
+              style={{
+                background: NAVY, color: WHITE, border: 'none',
+                padding: '8px 16px', borderRadius: '4px', cursor: 'pointer',
+                fontSize: '13px', fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 6
+              }}
+            >
+              ↓ Download Sem 3 Academic Transcript (PDF)
+            </button>
+          </div>
+
+          {/* IA 1 Section */}
+          <SectionCard>
+            <SectionHeader
+              title="Internal Assessment 1 (IA 1)"
+              subtitle={`Period: ${sem3IA1.period} | Maximum Marks: ${sem3IA1.maxMarks}`}
+              status="Completed"
+            />
+            <IAAverageKPI score={sem3IA1.average} max={sem3IA1.maxMarks} />
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "500px" }}>
+                <thead>
+                  <tr>
+                    <th style={{ ...th, width: "45%" }}>Subject</th>
+                    <th style={{ ...th, width: "20%", textAlign: "center" }}>Score</th>
+                    <th style={{ ...th, width: "20%", textAlign: "center" }}>Max Marks</th>
+                    <th style={{ ...th, width: "15%", textAlign: "center" }}>Grade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sem3IA1.subjects.map((s, i) => (
+                    <tr key={i} style={{ backgroundColor: i % 2 === 0 ? WHITE : "#f8fafc" }}>
+                      <td style={{ ...td, fontWeight: 500 }}>{s.name}</td>
+                      <td style={{ ...td, fontWeight: 700, textAlign: "center", color: GREEN }}>{s.score}</td>
+                      <td style={{ ...td, color: SLATE, textAlign: "center" }}>{sem3IA1.maxMarks}</td>
+                      <td style={{ ...td, textAlign: "center" }}>
+                        <span style={{ color: GREEN, fontWeight: 700 }}>
+                          {getIAGrade(s.score, sem3IA1.maxMarks)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </SectionCard>
+
+          {/* IA 2 Section */}
+          <SectionCard>
+            <SectionHeader
+              title="Internal Assessment 2 (IA 2)"
+              subtitle={`Period: ${sem3IA2.period} | Maximum Marks: ${sem3IA2.maxMarks}`}
+              status="Completed"
+            />
+            <IAAverageKPI score={sem3IA2.average} max={sem3IA2.maxMarks} />
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "500px" }}>
+                <thead>
+                  <tr>
+                    <th style={{ ...th, width: "45%" }}>Subject</th>
+                    <th style={{ ...th, width: "20%", textAlign: "center" }}>Score</th>
+                    <th style={{ ...th, width: "20%", textAlign: "center" }}>Max Marks</th>
+                    <th style={{ ...th, width: "15%", textAlign: "center" }}>Grade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sem3IA2.subjects.map((s, i) => (
+                    <tr key={i} style={{ backgroundColor: i % 2 === 0 ? WHITE : "#f8fafc" }}>
+                      <td style={{ ...td, fontWeight: 500 }}>{s.name}</td>
+                      <td style={{ ...td, fontWeight: 700, textAlign: "center", color: GREEN }}>{s.score}</td>
+                      <td style={{ ...td, color: SLATE, textAlign: "center" }}>{sem3IA2.maxMarks}</td>
+                      <td style={{ ...td, textAlign: "center" }}>
+                        <span style={{ color: GREEN, fontWeight: 700 }}>
+                          {getIAGrade(s.score, sem3IA2.maxMarks)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </SectionCard>
+
+          {/* Score distribution & comparison chart */}
+          <SectionCard>
+            <SectionHeader title="Internal Assessment Performance (IA 1 vs IA 2)" subtitle="Side-by-side Marks out of 20" />
+            <div style={{ overflowX: "auto" }}>
+              <div style={{ minWidth: 600, height: 260 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={sem3IA1.subjects.map((s, idx) => ({
+                      name: s.name
+                        .replace("Reinforcement Learning", "RL")
+                        .replace("Research Methodology & Technical Writing", "Res. Method")
+                        .replace("Cloud Architecture & DevOps", "Cloud & DevOps"),
+                      IA1: s.score,
+                      IA2: sem3IA2.subjects[idx]?.score ?? s.score,
+                    }))}
+                    margin={{ top: 10, right: 20, left: 0, bottom: 40 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke={BORDER} />
+                    <XAxis dataKey="name" angle={-25} textAnchor="end" interval={0} tick={{ fontSize: 10, fill: SLATE }} height={50} />
+                    <YAxis domain={[15, 20]} tick={{ fontSize: 11, fill: SLATE }} />
+                    <Tooltip formatter={(v, n) => [`${v}/20`, n === "IA1" ? "IA 1 Score" : "IA 2 Score"]} contentStyle={{ fontSize: 12 }} />
+                    <Bar dataKey="IA1" fill={BLUE} name="IA 1" radius={[3, 3, 0, 0]} />
+                    <Bar dataKey="IA2" fill={GREEN} name="IA 2" radius={[3, 3, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </SectionCard>
+
           {/* Exam schedule preview */}
           <SectionCard>
-            <SectionHeader title="Examination Schedule (Tentative)" subtitle="Semester 3" status="Upcoming" />
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 12 }}>
+            <SectionHeader title="Semester 3 Examination Timeline" subtitle="Internal & End-Semester Schedule" status="Active" />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
               {[
-                { label: "IA 1", period: `${sem3IASchedule.ia1.start} – ${sem3IASchedule.ia1.end}` },
-                { label: "IA 2", period: `${sem3IASchedule.ia2.start} – ${sem3IASchedule.ia2.end}` },
-                { label: "Pre-Final", period: `${sem3IASchedule.preFinal.start} – ${sem3IASchedule.preFinal.end}` },
-                { label: "Theory Exams", period: `${sem3IASchedule.theoryExams.start} – ${sem3IASchedule.theoryExams.end}` },
-                { label: "Practical Exams", period: `${sem3IASchedule.practicalExams.start} – ${sem3IASchedule.practicalExams.end}` },
+                { label: "IA 1", period: `${sem3IASchedule.ia1.start} – ${sem3IASchedule.ia1.end}`, status: "Completed & Published", color: GREEN, bg: "#f0fdf4" },
+                { label: "IA 2", period: `${sem3IASchedule.ia2.start} – ${sem3IASchedule.ia2.end}`, status: "Completed & Published", color: GREEN, bg: "#f0fdf4" },
+                { label: "Pre-Final Exams", period: `${sem3IASchedule.preFinal.start} – ${sem3IASchedule.preFinal.end}`, status: "Upcoming", color: AMBER, bg: BG_LIGHT },
+                { label: "Theory Exams", period: `${sem3IASchedule.theoryExams.start} – ${sem3IASchedule.theoryExams.end}`, status: "Upcoming", color: NAVY, bg: BG_LIGHT },
+                { label: "Practical Exams", period: `${sem3IASchedule.practicalExams.start} – ${sem3IASchedule.practicalExams.end}`, status: "Upcoming", color: NAVY, bg: BG_LIGHT },
               ].map((item) => (
-                <div key={item.label} style={{ backgroundColor: BG_LIGHT, padding: "10px 14px", borderRadius: 4, border: `1px solid ${BORDER}` }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: NAVY }}>{item.label}</div>
-                  <div style={{ fontSize: 12, color: SLATE, marginTop: 4 }}>{item.period}</div>
+                <div key={item.label} style={{ backgroundColor: item.bg, padding: "12px 14px", borderRadius: 4, border: `1px solid ${BORDER}` }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: NAVY }}>{item.label}</div>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: item.color, backgroundColor: WHITE, padding: "2px 6px", borderRadius: 3, border: `1px solid ${BORDER}` }}>
+                      {item.status}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 12, color: SLATE }}>{item.period}</div>
                 </div>
               ))}
             </div>
